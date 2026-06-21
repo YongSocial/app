@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,7 +10,44 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<!-- TON Connect not required — using native deep links -->
+<!-- TON Connect Dependencies - loaded dynamically with fallback -->
+<script>
+(function() {
+  const CDNS = [
+    'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js',
+    'https://unpkg.com/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js',
+  ];
+  // Resolve the TonConnectUI class regardless of which global the UMD bundle exposes
+  window.__getTonConnectUI = function() {
+    if (window.TON_CONNECT_UI && window.TON_CONNECT_UI.TonConnectUI) return window.TON_CONNECT_UI.TonConnectUI;
+    if (typeof window.TonConnectUI === 'function') return window.TonConnectUI;
+    if (typeof window.TONConnectUI === 'function') return window.TONConnectUI;
+    return null;
+  };
+  let idx = 0;
+  function tryNext() {
+    if (idx >= CDNS.length) {
+      window.__tonConnectFailed = true;
+      console.warn('TON Connect: all CDNs failed');
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = CDNS[idx++];
+    s.crossOrigin = 'anonymous';
+    s.onload = () => {
+      if (window.__getTonConnectUI()) {
+        window.__tonConnectLoaded = true;
+      } else {
+        console.warn('TON Connect: script loaded but global not found, trying next CDN');
+        tryNext();
+      }
+    };
+    s.onerror = () => tryNext();
+    document.head.appendChild(s);
+  }
+  tryNext();
+})();
+</script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>const _cw=console.warn.bind(console);console.warn=(...a)=>{if(typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_cw(...a);};</script>
@@ -150,11 +188,10 @@ const TON_CONFIG = {
 
       <div id="tonConnectContainer"></div>
 
-      <div class="flex flex-col gap-3">
-        <button id="payBtn" class="btn-brand w-full rounded-xl py-3.5 font-semibold text-base flex items-center justify-center gap-2">
-          <span>💎</span> Pay <span id="payAmount">0 TON</span> with Wallet
+      <div class="flex flex-col gap-2">
+        <button id="payBtn" class="btn-brand w-full rounded-xl py-3 font-semibold hidden">
+          Pay <span id="payAmount">0 TON</span>
         </button>
-        <p class="text-xs text-mute text-center">Opens your TON wallet app to confirm payment</p>
       </div>
 
       <div id="paymentDebug" class="text-xs text-mute text-center hidden"></div>
@@ -629,10 +666,67 @@ class TONPaymentSystem {
     }
     
     async initTONConnect() {
-        // TON Connect library not used — payments handled via native ton:// deep links
-        // Show the pay button immediately (no wallet connection step needed)
-        this.showPayButton();
-        document.getElementById('tonConnectContainer').innerHTML = '';
+        // Wait up to 10s for TON Connect script to finish loading
+        const TonConnectUIClass = await new Promise((resolve, reject) => {
+            const found = window.__getTonConnectUI && window.__getTonConnectUI();
+            if (found) return resolve(found);
+            if (window.__tonConnectFailed) return reject(new Error('TONConnectUI failed to load from all CDNs'));
+            let waited = 0;
+            const check = setInterval(() => {
+                waited += 100;
+                const cls = window.__getTonConnectUI && window.__getTonConnectUI();
+                if (cls) { clearInterval(check); resolve(cls); }
+                else if (window.__tonConnectFailed || waited >= 10000) { clearInterval(check); reject(new Error('TONConnectUI failed to load')); }
+            }, 100);
+        });
+
+        try {
+            this.tonConnect = new TonConnectUIClass({
+                manifestUrl: this.config.MANIFEST_URL,
+                buttonRootId: 'tonConnectContainer',
+                language: 'en',
+                walletsListConfiguration: {
+                    includeWallets: [
+                        {
+                            name: 'Tonkeeper',
+                            imageUrl: 'https://tonkeeper.com/assets/tonkeeper-icon.png',
+                            aboutUrl: 'https://tonkeeper.com',
+                            bridgeUrl: 'https://bridge.tonkeeper.com/bridge',
+                            universalLink: 'https://app.tonkeeper.com/ton-connect',
+                            deepLink: 'https://app.tonkeeper.com/ton-connect',
+                        },
+                        {
+                            name: 'Telegram Wallet',
+                            imageUrl: 'https://wallet.tg/images/logo-288.png',
+                            aboutUrl: 'https://wallet.tg',
+                            bridgeUrl: 'https://wallet.tg/ton-connect-bridge',
+                            universalLink: 'https://wallet.tg/ton-connect',
+                            deepLink: 'https://wallet.tg/ton-connect',
+                        }
+                    ]
+                }
+            });
+            
+            this.tonConnect.onStatusChange((wallet) => {
+                if (wallet) {
+                    this.wallet = wallet;
+                    this.isConnected = true;
+                    this.showPayButton();
+                    this.showDebug('Wallet connected: ' + wallet.account.address);
+                    this.updatePaymentUI('connected', 'Wallet Connected', 'Ready to pay');
+                } else {
+                    this.wallet = null;
+                    this.isConnected = false;
+                    this.hidePayButton();
+                    this.showDebug('Wallet disconnected');
+                    this.updatePaymentUI('idle');
+                }
+            });
+            
+        } catch (error) {
+            console.error('TON Connect init error:', error);
+            throw error; // re-thrown so init() can show fallback UI
+        }
     }
     
     async updatePriceAndAmount() {
@@ -741,11 +835,11 @@ class TONPaymentSystem {
     }
     
     showPayButton() {
-        this.payBtn?.classList.remove('hidden');
+        this.payBtn.classList.remove('hidden');
     }
     
     hidePayButton() {
-        // Keep button visible — user must always be able to pay
+        this.payBtn.classList.add('hidden');
     }
     
     updatePaymentUI(status, title, description) {
@@ -846,92 +940,111 @@ class TONPaymentSystem {
     
     async processPayment() {
         if (this.isProcessing) return;
+        
+        if (!this.isConnected) {
+            try {
+                await this.tonConnect.connectWallet();
+                if (!this.isConnected) {
+                    this.updatePaymentUI('error', 'Connection Failed', 'Please connect your wallet to continue.');
+                    return;
+                }
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                this.updatePaymentUI('error', 'Connection Failed', 'Unable to connect wallet. Please try again.');
+                return;
+            }
+        }
+        
         this.isProcessing = true;
+        this.paymentStatus = 'pending';
         this.updatePaymentUI('pending');
-
+        
         try {
             await this.updatePriceAndAmount();
-
-            const userId = this.getUserId();
-            const amountNano = Math.floor(this.paymentAmountTON * 1e9);
-            // Encode userId as a text comment so we can match the payment
-            const comment = encodeURIComponent('ys_' + userId);
-            const tonUrl = `ton://transfer/${this.config.RECEIVER_ADDRESS}?amount=${amountNano}&text=${comment}`;
-
-            // Open wallet via Telegram or fallback to window.open
-            const tgApp = window.Telegram?.WebApp;
-            if (tgApp?.openLink) {
-                tgApp.openLink(tonUrl);
+            
+            const amountNanoton = String(Math.floor(this.paymentAmountTON * 1e9));
+            
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 600,
+                messages: [
+                    {
+                        address: this.config.RECEIVER_ADDRESS,
+                        amount: amountNanoton,
+                        payload: this.encodePaymentPayload()
+                    }
+                ]
+            };
+            
+            console.log('[Payment] Sending transaction:', transaction);
+            
+            const result = await this.tonConnect.sendTransaction(transaction);
+            console.log('[Payment] Transaction result:', result);
+            
+            if (result && result.boc) {
+                this.paymentTxId = result.boc.substring(0, 20) + '...';
+                this.paymentStatus = 'success';
+                this.updatePaymentUI('success');
+                
+                await this.recordPayment(result);
+                
+                await loadProfile();
+                renderProfile();
+                
+                setTimeout(() => this.hidePaymentOverlay(), 2000);
             } else {
-                window.open(tonUrl, '_blank');
+                throw new Error('Transaction failed - no result returned');
             }
-
-            // Update UI to waiting state
-            this.statusIcon.textContent = '⏳';
-            this.statusTitle.textContent = 'Waiting for Payment…';
-            this.statusDescription.innerHTML = `
-                <div class="flex flex-col items-center gap-3">
-                    <div class="spinner"></div>
-                    <p class="text-sm">Complete the payment in your wallet app, then come back here.</p>
-                    <p class="text-xs text-mute">We'll detect it automatically.</p>
-                    <button id="iDidPayBtn" class="btn-brand rounded-xl px-6 py-2.5 text-sm mt-1">I've Paid — Check Now</button>
-                </div>`;
-
-            document.getElementById('iDidPayBtn')?.addEventListener('click', () => this.pollForPayment(userId, 0));
-
-            // Auto-poll every 5s for up to 3 minutes
-            this.pollForPayment(userId, 0);
-
+            
         } catch (error) {
             console.error('[Payment] Error:', error);
-            this.updatePaymentUI('error');
+            this.paymentStatus = 'error';
+            this.updatePaymentUI('error', 'Payment Failed', error.message || 'An error occurred. Please try again.');
             this.showDebug('Error: ' + error.message);
+        } finally {
             this.isProcessing = false;
         }
     }
-
-    async pollForPayment(userId, attempts) {
-        const MAX = 36; // 36 × 5s = 3 minutes
-        if (attempts >= MAX) {
-            this.isProcessing = false;
-            this.updatePaymentUI('error');
-            this.statusDescription.innerHTML = `<p class="text-danger text-sm">Payment not detected after 3 minutes.<br>If you paid, contact support.</p>`;
-            return;
-        }
-
-        const paid = await this.checkPaymentStatus();
-        if (paid) {
-            this.isProcessing = false;
-            this.paymentStatus = 'success';
-            this.updatePaymentUI('success');
-            await loadProfile();
-            renderProfile();
-            setTimeout(() => this.hidePaymentOverlay(), 2500);
-            return;
-        }
-
-        setTimeout(() => this.pollForPayment(userId, attempts + 1), 5000);
+    
+    encodePaymentPayload() {
+        const userId = this.getUserId();
+        const timestamp = Date.now();
+        const payload = {
+            type: 'ys_profile_payment',
+            userId: userId,
+            timestamp: timestamp,
+            amountUSD: this.config.PAYMENT_AMOUNT_USD,
+            amountTON: this.paymentAmountTON,
+            network: this.config.NETWORK
+        };
+        return btoa(JSON.stringify(payload));
     }
-
+    
     async recordPayment(txResult) {
         try {
             const userId = this.getUserId();
             const profileRef = doc(db, 'profiles', userId);
-            await updateDoc(profileRef, {
+            
+            const paymentData = {
                 tonPaymentTx: {
+                    txId: txResult.boc || this.paymentTxId,
                     amountUSD: this.config.PAYMENT_AMOUNT_USD,
                     amountTON: this.paymentAmountTON,
                     timestamp: serverTimestamp(),
                     status: 'paid',
                     type: 'profile_access',
+                    network: this.config.NETWORK
                 },
                 paymentStatus: 'paid',
                 paymentDate: serverTimestamp(),
                 updatedAt: serverTimestamp()
-            });
+            };
+            
+            await updateDoc(profileRef, paymentData);
             console.log('[Payment] Recorded in Firebase');
+            
         } catch (error) {
             console.error('[Payment] Error recording:', error);
+            this.showDebug('Error recording payment: ' + error.message);
         }
     }
     
