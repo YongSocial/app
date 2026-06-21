@@ -9,8 +9,30 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<!-- TON Connect Dependencies -->
-<script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js"></script>
+<!-- TON Connect Dependencies - loaded dynamically with fallback -->
+<script>
+(function() {
+  const CDNS = [
+    'https://cdn.jsdelivr.net/npm/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js',
+    'https://unpkg.com/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js',
+    'https://esm.run/@tonconnect/ui@2.0.12',
+  ];
+  let idx = 0;
+  function tryNext() {
+    if (idx >= CDNS.length) {
+      window.__tonConnectFailed = true;
+      console.warn('TON Connect: all CDNs failed');
+      return;
+    }
+    const s = document.createElement('script');
+    s.src = CDNS[idx++];
+    s.onload = () => { window.__tonConnectLoaded = true; };
+    s.onerror = () => tryNext();
+    document.head.appendChild(s);
+  }
+  tryNext();
+})();
+</script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>const _cw=console.warn.bind(console);console.warn=(...a)=>{if(typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_cw(...a);};</script>
@@ -629,6 +651,18 @@ class TONPaymentSystem {
     }
     
     async initTONConnect() {
+        // Wait up to 5s for TON Connect script to finish loading
+        await new Promise((resolve, reject) => {
+            if (typeof TONConnectUI !== 'undefined') return resolve();
+            if (window.__tonConnectFailed) return reject(new Error('TONConnectUI failed to load from all CDNs'));
+            let waited = 0;
+            const check = setInterval(() => {
+                waited += 100;
+                if (typeof TONConnectUI !== 'undefined') { clearInterval(check); resolve(); }
+                else if (window.__tonConnectFailed || waited >= 5000) { clearInterval(check); reject(new Error('TONConnectUI failed to load')); }
+            }, 100);
+        });
+
         try {
             this.tonConnect = new TONConnectUI({
                 manifestUrl: this.config.MANIFEST_URL,
@@ -759,16 +793,13 @@ class TONPaymentSystem {
     }
     
     setupEventListeners() {
-        this.payBtn.addEventListener('click', () => this.processPayment());
-        
-        this.closeBtn.addEventListener('click', () => {
+        this.payBtn?.addEventListener('click', () => this.processPayment());
+        this.closeBtn?.addEventListener('click', () => {
             // Cancel is disabled — payment is required to access the app
         });
-        
-        this.overlay.addEventListener('click', (e) => {
+        this.overlay?.addEventListener('click', (e) => {
             // Prevent closing by clicking backdrop — payment is required
         });
-        
         document.addEventListener('keydown', (e) => {
             // Prevent closing with Escape — payment is required
         });
