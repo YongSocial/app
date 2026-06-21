@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Yong Social — Finance, Crypto & Wealth Building</title>
+<meta name="description" content="Yong Social dashboard: traffic, social reach, net worth, crypto holdings, latest article, and Yong Pool live polls." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] },
+        colors: {
+          ink:'#070b14', surface:'#0d1322', surface2:'#121a2d',
+          line:'#1f2940', mute:'#8a93a8',
+          brand:'#d4b25a', brand2:'#22c984', danger:'#ef4444',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html,body{background:#070b14;color:#e7ecf5;font-family:Inter,system-ui,sans-serif}
+  .card{background:linear-gradient(180deg,#0f1626,#0b1120);border:1px solid #1f2940;border-radius:18px}
+  .chip{background:#121a2d;border:1px solid #1f2940;border-radius:9999px}
+  .btn-brand{background:#d4b25a;color:#0b1120;font-weight:600}
+  .btn-brand:hover{filter:brightness(1.05)}
+  .btn-brand:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{background:#121a2d;border:1px solid #1f2940;color:#e7ecf5}
+  .btn-ghost:hover{border-color:#d4b25a}
+  .scroll-hide::-webkit-scrollbar{display:none}
+  .skeleton{background:linear-gradient(90deg,#121a2d,#1a2440,#121a2d);background-size:200% 100%;animation:sh 1.2s infinite}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .grain{background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:3px 3px}
+  .nav-link{padding:.5rem .9rem;border-radius:9999px;font-size:.85rem;font-weight:500;color:#8a93a8}
+  .nav-link:hover{color:#e7ecf5}
+  .nav-link.active{background:#121a2d;border:1px solid #1f2940;color:#d4b25a}
+  .bar-track{height:8px;background:#121a2d;border:1px solid #1f2940;border-radius:9999px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,#d4b25a,#22c984);transition:width .6s ease}
+  .pulse-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c984;box-shadow:0 0 0 0 rgba(34,201,132,.7);animation:pd 1.6s infinite}
+  @keyframes pd{0%{box-shadow:0 0 0 0 rgba(34,201,132,.6)}70%{box-shadow:0 0 0 10px rgba(34,201,132,0)}100%{box-shadow:0 0 0 0 rgba(34,201,132,0)}}
+</style>
+</head>
+<body class="min-h-screen grain">
+
+<header class="sticky top-0 z-30 backdrop-blur bg-ink/80 border-b border-line">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
+    <a href="https://www.yongsocial.com/" target="_blank" rel="noreferrer" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand to-brand2 grid place-items-center text-ink font-extrabold">Y</div>
+      <div class="leading-tight">
+        <div class="font-bold tracking-tight">Yong Social</div>
+        <div class="text-[11px] text-mute -mt-0.5">Finance · Crypto · Wealth</div>
+      </div>
+    </a>
+    <nav id="nav" class="flex items-center gap-1">
+      <a href="#/" class="nav-link" data-route="/">Dashboard</a>
+      <a href="#/pool" class="nav-link" data-route="/pool">Yong Pool</a>
+      <a href="#/profile" class="nav-link flex items-center gap-2" data-route="/profile" id="navProfile">
+        <span id="navAvatar" class="w-6 h-6 rounded-full bg-surface2 border border-line grid place-items-center text-[11px] text-brand font-bold">Y</span>
+        <span class="hidden sm:inline">Profile</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-5 py-8">
+
+<!-- ===================== DASHBOARD VIEW ===================== -->
+<section id="view-dashboard" class="space-y-6">
+
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card p-5">
+      <div class="text-xs uppercase tracking-wider text-mute">Company Net Worth</div>
+      <div id="netWorth" class="text-3xl font-extrabold mt-1">—</div>
+      <div id="netWorthDelta" class="text-xs mt-1 text-mute">cash + crypto, live</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs uppercase tracking-wider text-mute">Website Views · 24h</div>
+      <div id="viewsTotal" class="text-3xl font-extrabold mt-1">—</div>
+      <div id="viewsDelta" class="text-xs mt-1 text-mute">vs previous day</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-xs uppercase tracking-wider text-mute">Total Followers</div>
+      <div id="followersTotal" class="text-3xl font-extrabold mt-1">—</div>
+      <div class="text-xs mt-1 text-mute">across all platforms</div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="card p-5 lg:col-span-2">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div class="font-semibold">Traffic</div>
+          <div class="text-xs text-mute">Hourly views · last 24 hours</div>
+        </div>
+        <span class="chip text-xs px-3 py-1 text-brand">Live</span>
+      </div>
+      <div class="h-64"><canvas id="viewsChart"></canvas></div>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <div class="font-semibold">Social Reach</div>
+        <span class="chip text-xs px-2.5 py-1 text-mute">followers</span>
+      </div>
+      <ul id="socialList" class="space-y-2.5"></ul>
+    </div>
+  </section>
+
+  <section class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <div class="font-semibold">Crypto Holdings</div>
+        <div class="text-xs text-mute">Powered by CoinGecko · refreshes every 60s</div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs text-mute">Total crypto value</div>
+        <div id="cryptoTotal" class="font-bold text-brand">—</div>
+      </div>
+    </div>
+    <div class="overflow-x-auto scroll-hide">
+      <table class="w-full text-sm min-w-[520px]">
+        <thead class="text-mute text-xs uppercase tracking-wider">
+          <tr class="text-left">
+            <th class="py-2 font-medium">Asset</th>
+            <th class="py-2 font-medium">Holdings</th>
+            <th class="py-2 font-medium">Price</th>
+            <th class="py-2 font-medium">24h</th>
+            <th class="py-2 font-medium text-right">Value</th>
+          </tr>
+        </thead>
+        <tbody id="cryptoBody" class="divide-y divide-line"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MOST RECENT (RSS) -->
+  <section class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <div class="font-semibold">Most Recent</div>
+        <div class="text-xs text-mute">Latest article from yongsocial.com</div>
+      </div>
+      <span class="chip text-xs px-2.5 py-1 text-brand">RSS</span>
+    </div>
+    <div id="recentArticle">
+      <div class="skeleton h-40 rounded-xl"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ===================== POOL VIEW ===================== -->
+<section id="view-pool" class="space-y-6 hidden">
+  <div class="card p-6">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-brand">Yong Pool</div>
+        <h1 class="text-2xl md:text-3xl font-extrabold mt-1">Published Polls</h1>
+        <p class="text-sm text-mute mt-1 max-w-xl">Vote on live polls, watch the countdown, and review final results once a poll ends. One vote per device, per poll.</p>
+      </div>
+      <div class="flex items-center gap-3 text-xs text-mute">
+        <span class="flex items-center gap-2"><span class="pulse-dot"></span> Live</span>
+        <span>·</span>
+        <span id="poolCount">—</span>
+      </div>
+    </div>
+  </div>
+  <div id="pollsList" class="space-y-5"></div>
+</section>
+
+
+<!-- ===================== PROFILE VIEW ===================== -->
+<section id="view-profile" class="space-y-6 hidden">
+  <div class="card p-6">
+    <div class="text-xs uppercase tracking-wider text-brand">Profile</div>
+    <h1 class="text-2xl md:text-3xl font-extrabold mt-1">Your Yong Social profile</h1>
+    <p id="profileMode" class="text-sm text-mute mt-1">Loading…</p>
+  </div>
+
+  <div id="profileLoading" class="card p-6"><div class="skeleton h-24 rounded-xl"></div></div>
+  <div id="profileError" class="card p-6 text-danger text-sm hidden"></div>
+
+  <div id="profileCard" class="card p-6 flex items-center gap-5 hidden">
+    <div id="profileAvatar" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand2 grid place-items-center text-ink text-3xl font-extrabold">Y</div>
+    <div class="min-w-0 flex-1">
+      <div id="profileName" class="text-xl font-bold truncate">—</div>
+      <div id="profileHandle" class="text-sm text-mute truncate">—</div>
+      <div id="profileId" class="text-xs text-mute mt-1">—</div>
+    </div>
+  </div>
+
+  <div id="profileForm" class="card p-6 space-y-4 hidden">
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-mute mb-2">Display name</label>
+      <input id="inpDisplayName" maxlength="48" class="w-full rounded-xl bg-surface2 border border-line px-4 py-3 text-sm outline-none focus:border-brand"/>
+    </div>
+    <div>
+      <label class="block text-xs uppercase tracking-wider text-mute mb-2">Bio</label>
+      <textarea id="inpBio" rows="4" maxlength="240" placeholder="Tell the Yong Social community about yourself…" class="w-full rounded-xl bg-surface2 border border-line px-4 py-3 text-sm outline-none focus:border-brand resize-none"></textarea>
+      <div class="text-[11px] text-mute mt-1 text-right"><span id="bioCount">0</span>/240</div>
+    </div>
+    <div class="flex items-center justify-between gap-3">
+      <div id="saveStatus" class="text-xs text-mute">Changes sync to Firestore.</div>
+      <button id="btnSaveProfile" class="btn-brand rounded-xl px-5 py-2.5 text-sm">Save profile</button>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center text-xs text-mute py-8">
+  © <span id="yr"></span> Yong Social ·
+  <a class="underline hover:text-brand" href="https://www.yongsocial.com/" target="_blank" rel="noreferrer">yongsocial.com</a>
+</footer>
+
+</main>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, runTransaction, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME',
+  authDomain: 'yong-social.firebaseapp.com',
+  projectId: 'yong-social',
+  storageBucket: 'yong-social.firebasestorage.app',
+  messagingSenderId: '178823074404',
+  appId: '1:178823074404:web:d1b4d76ea3a2d7c9170571',
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+/* ================ TELEGRAM ================ */
+const tg = window.Telegram?.WebApp || null;
+try { tg?.ready(); tg?.expand(); } catch {}
+function getTgUser(){
+  const u = tg?.initDataUnsafe?.user;
+  if (u) return { ...u, _source:'telegram' };
+  // Dev fallback for browser testing outside Telegram
+  let cached = null; try { cached = JSON.parse(localStorage.getItem('ys.devTgUser')||'null'); } catch {}
+  if (cached) return { ...cached, _source:'guest' };
+  const id = Math.floor(100000 + Math.random()*900000);
+  const g = { id, first_name:'Guest', username:'guest_'+id };
+  localStorage.setItem('ys.devTgUser', JSON.stringify(g));
+  return { ...g, _source:'guest' };
+}
+const TG_USER = getTgUser();
+let PROFILE = null;
+
+async function loadProfile(){
+  const ref = doc(db, 'profiles', String(TG_USER.id));
+  const snap = await getDoc(ref);
+  const base = {
+    telegramId: TG_USER.id,
+    username: TG_USER.username || null,
+    firstName: TG_USER.first_name || null,
+    lastName: TG_USER.last_name || null,
+    photoUrl: TG_USER.photo_url || null,
+    languageCode: TG_USER.language_code || null,
+    isPremium: !!TG_USER.is_premium,
+  };
+  if (!snap.exists()){
+    PROFILE = {
+      ...base,
+      displayName: [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || TG_USER.username || ('tg_'+TG_USER.id),
+      bio: '',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      lastSeenAt: serverTimestamp(),
+    };
+    await setDoc(ref, PROFILE);
+  } else {
+    PROFILE = { ...snap.data(), ...base };
+    await updateDoc(ref, { ...base, lastSeenAt: serverTimestamp(), updatedAt: serverTimestamp() });
+  }
+  paintNavAvatar();
+  return PROFILE;
+}
+function paintNavAvatar(){
+  const el = document.getElementById('navAvatar'); if(!el||!PROFILE) return;
+  if (PROFILE.photoUrl){
+    el.outerHTML = `<img id="navAvatar" src="${PROFILE.photoUrl}" alt="" class="w-6 h-6 rounded-full object-cover border border-line"/>`;
+  } else {
+    el.textContent = (PROFILE.displayName||PROFILE.firstName||'Y').slice(0,1).toUpperCase();
+  }
+}
+function renderProfile(){
+  const modeEl = document.getElementById('profileMode');
+  modeEl.textContent = TG_USER._source==='telegram'
+    ? 'Signed in automatically via Telegram.'
+    : 'Running outside Telegram — using a local guest profile for preview.';
+  if (!PROFILE){ return; }
+  document.getElementById('profileLoading').classList.add('hidden');
+  document.getElementById('profileCard').classList.remove('hidden');
+  document.getElementById('profileForm').classList.remove('hidden');
+  const avatar = document.getElementById('profileAvatar');
+  if (PROFILE.photoUrl){ avatar.outerHTML = `<img id="profileAvatar" src="${PROFILE.photoUrl}" alt="" class="w-20 h-20 rounded-2xl object-cover border border-line"/>`; }
+  else { avatar.textContent = (PROFILE.displayName||PROFILE.firstName||'Y').slice(0,1).toUpperCase(); }
+  document.getElementById('profileName').textContent = PROFILE.displayName || '—';
+  document.getElementById('profileHandle').innerHTML = (PROFILE.username?('@'+PROFILE.username):('tg_'+PROFILE.telegramId)) + (PROFILE.isPremium?' <span class="chip ml-1 px-2 py-0.5 text-[10px] text-brand">Premium</span>':'');
+  document.getElementById('profileId').textContent = 'Telegram ID: ' + PROFILE.telegramId;
+  const dn = document.getElementById('inpDisplayName'); dn.value = PROFILE.displayName || '';
+  const bio = document.getElementById('inpBio'); bio.value = PROFILE.bio || '';
+  document.getElementById('bioCount').textContent = (PROFILE.bio||'').length;
+  bio.oninput = ()=> document.getElementById('bioCount').textContent = bio.value.length;
+  document.getElementById('btnSaveProfile').onclick = async ()=>{
+    const btn = document.getElementById('btnSaveProfile');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try{
+      await updateDoc(doc(db,'profiles',String(PROFILE.telegramId)), { displayName: dn.value.trim(), bio: bio.value, updatedAt: serverTimestamp() });
+      PROFILE.displayName = dn.value.trim(); PROFILE.bio = bio.value;
+      paintNavAvatar();
+      document.getElementById('saveStatus').textContent = 'Saved ' + new Date().toLocaleTimeString();
+    } catch(e){ document.getElementById('saveStatus').innerHTML = '<span class="text-danger">'+e.message+'</span>'; }
+    finally { btn.disabled = false; btn.textContent = 'Save profile'; }
+  };
+}
+
+/* ================ CONFIG ================ */
+const CONFIG = {
+  company: { name:"Yong Social", site:"https://www.yongsocial.com/" },
+  rssFeed: "https://www.yongsocial.com/feed/",
+  baseNetWorthUSD: 4_200_000,
+  cryptoHoldings: [
+    { id:"bitcoin",  symbol:"BTC",  amount:2.5 },
+    { id:"ethereum", symbol:"ETH",  amount:40 },
+    { id:"solana",   symbol:"SOL",  amount:1200 },
+    { id:"usd-coin", symbol:"USDC", amount:250000 },
+    { id:"ripple",   symbol:"XRP",  amount:50000 },
+  ],
+  socials: [
+    { name:"X (Twitter)", handle:"@yongsocial", url:"https://x.com/yongsocial",       count:12400, icon:"x" },
+    { name:"Facebook",    handle:"yongsocial",  url:"https://facebook.com/yongsocial", count:8900,  icon:"fb" },
+    { name:"LinkedIn",    handle:"yongsocial",  url:"https://linkedin.com/company/yongsocial", count:3100, icon:"li" },
+    { name:"YouTube",     handle:"@yongsocial", url:"https://youtube.com/@yongsocial", count:5200,  icon:"yt" },
+    { name:"GitHub",      handle:"yongsocial",  url:"https://github.com/yongsocial",   count:null,  icon:"gh", live:true },
+  ],
+};
+
+/* ================ POLLS CONFIG ================ */
+const NOW = Date.now();
+const DAYS = d => d*86400000;
+const POLLS = [
+  {
+    id:"p-btc-100k",
+    question:"Will Bitcoin close above $100,000 by year end?",
+    description:"Community sentiment on BTC year-end performance.",
+    publishedAt: NOW - DAYS(2),
+    endsAt:      NOW + DAYS(5),
+    options:[
+      { id:"yes", label:"Yes — above $100k", baseline:1284 },
+      { id:"no",  label:"No — below $100k",  baseline:742 },
+    ],
+  },
+  {
+    id:"p-best-2026",
+    question:"Best performing asset class in 2026?",
+    description:"Where do you expect the strongest returns this year?",
+    publishedAt: NOW - DAYS(10),
+    endsAt:      NOW + DAYS(12),
+    options:[
+      { id:"crypto",   label:"Crypto",            baseline:982 },
+      { id:"stocks",   label:"Equities (S&P 500)",baseline:617 },
+      { id:"gold",     label:"Gold & metals",     baseline:341 },
+      { id:"realestate",label:"Real estate",      baseline:228 },
+    ],
+  },
+  {
+    id:"p-eth-flip",
+    question:"Will ETH flip BTC by market cap this cycle?",
+    description:"The classic flippening debate — closed poll.",
+    publishedAt: NOW - DAYS(30),
+    endsAt:      NOW - DAYS(2),
+    options:[
+      { id:"yes", label:"Yes",   baseline:412 },
+      { id:"no",  label:"No",    baseline:1690 },
+      { id:"unsure", label:"Unsure", baseline:233 },
+    ],
+  },
+];
+
+/* ================ HELPERS ================ */
+const $ = (s,p=document)=>p.querySelector(s);
+const $$ = (s,p=document)=>[...p.querySelectorAll(s)];
+const fmt = {
+  usd:n=>"$"+(n??0).toLocaleString(undefined,{maximumFractionDigits:0}),
+  usdF:n=>"$"+(n??0).toLocaleString(undefined,{maximumFractionDigits:2}),
+  num:n=>(n??0).toLocaleString(),
+  abbrev:n=>{ if(n==null)return"—"; const a=Math.abs(n);
+    if(a>=1e9)return(n/1e9).toFixed(1)+"B";
+    if(a>=1e6)return(n/1e6).toFixed(1)+"M";
+    if(a>=1e3)return(n/1e3).toFixed(1)+"K";
+    return ""+n; },
+  pct:n=>(n>=0?"+":"")+(n??0).toFixed(2)+"%",
+  date:ts=>new Date(ts).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}),
+  dateTime:ts=>new Date(ts).toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}),
+};
+const store = {
+  get:k=>{ try{return JSON.parse(localStorage.getItem(k));}catch{return null;} },
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
+};
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ================ ROUTER ================ */
+function route(){
+  const hash = location.hash.replace(/^#/,"") || "/";
+  const isPool = hash.startsWith("/pool");
+  const isProfile = hash.startsWith("/profile");
+  $("#view-dashboard").classList.toggle("hidden", isPool||isProfile);
+  $("#view-pool").classList.toggle("hidden", !isPool);
+  $("#view-profile").classList.toggle("hidden", !isProfile);
+  const current = isProfile ? "/profile" : isPool ? "/pool" : "/";
+  $$("#nav .nav-link").forEach(a=>a.classList.toggle("active", a.dataset.route === current));
+  if (isPool) renderPolls();
+  if (isProfile) renderProfile();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+window.addEventListener("hashchange", route);
+
+/* ================ CHART ================ */
+function seededRand(seed){ let s=seed; return ()=>(s=(s*9301+49297)%233280)/233280; }
+function getViewsData(){
+  const today=new Date().toISOString().slice(0,10);
+  let cached=store.get("ys.views");
+  if(cached?.day===today) return cached;
+  const rng=seededRand([...today].reduce((a,c)=>a+c.charCodeAt(0),0));
+  const hours=Array.from({length:24},(_,i)=>{
+    const base=200+350*Math.sin((i-4)/24*Math.PI);
+    return Math.max(40,Math.round(base+rng()*180-60));
+  });
+  const prev=Math.round(hours.reduce((a,b)=>a+b,0)*(0.85+rng()*0.3));
+  const out={day:today,hours,prev}; store.set("ys.views",out); return out;
+}
+function renderChart(){
+  const v=getViewsData(); const total=v.hours.reduce((a,b)=>a+b,0);
+  const delta=((total-v.prev)/v.prev)*100;
+  $("#viewsTotal").textContent=fmt.num(total);
+  $("#viewsDelta").innerHTML=`<span class="${delta>=0?'text-brand2':'text-danger'}">${fmt.pct(delta)}</span> vs previous day`;
+  const ctx=$("#viewsChart").getContext("2d");
+  const grad=ctx.createLinearGradient(0,0,0,240);
+  grad.addColorStop(0,"rgba(212,178,90,.35)"); grad.addColorStop(1,"rgba(212,178,90,0)");
+  const now=new Date(); now.setMinutes(0,0,0);
+  const labels=Array.from({length:24},(_,i)=>{
+    const d=new Date(now.getTime()-(23-i)*3600000);
+    return d.getHours().toString().padStart(2,"0")+":00";
+  });
+  new Chart(ctx,{type:"line",data:{labels,datasets:[{data:v.hours,borderColor:"#d4b25a",backgroundColor:grad,borderWidth:2,fill:true,tension:.4,pointRadius:0,pointHoverRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,backgroundColor:"#0b1120",borderColor:"#1f2940",borderWidth:1,titleColor:"#e7ecf5",bodyColor:"#e7ecf5"}},
+      scales:{x:{grid:{display:false},ticks:{color:"#8a93a8",maxRotation:0,autoSkipPadding:18}},
+              y:{grid:{color:"#1f294055"},ticks:{color:"#8a93a8",callback:v=>fmt.abbrev(v)},beginAtZero:true}}}});
+}
+
+/* ================ SOCIALS ================ */
+const ICONS = {
+  x:'<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M17.5 3h3.2l-7 8 8.2 10h-6.4l-5-6.4L4.8 21H1.6l7.5-8.6L1.2 3h6.6l4.5 5.9L17.5 3Zm-1.1 16h1.8L7.7 5H5.8l10.6 14Z"/></svg>',
+  fb:'<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.7c0-.9.3-1.6 1.6-1.6h1.6V4.2C16.4 4.1 15.4 4 14.3 4c-2.3 0-3.8 1.4-3.8 3.9v2.9H8v3.2h2.5V22h3Z"/></svg>',
+  li:'<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M6.94 8.5H3.56V21h3.38V8.5ZM5.25 3a1.94 1.94 0 1 0 0 3.88 1.94 1.94 0 0 0 0-3.88ZM21 21h-3.36v-6.1c0-1.46-.03-3.34-2.03-3.34-2.03 0-2.34 1.59-2.34 3.23V21H9.92V8.5h3.22v1.7h.05c.45-.85 1.55-1.74 3.19-1.74 3.41 0 4.04 2.25 4.04 5.17V21Z"/></svg>',
+  yt:'<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M23 7.2s-.2-1.6-.9-2.3c-.8-.9-1.7-.9-2.2-1C16.6 3.5 12 3.5 12 3.5s-4.6 0-7.9.4c-.5.1-1.4.1-2.2 1C1.2 5.6 1 7.2 1 7.2S.8 9.1.8 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.8.9 1.9.9 2.4 1 1.7.2 7.7.4 7.7.4s4.6 0 7.9-.4c.5-.1 1.4-.1 2.2-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8ZM9.9 14.7V8.3l6 3.2-6 3.2Z"/></svg>',
+  gh:'<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M12 .5C5.7.5.7 5.6.7 11.9c0 5.1 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.5-1.5 7.8-5.7 7.8-10.8C23.3 5.6 18.3.5 12 .5Z"/></svg>',
+};
+async function loadSocials(){
+  const list=$("#socialList");
+  list.innerHTML=CONFIG.socials.map((s,i)=>`
+    <li id="soc-${i}" class="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-surface2 transition">
+      <a href="${s.url}" target="_blank" rel="noreferrer" class="flex items-center gap-3 min-w-0">
+        <span class="w-8 h-8 grid place-items-center rounded-lg bg-surface2 border border-line text-brand">${ICONS[s.icon]||""}</span>
+        <span class="min-w-0">
+          <span class="block text-sm font-medium truncate">${s.name}</span>
+          <span class="block text-xs text-mute truncate">${s.handle}</span>
+        </span>
+      </a>
+      <span class="text-sm font-semibold" data-count>${s.count==null?'<span class="skeleton inline-block w-10 h-3 rounded"></span>':fmt.abbrev(s.count)}</span>
+    </li>`).join("");
+  const ghIdx=CONFIG.socials.findIndex(s=>s.icon==="gh"&&s.live);
+  if(ghIdx>=0){
+    const gh=CONFIG.socials[ghIdx];
+    try{
+      let r=await fetch(`https://api.github.com/users/${gh.handle}`);
+      if(!r.ok) r=await fetch(`https://api.github.com/orgs/${gh.handle}`);
+      const j=await r.json(); gh.count=j.followers??0;
+    }catch{ gh.count=gh.count??0; }
+    const el=$(`#soc-${ghIdx} [data-count]`); if(el) el.textContent=fmt.abbrev(gh.count);
+  }
+  $("#followersTotal").textContent=fmt.abbrev(CONFIG.socials.reduce((a,s)=>a+(s.count||0),0));
+}
+
+/* ================ CRYPTO ================ */
+async function loadCrypto(){
+  const ids=CONFIG.cryptoHoldings.map(c=>c.id).join(",");
+  const body=$("#cryptoBody");
+  body.innerHTML=CONFIG.cryptoHoldings.map(c=>`
+    <tr data-sym="${c.symbol}">
+      <td class="py-3"><span class="font-semibold">${c.symbol}</span> <span class="text-mute text-xs">${c.id}</span></td>
+      <td class="py-3">${fmt.num(c.amount)}</td>
+      <td class="py-3"><span class="skeleton inline-block w-16 h-3 rounded"></span></td>
+      <td class="py-3 text-mute">—</td>
+      <td class="py-3 text-right text-mute">—</td>
+    </tr>`).join("");
+  let prices={};
+  try{
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+    prices=await r.json(); store.set("ys.prices",prices);
+  }catch{ prices=store.get("ys.prices")||{}; }
+  let cryptoTotal=0;
+  CONFIG.cryptoHoldings.forEach(c=>{
+    const p=prices[c.id]?.usd??0, ch=prices[c.id]?.usd_24h_change??0, val=p*c.amount;
+    cryptoTotal+=val;
+    const row=body.querySelector(`tr[data-sym="${c.symbol}"]`);
+    if(row) row.innerHTML=`
+      <td class="py-3"><span class="font-semibold">${c.symbol}</span> <span class="text-mute text-xs">${c.id}</span></td>
+      <td class="py-3">${fmt.num(c.amount)}</td>
+      <td class="py-3">${p?fmt.usdF(p):"—"}</td>
+      <td class="py-3 ${ch>=0?'text-brand2':'text-danger'}">${fmt.pct(ch)}</td>
+      <td class="py-3 text-right font-medium">${fmt.usd(val)}</td>`;
+  });
+  $("#cryptoTotal").textContent=fmt.usd(cryptoTotal);
+  const net=CONFIG.baseNetWorthUSD+cryptoTotal;
+  $("#netWorth").textContent=fmt.usd(net);
+  $("#netWorthDelta").innerHTML=`Base ${fmt.usd(CONFIG.baseNetWorthUSD)} + crypto <span class="text-brand">${fmt.usd(cryptoTotal)}</span>`;
+}
+
+/* ================ MOST RECENT (RSS) ================ */
+async function loadRecent(){
+  const wrap=$("#recentArticle");
+  try{
+    const url=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(CONFIG.rssFeed)}`;
+    const r=await fetch(url); const j=await r.json();
+    const item=j.items?.[0]; if(!item) throw new Error("no items");
+    let img=item.thumbnail||item.enclosure?.link||"";
+    if(!img){ const m=(item.content||item.description||"").match(/<img[^>]+src="([^"]+)"/i); if(m) img=m[1]; }
+    const excerpt=(item.description||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim().slice(0,220);
+    wrap.innerHTML=`
+      <article class="grid grid-cols-1 md:grid-cols-[260px,1fr] gap-5 items-stretch">
+        ${img?`<a href="${item.link}" target="_blank" rel="noreferrer" class="block rounded-xl overflow-hidden border border-line bg-surface2">
+          <img src="${img}" alt="" class="w-full h-44 md:h-full object-cover" loading="lazy"/>
+        </a>`:`<div class="rounded-xl bg-surface2 border border-line h-44 md:h-full"></div>`}
+        <div class="flex flex-col">
+          <div class="text-xs text-mute">${fmt.date(new Date(item.pubDate).getTime())} · ${escapeHtml(item.author||"Yong Social")}</div>
+          <h3 class="text-xl font-bold mt-1 leading-snug"><a href="${item.link}" target="_blank" rel="noreferrer" class="hover:text-brand">${escapeHtml(item.title)}</a></h3>
+          <p class="text-sm text-mute mt-2 flex-1">${escapeHtml(excerpt)}…</p>
+          <div class="mt-4">
+            <a href="${item.link}" target="_blank" rel="noreferrer" class="btn-brand inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm">
+              Read more
+              <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>`;
+  }catch(e){
+    wrap.innerHTML=`<div class="text-sm text-mute p-4 text-center">
+      Unable to load the latest article right now.
+      <a class="underline text-brand" href="${CONFIG.company.site}" target="_blank" rel="noreferrer">Visit yongsocial.com</a>.
+    </div>`;
+  }
+}
+
+/* ================ POLLS (Firestore) ================ */
+const POLL_TALLY = {}; // pollId -> { votes:{optId:count}, voters:{uid:optId} }
+function getVote(pollId){ const uid=String(TG_USER.id); return POLL_TALLY[pollId]?.voters?.[uid] || null; }
+function getDeltas(pollId){ return POLL_TALLY[pollId]?.votes || {}; }
+async function setVote(pollId, optId){
+  const uid = String(TG_USER.id);
+  const ref = doc(db, "polls", pollId);
+  await runTransaction(db, async (tx)=>{
+    const snap = await tx.get(ref);
+    const data = snap.data() || {};
+    if (data.voters?.[uid]) return;
+    const votes = { ...(data.votes||{}) };
+    votes[optId] = (votes[optId]||0) + 1;
+    const voters = { ...(data.voters||{}), [uid]: optId };
+    tx.set(ref, { votes, voters, updatedAt: serverTimestamp() }, { merge: true });
+  });
+}
+function subscribePolls(){
+  POLLS.forEach(p=>{
+    onSnapshot(doc(db,"polls",p.id), (snap)=>{
+      POLL_TALLY[p.id] = snap.data() || {};
+      if(!$("#view-pool").classList.contains("hidden")) renderPolls();
+    });
+  });
+}
+function countsFor(poll){
+  const d=getDeltas(poll.id);
+  return poll.options.map(o=>({...o, votes:(o.baseline||0)+(d[o.id]||0)}));
+}
+function countdownStr(ms){
+  if(ms<=0) return "Ended";
+  const s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600),
+        m=Math.floor(s%3600/60), sec=s%60;
+  const pad=n=>String(n).padStart(2,"0");
+  return `${d}d ${pad(h)}h ${pad(m)}m ${pad(sec)}s`;
+}
+
+function renderPolls(){
+  const wrap=$("#pollsList");
+  const sorted=[...POLLS].sort((a,b)=>{
+    const aE=a.endsAt<Date.now(), bE=b.endsAt<Date.now();
+    if(aE!==bE) return aE?1:-1;
+    return b.publishedAt-a.publishedAt;
+  });
+  $("#poolCount").textContent=`${sorted.length} poll${sorted.length===1?"":"s"} published`;
+  wrap.innerHTML=sorted.map(poll=>{
+    const ended=Date.now()>=poll.endsAt;
+    const opts=countsFor(poll);
+    const total=opts.reduce((a,o)=>a+o.votes,0)||1;
+    const myVote=getVote(poll.id);
+    const showResults=ended||!!myVote;
+    const winner=ended?opts.slice().sort((a,b)=>b.votes-a.votes)[0]:null;
+    return `
+    <article class="card p-6" data-poll="${poll.id}">
+      <header class="flex items-start justify-between gap-4 flex-wrap">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 text-xs">
+            ${ended
+              ? `<span class="chip px-2.5 py-0.5 text-mute">Ended</span>`
+              : `<span class="chip px-2.5 py-0.5 text-brand2 flex items-center gap-1.5"><span class="pulse-dot"></span> Live</span>`}
+            <span class="text-mute">Published ${fmt.date(poll.publishedAt)}</span>
+            <span class="text-mute">·</span>
+            <span class="text-mute">${ended?`Ended ${fmt.date(poll.endsAt)}`:`Ends ${fmt.dateTime(poll.endsAt)}`}</span>
+          </div>
+          <h2 class="text-lg md:text-xl font-bold mt-2">${escapeHtml(poll.question)}</h2>
+          ${poll.description?`<p class="text-sm text-mute mt-1">${escapeHtml(poll.description)}</p>`:""}
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] uppercase tracking-wider text-mute">${ended?"Final votes":"Total votes"}</div>
+          <div class="font-bold text-brand">${fmt.num(total)}</div>
+          ${!ended?`<div class="text-[11px] text-mute mt-1" data-countdown>${countdownStr(poll.endsAt-Date.now())}</div>`:""}
+        </div>
+      </header>
+
+      <div class="mt-5 space-y-3">
+        ${opts.map(o=>{
+          const pct=total?(o.votes/total*100):0;
+          const chosen=myVote===o.id;
+          const isWinner=winner&&winner.id===o.id;
+          if(showResults){
+            return `
+            <div class="rounded-xl border ${chosen?'border-brand':'border-line'} bg-surface2/60 p-3">
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="font-medium truncate">${escapeHtml(o.label)}</span>
+                  ${chosen?`<span class="chip text-[10px] px-2 py-0.5 text-brand">Your vote</span>`:""}
+                  ${isWinner?`<span class="chip text-[10px] px-2 py-0.5 text-brand2">Winner</span>`:""}
+                </div>
+                <div class="text-mute text-xs whitespace-nowrap">${fmt.num(o.votes)} · <span class="text-white font-semibold">${pct.toFixed(1)}%</span></div>
+              </div>
+              <div class="bar-track mt-2"><div class="bar-fill" style="width:${pct.toFixed(2)}%"></div></div>
+            </div>`;
+          }
+          return `
+            <button data-vote="${o.id}" class="w-full text-left rounded-xl border border-line hover:border-brand bg-surface2/40 hover:bg-surface2 transition p-3 flex items-center justify-between gap-3">
+              <span class="font-medium">${escapeHtml(o.label)}</span>
+              <span class="chip text-xs px-3 py-1 text-brand">Vote</span>
+            </button>`;
+        }).join("")}
+      </div>
+
+      ${ended
+        ? `<div class="mt-5 text-xs text-mute">This poll has ended. Results are final.</div>`
+        : (myVote
+            ? `<div class="mt-5 text-xs text-mute">Thanks for voting — results update live until the poll ends.</div>`
+            : `<div class="mt-5 text-xs text-mute">Cast your vote to reveal live results.</div>`)}
+    </article>`;
+  }).join("");
+
+  // wire vote buttons
+  $$("#pollsList [data-poll]").forEach(card=>{
+    const pollId=card.dataset.poll;
+    card.querySelectorAll("[data-vote]").forEach(b=>{
+      b.onclick=async ()=>{ await setVote(pollId, b.dataset.vote); renderPolls(); };
+    });
+  });
+}
+
+/* live countdown tick */
+setInterval(()=>{
+  if($("#view-pool").classList.contains("hidden")) return;
+  $$("#pollsList [data-poll]").forEach(card=>{
+    const poll=POLLS.find(p=>p.id===card.dataset.poll); if(!poll) return;
+    const el=card.querySelector("[data-countdown]");
+    if(el){
+      const left=poll.endsAt-Date.now();
+      if(left<=0){ renderPolls(); }
+      else el.textContent=countdownStr(left);
+    }
+  });
+},1000);
+
+/* ================ BOOT ================ */
+$("#yr").textContent=new Date().getFullYear();
+renderChart();
+loadSocials();
+loadCrypto(); setInterval(loadCrypto,60_000);
+loadRecent();
+loadProfile().catch(e=>{
+  const err=document.getElementById("profileError");
+  if(err){ err.textContent=e.message; err.classList.remove("hidden"); }
+  document.getElementById("profileLoading")?.classList.add("hidden");
+}).finally(()=>{ if(location.hash.startsWith("#/profile")) renderProfile(); });
+subscribePolls();
+route();
+</script>
+</body>
+</html>
