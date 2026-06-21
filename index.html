@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
 <!-- TON Connect Dependencies -->
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tonconnect/ui@2.0.12/dist/tonconnect-ui.min.js"></script>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>const _cw=console.warn.bind(console);console.warn=(...a)=>{if(typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_cw(...a);};</script>
@@ -597,11 +597,24 @@ class TONPaymentSystem {
     async init() {
         try {
             await this.updatePriceAndAmount();
-            await this.initTONConnect();
             
+            // Always check payment status first — gate must show regardless of TON Connect
             const paid = await this.checkPaymentStatus();
             if (!paid) {
                 setTimeout(() => this.showPaymentOverlay(), 500);
+            }
+
+            // Init TON Connect separately — failure here doesn't bypass the gate
+            try {
+                await this.initTONConnect();
+            } catch (tcError) {
+                console.error('TON Connect init error:', tcError);
+                this.showDebug('Wallet connect unavailable. Try refreshing.');
+                // Show a manual fallback message in the connect container
+                const container = document.getElementById('tonConnectContainer');
+                if (container) {
+                    container.innerHTML = `<p class="text-sm text-mute text-center py-2">⚠️ Wallet connector failed to load. Please refresh.</p>`;
+                }
             }
             
             this.setupEventListeners();
@@ -609,6 +622,9 @@ class TONPaymentSystem {
         } catch (error) {
             console.error('TON Payment init error:', error);
             this.showDebug('Error: ' + error.message);
+            // Safety net: still show payment gate even on unexpected errors
+            const paid = await this.checkPaymentStatus().catch(() => false);
+            if (!paid) this.showPaymentOverlay();
         }
     }
     
@@ -658,7 +674,7 @@ class TONPaymentSystem {
             
         } catch (error) {
             console.error('TON Connect init error:', error);
-            throw error;
+            throw error; // re-thrown so init() can show fallback UI
         }
     }
     
