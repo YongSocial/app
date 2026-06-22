@@ -1577,29 +1577,7 @@ function renderChart() {
     const delta = ((total - v.prev) / v.prev) * 100;
     $("#viewsTotal").textContent = fmt.num(total);
     $("#viewsDelta").innerHTML = `<span class="${delta >= 0 ? 'text-brand2' : 'text-danger'}">${fmt.pct(delta)}</span> vs previous day`;
-    const ctx = $("#viewsChart").getContext("2d");
-    const grad = ctx.createLinearGradient(0, 0, 0, 240);
-    grad.addColorStop(0, "rgba(212,178,90,.35)");
-    grad.addColorStop(1, "rgba(212,178,90,0)");
-    const now = new Date();
-    now.setMinutes(0, 0, 0);
-    const labels = Array.from({ length: 24 }, (_, i) => {
-        const d = new Date(now.getTime() - (23 - i) * 3600000);
-        return d.getHours().toString().padStart(2, "0") + ":00";
-    });
-    new Chart(ctx, {
-        type: "line",
-        data: { labels, datasets: [{ data: v.hours, borderColor: "#d4b25a", backgroundColor: grad, borderWidth: 2, fill: true, tension: .4, pointRadius: 0, pointHoverRadius: 4 }] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false, backgroundColor: "#0b1120", borderColor: "#1f2940", borderWidth: 1, titleColor: "#e7ecf5", bodyColor: "#e7ecf5" } },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: "#8a93a8", maxRotation: 0, autoSkipPadding: 18 } },
-                y: { grid: { color: "#1f294055" }, ticks: { color: "#8a93a8", callback: v => fmt.abbrev(v) }, beginAtZero: true }
-            }
-        }
-    });
+    // Traffic chart removed — canvas no longer in DOM
 }
 
 // ============================================
