@@ -47,6 +47,7 @@
       padding: 0.5rem 1.25rem;
       cursor: pointer;
       transition: filter 0.15s;
+      font-family: 'Inter', sans-serif;
     }
     .btn-brand:hover { filter: brightness(1.05); }
     .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -380,37 +381,22 @@
       word-wrap: break-word;
     }
 
-    /* Post Images Grid */
+    /* Post Images - Instagram 4:5 aspect ratio */
     .post-images {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 4px;
       margin-top: 0.6rem;
       border-radius: 12px;
       overflow: hidden;
       position: relative;
-    }
-    .post-images .image-wrapper {
-      position: relative;
-      aspect-ratio: 1;
-      overflow: hidden;
-      cursor: pointer;
       background: #0f1626;
+      aspect-ratio: 4 / 5;
+      width: 100%;
+      cursor: pointer;
     }
-    .post-images .image-wrapper img {
+    .post-images .thumbnail-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.2s;
-    }
-    .post-images .image-wrapper img:hover {
-      transform: scale(1.02);
-    }
-    .post-images .image-wrapper:first-child {
-      grid-column: span 1;
-    }
-    .post-images .image-wrapper:only-child {
-      grid-column: span 2;
+      display: block;
     }
     .post-images .play-overlay {
       position: absolute;
@@ -418,41 +404,46 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.4);
-      opacity: 0;
-      transition: opacity 0.3s;
+      background: rgba(0,0,0,0.3);
+      transition: background 0.3s;
       cursor: pointer;
     }
-    .post-images .image-wrapper:hover .play-overlay {
-      opacity: 1;
+    .post-images .play-overlay:hover {
+      background: rgba(0,0,0,0.45);
     }
     .post-images .play-overlay .play-btn {
-      width: 48px;
-      height: 48px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: rgba(212, 178, 90, 0.9);
+      background: rgba(212, 178, 90, 0.92);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       color: #0b1120;
       border: none;
       cursor: pointer;
       transition: transform 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
     .post-images .play-overlay .play-btn:hover {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
     .post-images .image-count-badge {
       position: absolute;
-      bottom: 8px;
-      right: 8px;
+      bottom: 12px;
+      right: 12px;
       background: rgba(0,0,0,0.75);
       color: #fff;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
       border-radius: 9999px;
       font-weight: 600;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .post-images .image-count-badge i {
+      margin-right: 0.3rem;
     }
 
     /* Slideshow Modal */
@@ -473,13 +464,26 @@
       width: 100%;
       max-height: 90vh;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .slideshow-container img {
+    .slideshow-container .slideshow-image-wrapper {
       width: 100%;
-      height: auto;
       max-height: 80vh;
-      object-fit: contain;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #070b14;
       border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      position: relative;
+    }
+    .slideshow-container .slideshow-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .slideshow-nav {
       position: absolute;
@@ -497,6 +501,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 10;
     }
     .slideshow-nav:hover { background: rgba(255,255,255,0.2); }
     .slideshow-nav.prev { left: -50px; }
@@ -512,6 +517,7 @@
       cursor: pointer;
       opacity: 0.7;
       transition: opacity 0.2s;
+      z-index: 10;
     }
     .slideshow-close:hover { opacity: 1; }
     .slideshow-dots {
@@ -609,13 +615,13 @@
     .creator-support .diamond { font-size: 0.9rem; line-height: 1; }
     .creator-support .value { font-weight: 600; color: #e7ecf5; letter-spacing: 0.01em; }
 
-    /* Post Popup */
+    /* Post Popup - Professional */
     .post-overlay {
       position: fixed;
       inset: 0;
       z-index: 100;
-      background: rgba(7, 11, 20, 0.95);
-      backdrop-filter: blur(12px);
+      background: rgba(7, 11, 20, 0.92);
+      backdrop-filter: blur(16px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -623,56 +629,97 @@
     }
     .post-overlay.active { display: flex; }
     .post-modal {
-      max-width: 560px;
+      max-width: 540px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
+      background: linear-gradient(180deg, #0f1626, #0b1120);
+      border: 1px solid #1f2940;
+      border-radius: 20px;
+      padding: 1.5rem;
     }
+    .post-modal::-webkit-scrollbar { width: 4px; }
+    .post-modal::-webkit-scrollbar-track { background: #0b1120; }
+    .post-modal::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
+    
     .post-modal .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
       border-bottom: 1px solid #1f2940;
     }
-    .post-modal .modal-header h2 {
-      font-size: 1.2rem;
+    .post-modal .modal-header .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .post-modal .modal-header .avatar-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4b25a, #22c984);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
+      font-size: 0.8rem;
+      color: #0b1120;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .post-modal .modal-header .avatar-sm img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .post-modal .modal-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #e7ecf5;
     }
     .post-modal .modal-header .close-btn {
       background: none;
       border: none;
       color: #8a93a8;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       cursor: pointer;
       transition: color 0.2s;
+      padding: 0.2rem;
+      line-height: 1;
     }
     .post-modal .modal-header .close-btn:hover { color: #e7ecf5; }
+    
     .post-modal textarea {
       width: 100%;
-      min-height: 120px;
-      background: #121a2d;
-      border: 1px solid #1f2940;
-      border-radius: 14px;
-      padding: 0.85rem 1rem;
-      font-size: 0.95rem;
+      min-height: 100px;
+      background: transparent;
+      border: none;
+      padding: 0.25rem 0;
+      font-size: 1rem;
       font-family: 'Inter', sans-serif;
       color: #e7ecf5;
       outline: none;
-      transition: border-color 0.2s;
       resize: vertical;
+      line-height: 1.6;
     }
-    .post-modal textarea:focus { border-color: #d4b25a; }
     .post-modal textarea::placeholder { color: #5a6378; }
+    .post-modal .char-count {
+      font-size: 0.7rem;
+      color: #5a6378;
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+    .post-modal .char-count.over { color: #ef4444; }
 
-    .image-preview-grid {
+    .post-modal .image-preview-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
       gap: 0.5rem;
       margin-top: 0.75rem;
     }
-    .image-preview-item {
+    .post-modal .image-preview-item {
       position: relative;
       aspect-ratio: 1;
       border-radius: 10px;
@@ -680,63 +727,65 @@
       background: #121a2d;
       border: 1px solid #1f2940;
     }
-    .image-preview-item img {
+    .post-modal .image-preview-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .image-preview-item .remove-btn {
+    .post-modal .image-preview-item .remove-btn {
       position: absolute;
-      top: 2px;
-      right: 2px;
-      width: 20px;
-      height: 20px;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: rgba(239, 68, 68, 0.9);
+      background: rgba(239, 68, 68, 0.92);
       border: none;
       color: #fff;
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
     }
-    .image-preview-item .remove-btn:hover { background: #ef4444; }
+    .post-modal .image-preview-item .remove-btn:hover { background: #ef4444; }
 
-    .upload-progress {
+    .post-modal .upload-progress {
       margin-top: 0.75rem;
       display: none;
     }
-    .upload-progress.show { display: block; }
-    .upload-progress .progress-bar {
+    .post-modal .upload-progress.show { display: block; }
+    .post-modal .upload-progress .progress-bar {
       width: 100%;
-      height: 6px;
+      height: 4px;
       background: #1f2940;
       border-radius: 9999px;
       overflow: hidden;
     }
-    .upload-progress .progress-bar .progress-fill {
+    .post-modal .upload-progress .progress-bar .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, #d4b25a, #22c984);
       border-radius: 9999px;
       transition: width 0.3s ease;
       width: 0%;
     }
-    .upload-progress .progress-text {
+    .post-modal .upload-progress .progress-text {
       font-size: 0.75rem;
       color: #8a93a8;
-      margin-top: 0.3rem;
+      margin-top: 0.4rem;
       text-align: center;
     }
 
-    .post-actions {
+    .post-modal .post-actions {
       display: flex;
       gap: 0.75rem;
       margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #1f2940;
       flex-wrap: wrap;
     }
-    .post-actions .btn-secondary {
+    .post-modal .post-actions .btn-secondary {
       background: #121a2d;
       border: 1px solid #1f2940;
       color: #e7ecf5;
@@ -748,13 +797,22 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      font-family: 'Inter', sans-serif;
     }
-    .post-actions .btn-secondary:hover {
+    .post-modal .post-actions .btn-secondary:hover {
       border-color: #d4b25a;
     }
-    .post-actions .btn-secondary:disabled {
+    .post-modal .post-actions .btn-secondary:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    .post-modal .post-actions .btn-brand {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-left: auto;
     }
 
     /* Widgets */
@@ -982,6 +1040,7 @@
       cursor: pointer;
       transition: filter 0.15s;
       width: 100%;
+      font-family: 'Inter', sans-serif;
     }
     .wallet-actions .btn-primary:hover { filter: brightness(1.05); }
     .wallet-actions .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -1026,6 +1085,9 @@
       .slideshow-nav.prev { left: 10px; }
       .slideshow-nav.next { right: 10px; }
       .slideshow-close { top: -40px; }
+      .post-modal { padding: 1.25rem; }
+      .post-images { aspect-ratio: 4 / 5; }
+      .slideshow-container .slideshow-image-wrapper { aspect-ratio: 4 / 5; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -1070,17 +1132,20 @@
 </div>
 
 <!-- ============================================ -->
-<!-- POST POPUP -->
+<!-- POST POPUP - Professional -->
 <!-- ============================================ -->
 <div id="postOverlay" class="post-overlay">
-  <div class="post-modal card p-6">
+  <div class="post-modal">
     <div class="modal-header">
-      <h2>Create Post</h2>
+      <div class="header-left">
+        <div class="avatar-sm" id="postPopupAvatar">Y</div>
+        <h2 id="postPopupName">Create Post</h2>
+      </div>
       <button class="close-btn" onclick="closePostPopup()">✕</button>
     </div>
     
-    <textarea id="postContent" placeholder="What's on your mind?" maxlength="2000"></textarea>
-    <div class="text-xs text-mute mt-1 text-right"><span id="charCount">0</span>/2000</div>
+    <textarea id="postContent" placeholder="What's on your mind? (max 500 characters)" maxlength="500"></textarea>
+    <div class="char-count"><span id="charCount">0</span>/500</div>
     
     <div id="imagePreviewGrid" class="image-preview-grid"></div>
     
@@ -1093,7 +1158,7 @@
       <button class="btn-secondary" onclick="selectImages()">
         <i class="fa-solid fa-image"></i> Add Images (max 5)
       </button>
-      <button id="postSubmitBtn" class="btn-brand" onclick="submitPost()" style="margin-left:auto;">
+      <button id="postSubmitBtn" class="btn-brand" onclick="submitPost()">
         <i class="fa-solid fa-paper-plane"></i> Post
       </button>
     </div>
@@ -1108,7 +1173,9 @@
   <div class="slideshow-container" onclick="event.stopPropagation()">
     <button class="slideshow-close" onclick="closeSlideshow()">✕</button>
     <button class="slideshow-nav prev" onclick="changeSlide(-1)">‹</button>
-    <img id="slideshowImage" src="" alt="Slideshow" />
+    <div class="slideshow-image-wrapper">
+      <img id="slideshowImage" src="" alt="Slideshow" />
+    </div>
     <button class="slideshow-nav next" onclick="changeSlide(1)">›</button>
     <div class="slideshow-dots" id="slideshowDots"></div>
     <div class="slideshow-counter" id="slideshowCounter">1 / 1</div>
@@ -1279,6 +1346,7 @@ const auth = firebase.auth();
 const IMGBB_API_KEY = '1847c509e303548abdab86c734a109b2';
 const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 const MAX_IMAGES = 5;
+const MAX_CHARS = 500;
 
 // ============================================
 // STATE
@@ -1503,13 +1571,29 @@ function renderTicker() {
 // POST FUNCTIONS
 // ============================================
 function openPostPopup() {
-  document.getElementById('postOverlay').classList.add('active');
+  const overlay = document.getElementById('postOverlay');
+  overlay.classList.add('active');
+  
+  // Set profile avatar and name in popup
+  const avatarEl = document.getElementById('postPopupAvatar');
+  const nameEl = document.getElementById('postPopupName');
+  
+  if (PROFILE) {
+    if (PROFILE.photoUrl) {
+      avatarEl.innerHTML = `<img src="${PROFILE.photoUrl}" alt="" />`;
+    } else {
+      avatarEl.textContent = (PROFILE.displayName || 'Y').slice(0, 1).toUpperCase();
+    }
+    nameEl.textContent = PROFILE.displayName || 'Create Post';
+  }
+  
   document.getElementById('postContent').value = '';
   document.getElementById('charCount').textContent = '0';
   selectedFiles = [];
   document.getElementById('imagePreviewGrid').innerHTML = '';
   document.getElementById('uploadProgress').classList.remove('show');
   document.getElementById('postSubmitBtn').disabled = false;
+  document.getElementById('postSubmitBtn').innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
   isSubmitting = false;
 }
 
@@ -1559,7 +1643,14 @@ function removeImage(index) {
 
 // Character counter
 document.getElementById('postContent').addEventListener('input', function() {
-  document.getElementById('charCount').textContent = this.value.length;
+  const count = this.value.length;
+  document.getElementById('charCount').textContent = count;
+  const charEl = document.getElementById('charCount');
+  if (count > MAX_CHARS) {
+    charEl.classList.add('over');
+  } else {
+    charEl.classList.remove('over');
+  }
 });
 
 // ============================================
@@ -1615,7 +1706,7 @@ async function submitPost() {
   isSubmitting = true;
   const submitBtn = document.getElementById('postSubmitBtn');
   submitBtn.disabled = true;
-  submitBtn.textContent = '⏳ Posting...';
+  submitBtn.innerHTML = '⏳ Posting...';
   
   const progressContainer = document.getElementById('uploadProgress');
   const progressFill = document.getElementById('progressFill');
@@ -1641,7 +1732,7 @@ async function submitPost() {
         showToast(`Failed to upload image: ${error.message}`, 'error');
         isSubmitting = false;
         submitBtn.disabled = false;
-        submitBtn.textContent = '<i class="fa-solid fa-paper-plane"></i> Post';
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
         progressContainer.classList.remove('show');
         return;
       }
@@ -1659,7 +1750,7 @@ async function submitPost() {
         pfp: PROFILE.photoUrl || (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase(),
         wallet: PROFILE.walletAddress || null
       },
-      content: content,
+      content: content.substring(0, MAX_CHARS),
       imageUrls: imageUrls,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       reactions: {
@@ -1682,7 +1773,7 @@ async function submitPost() {
   } finally {
     isSubmitting = false;
     submitBtn.disabled = false;
-    submitBtn.textContent = '<i class="fa-solid fa-paper-plane"></i> Post';
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
     progressContainer.classList.remove('show');
   }
 }
@@ -1760,14 +1851,6 @@ function loadNewPosts() {
 // ============================================
 // REACTION HANDLERS
 // ============================================
-const REACTION_EMOJIS = {
-  like: '👍',
-  dislike: '👎',
-  celebrate: '🎉',
-  angry: '😡',
-  diamond: '💎'
-};
-
 function handleReaction(postId, reactionKey) {
   if (!PROFILE) {
     showToast('Please sign in to react.', 'error');
@@ -1872,6 +1955,7 @@ function renderPosts() {
     const userReaction = post[`userReaction_${PROFILE?.telegramId}`] || null;
     const images = post.imageUrls || [];
     const hasMultipleImages = images.length > 1;
+    const thumbnail = images.length > 0 ? images[0] : null;
     
     return `
     <article class="tweet" data-post="${post.id}">
@@ -1889,19 +1973,15 @@ function renderPosts() {
         </div>
         ${post.content ? `<div class="text">${post.content.replace(/\n/g, '<br>')}</div>` : ''}
         
-        ${images.length > 0 ? `
-          <div class="post-images">
-            ${images.map((img, idx) => `
-              <div class="image-wrapper" onclick="${images.length > 1 ? `openSlideshow(images, ${idx})` : `window.open('${img}', '_blank')`}">
-                <img src="${img}" alt="Post image ${idx + 1}" loading="lazy" />
-                ${hasMultipleImages && idx === 0 ? `
-                  <div class="play-overlay" onclick="event.stopPropagation();openSlideshow(images, 0)">
-                    <button class="play-btn"><i class="fa-solid fa-play"></i></button>
-                  </div>
-                  <span class="image-count-badge">+${images.length}</span>
-                ` : ''}
+        ${thumbnail ? `
+          <div class="post-images" onclick="${hasMultipleImages ? `openSlideshow(images, 0)` : `window.open('${thumbnail}', '_blank')`}">
+            <img src="${thumbnail}" alt="Post image" class="thumbnail-img" loading="lazy" />
+            ${hasMultipleImages ? `
+              <div class="play-overlay">
+                <button class="play-btn"><i class="fa-solid fa-play"></i></button>
               </div>
-            `).join('')}
+              <div class="image-count-badge"><i class="fa-regular fa-images"></i> ${images.length}</div>
+            ` : ''}
           </div>
         ` : ''}
         
