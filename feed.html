@@ -339,7 +339,9 @@
     }
     .fab i { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 
-    /* Wallet Address Popup */
+    /* ============================================ */
+    /* WALLET POPUP — Professional styling */
+    /* ============================================ */
     .wallet-overlay {
       position: fixed;
       inset: 0;
@@ -352,18 +354,115 @@
       padding: 1rem;
     }
     .wallet-overlay.active { display: flex; }
-    .wallet-modal { max-width: 480px; width: 100%; }
-    .wallet-status { transition: all 0.3s ease; }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #1f2940;
-      border-top-color: #d4b25a;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .wallet-modal {
+      max-width: 440px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .wallet-status {
+      transition: all 0.3s ease;
+      border: 2px solid #1f2940;
+      border-radius: 18px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .wallet-status .icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .wallet-status h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #e7ecf5;
+    }
+    .wallet-status p {
+      font-size: 0.9rem;
+      color: #8a93a8;
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+    .wallet-input-group {
+      margin-top: 1.25rem;
+      text-align: left;
+    }
+    .wallet-input-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #8a93a8;
+      margin-bottom: 0.4rem;
+    }
+    .wallet-input-group input {
+      width: 100%;
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-family: 'Inter', monospace;
+      color: #e7ecf5;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .wallet-input-group input:focus {
+      border-color: #d4b25a;
+    }
+    .wallet-input-group input::placeholder {
+      color: #5a6378;
+    }
+    .wallet-error {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .wallet-error.visible { display: block; }
+    .wallet-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .wallet-actions .btn-primary {
+      background: #d4b25a;
+      color: #0b1120;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: filter 0.15s;
+      width: 100%;
+    }
+    .wallet-actions .btn-primary:hover { filter: brightness(1.05); }
+    .wallet-actions .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .wallet-actions .btn-skip {
+      background: transparent;
+      color: #8a93a8;
+      font-size: 0.85rem;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .wallet-actions .btn-skip:hover { color: #e7ecf5; }
+    .wallet-footer {
+      font-size: 0.7rem;
+      color: #5a6378;
+      text-align: center;
+      margin-top: 0.75rem;
+    }
+    .wallet-footer a {
+      color: #d4b25a;
+      text-decoration: underline;
+    }
 
     /* Responsive */
     @media (max-width: 1024px) {
@@ -386,32 +485,26 @@
 <body>
 
 <!-- ============================================ -->
-<!-- WALLET ADDRESS POPUP -->
+<!-- WALLET ADDRESS POPUP — Professional -->
 <!-- ============================================ -->
 <div id="walletOverlay" class="wallet-overlay">
-  <div class="wallet-modal card p-6">
-    <div id="walletContent" class="space-y-6">
-      <div id="walletStatus" class="wallet-status border-2 rounded-2xl p-6 text-center">
-        <div id="walletIcon" class="text-5xl mb-3">💎</div>
-        <h2 id="walletTitle" class="text-xl font-bold">Enter Your TON Wallet Address</h2>
-        <p id="walletDesc" class="text-sm text-mute mt-2">
-          To receive creator support, please enter your TON wallet address.
-          This will be saved to your profile.
-        </p>
-        <div class="mt-4">
-          <input id="walletInput" type="text" placeholder="UQ… or EQ…" 
-            class="w-full rounded-xl bg-surface2 border border-line px-4 py-3 text-sm outline-none focus:border-brand font-mono" />
-          <div id="walletError" class="text-xs text-danger mt-2 hidden"></div>
-        </div>
+  <div class="wallet-modal card">
+    <div class="wallet-status">
+      <div class="icon">💎</div>
+      <h2>Enter Your TON Wallet Address</h2>
+      <p>To receive creator support, please enter your TON wallet address. This will be saved to your profile.</p>
+      
+      <div class="wallet-input-group">
+        <label for="walletInput">Wallet Address</label>
+        <input id="walletInput" type="text" placeholder="UQ… or EQ…" />
+        <div id="walletError" class="wallet-error">Please enter a valid TON wallet address.</div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <button id="saveWalletBtn" class="btn-brand w-full rounded-xl py-3.5 font-semibold text-base">
-          💎 Save Wallet Address
-        </button>
-        <button id="skipWalletBtn" class="text-xs text-mute hover:text-white transition">Skip for now</button>
-        <p class="text-xs text-mute text-center">Your wallet address is stored securely in your profile.</p>
+      <div class="wallet-actions">
+        <button id="saveWalletBtn" class="btn-primary">💎 Save Wallet Address</button>
+        <button id="skipWalletBtn" class="btn-skip">Skip for now</button>
       </div>
+      <div class="wallet-footer">Your wallet address is stored securely in your profile.</div>
     </div>
   </div>
 </div>
@@ -421,14 +514,14 @@
 <!-- ============================================ -->
 <div class="app-shell">
 
-  <!-- LEFT SIDEBAR -->
+  <!-- LEFT SIDEBAR (desktop) — removed Messages icon -->
   <aside class="sidebar">
     <div class="brand">Yong <span>Social</span></div>
     <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
     <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i> Explore</div>
     <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i> Rocket</div>
     <div class="nav-item"><i class="fa-regular fa-bell"></i> Notifications <span class="badge">1</span></div>
-    <div class="nav-item"><i class="fa-regular fa-envelope"></i> Messages</div>
+    <!-- Messages removed from sidebar -->
     <button class="post-btn" style="background:#d4b25a;border:none;color:#0b1120;font-weight:700;padding:0.7rem;border-radius:9999px;width:100%;cursor:pointer;font-size:0.95rem;margin-top:1.5rem;">Post</button>
 
     <div class="sidebar-profile" id="sidebarProfile">
@@ -451,7 +544,6 @@
     </div>
 
     <main id="feed">
-      <!-- Posts will be rendered here -->
       <div id="postsContainer"></div>
     </main>
   </section>
@@ -490,13 +582,13 @@
 <!-- MOBILE FAB -->
 <button class="fab"><i class="fa-solid fa-feather"></i></button>
 
-<!-- MOBILE BOTTOM NAV -->
+<!-- MOBILE BOTTOM NAV — replaced Messages with Profile -->
 <nav class="bottomnav">
   <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
   <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i></div>
   <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i></div>
   <div class="nav-item"><i class="fa-regular fa-bell"></i></div>
-  <div class="nav-item"><i class="fa-regular fa-envelope"></i></div>
+  <div class="nav-item" id="mobileProfileBtn"><i class="fa-regular fa-user"></i></div>
 </nav>
 
 <!-- ============================================ -->
@@ -519,26 +611,49 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ============================================
-// TELEGRAM USER
+// TELEGRAM USER — proper initialization
 // ============================================
 const tg = window.Telegram?.WebApp || null;
-try { tg?.ready(); tg?.expand(); } catch {}
+
+// Try to expand the WebApp
+try { 
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+} catch(e) {}
 
 function getTgUser() {
-  const u = tg?.initDataUnsafe?.user;
-  if (u) return { ...u, _source: 'telegram' };
+  // First try Telegram WebApp
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    const u = tg.initDataUnsafe.user;
+    console.log('[Telegram] User from WebApp:', u);
+    return { ...u, _source: 'telegram' };
+  }
   
+  // Fallback: check localStorage for dev mode
   let cached = null;
   try { cached = JSON.parse(localStorage.getItem('ys.devTgUser') || 'null'); } catch {}
-  if (cached) return { ...cached, _source: 'guest' };
+  if (cached) {
+    console.log('[Telegram] Using cached dev user:', cached);
+    return { ...cached, _source: 'guest' };
+  }
   
+  // Final fallback: generate a guest ID
   const id = Math.floor(100000 + Math.random() * 900000);
-  const g = { id, first_name: 'Guest', username: 'guest_' + id };
+  const g = { 
+    id: id, 
+    first_name: 'Guest', 
+    username: 'guest_' + id,
+    _source: 'guest'
+  };
   localStorage.setItem('ys.devTgUser', JSON.stringify(g));
-  return { ...g, _source: 'guest' };
+  console.log('[Telegram] Generated guest user:', g);
+  return g;
 }
 
 const TG_USER = getTgUser();
+console.log('[Telegram] Final user:', TG_USER);
 
 // ============================================
 // STATE
@@ -557,7 +672,6 @@ function getUTCDay() {
 
 async function getTONPrice() {
   try {
-    // Check Firestore cache first
     const doc = await db.collection('config').doc('tonPriceCache').get();
     if (doc.exists) {
       const data = doc.data();
@@ -572,7 +686,6 @@ async function getTONPrice() {
       }
     }
     
-    // Check localStorage fallback
     try {
       const local = localStorage.getItem('ys.tonPrice');
       if (local) {
@@ -584,7 +697,6 @@ async function getTONPrice() {
       }
     } catch (e) {}
     
-    // Fetch live from CoinGecko public API
     const response = await fetch(
       'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd'
     );
@@ -600,7 +712,6 @@ async function getTONPrice() {
     
     TON_PRICE = price;
     
-    // Save to Firestore
     try {
       await db.collection('config').doc('tonPriceCache').set({
         price: price,
@@ -609,7 +720,6 @@ async function getTONPrice() {
       }, { merge: true });
     } catch (e) {}
     
-    // Save to localStorage
     try {
       localStorage.setItem('ys.tonPrice', JSON.stringify({
         price: price,
@@ -625,10 +735,13 @@ async function getTONPrice() {
 }
 
 // ============================================
-// LOAD PROFILE
+// LOAD PROFILE — uses Telegram ID
 // ============================================
 async function loadProfile() {
-  const ref = db.collection('profiles').doc(String(TG_USER.id));
+  const userId = String(TG_USER.id);
+  console.log('[Profile] Loading for user ID:', userId);
+  
+  const ref = db.collection('profiles').doc(userId);
   const snap = await ref.get();
   
   const base = {
@@ -642,6 +755,7 @@ async function loadProfile() {
   };
   
   if (!snap.exists) {
+    console.log('[Profile] Creating new profile for:', userId);
     PROFILE = {
       ...base,
       displayName: [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 
@@ -655,11 +769,13 @@ async function loadProfile() {
     };
     await ref.set(PROFILE);
   } else {
+    console.log('[Profile] Existing profile found for:', userId);
     PROFILE = { ...snap.data(), ...base };
     await ref.update({ ...base, lastSeenAt: firebase.firestore.FieldValue.serverTimestamp() });
   }
   
   userWalletAddress = PROFILE.walletAddress || null;
+  console.log('[Profile] Wallet address:', userWalletAddress);
   updateSidebar();
   return PROFILE;
 }
@@ -682,12 +798,12 @@ function updateSidebar() {
 }
 
 // ============================================
-// WALLET POPUP
+// WALLET POPUP — Professional
 // ============================================
 function showWalletPopup() {
   document.getElementById('walletOverlay').classList.add('active');
   document.getElementById('walletInput').value = userWalletAddress || '';
-  document.getElementById('walletError').classList.add('hidden');
+  document.getElementById('walletError').classList.remove('visible');
 }
 
 function hideWalletPopup() {
@@ -701,19 +817,23 @@ document.getElementById('saveWalletBtn').addEventListener('click', async () => {
   
   if (!wallet) {
     error.textContent = 'Please enter a TON wallet address';
-    error.classList.remove('hidden');
+    error.classList.add('visible');
     return;
   }
   
   if (!wallet.match(/^[UQ][A-Za-z0-9_-]{40,48}$/)) {
     error.textContent = 'Please enter a valid TON wallet address (starts with UQ or EQ)';
-    error.classList.remove('hidden');
+    error.classList.add('visible');
     return;
   }
   
-  error.classList.add('hidden');
+  error.classList.remove('visible');
   
   try {
+    const btn = document.getElementById('saveWalletBtn');
+    btn.textContent = '⏳ Saving...';
+    btn.disabled = true;
+    
     const ref = db.collection('profiles').doc(String(TG_USER.id));
     await ref.update({
       walletAddress: wallet,
@@ -723,20 +843,19 @@ document.getElementById('saveWalletBtn').addEventListener('click', async () => {
     PROFILE.walletAddress = wallet;
     userWalletAddress = wallet;
     
-    // Show success briefly
-    const btn = document.getElementById('saveWalletBtn');
     btn.textContent = '✅ Saved!';
-    btn.disabled = true;
     
     setTimeout(() => {
       hideWalletPopup();
       btn.textContent = '💎 Save Wallet Address';
       btn.disabled = false;
-    }, 1000);
+    }, 800);
     
   } catch (err) {
     error.textContent = 'Error saving: ' + err.message;
-    error.classList.remove('hidden');
+    error.classList.add('visible');
+    document.getElementById('saveWalletBtn').textContent = '💎 Save Wallet Address';
+    document.getElementById('saveWalletBtn').disabled = false;
   }
 });
 
@@ -745,10 +864,9 @@ document.getElementById('skipWalletBtn').addEventListener('click', () => {
 });
 
 // ============================================
-// CREATOR SUPPORT — Opens wallet with pre-filled amount
+// CREATOR SUPPORT
 // ============================================
 function getSupportAmount() {
-  // $1 worth of TON = 1 / TON_PRICE
   return (1 / TON_PRICE).toFixed(6);
 }
 
@@ -762,7 +880,6 @@ function openCreatorSupport(postCreatorAddress) {
   const amountNano = Math.floor(parseFloat(amount) * 1e9);
   const comment = encodeURIComponent('Creator support from Yong Social');
   
-  // Build wallet links
   const links = {
     tonkeeper: `https://app.tonkeeper.com/transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
     tonhub: `https://tonhub.com/transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
@@ -770,23 +887,12 @@ function openCreatorSupport(postCreatorAddress) {
     native: `ton://transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
   };
   
-  // Open Tonkeeper by default (most popular)
   const tgApp = window.Telegram?.WebApp;
   if (tgApp?.openLink) {
     tgApp.openLink(links.tonkeeper, { try_instant_view: false });
   } else {
     window.open(links.tonkeeper, '_blank');
   }
-  
-  // Also show a small notification that the wallet opened
-  const status = document.createElement('div');
-  status.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-50 card px-6 py-3 text-sm';
-  status.innerHTML = `
-    💎 Opening wallet for ${amount} TON support...
-    <br><span class="text-xs text-mute">If wallet doesn't open, tap the link again.</span>
-  `;
-  document.body.appendChild(status);
-  setTimeout(() => status.remove(), 3000);
 }
 
 // ============================================
@@ -839,13 +945,12 @@ const samplePosts = [
 
 function renderPosts() {
   const container = document.getElementById('postsContainer');
-  
   if (!container) return;
   
   container.innerHTML = samplePosts.map(post => `
     <article class="tweet" data-post="${post.id}">
-      <div class="pfp ${post.author.pfp === 'Y' ? 'yong' : ''}">
-        ${post.author.pfp.length === 1 ? post.author.pfp : ''}
+      <div class="pfp">
+        ${post.author.pfp}
       </div>
       <div class="content">
         <div class="head">
@@ -889,6 +994,16 @@ document.querySelectorAll('.bottomnav .nav-item').forEach(item => {
   });
 });
 
+// Mobile profile button — show profile view or alert
+document.getElementById('mobileProfileBtn')?.addEventListener('click', function() {
+  // Simple profile view: show user info in an alert or could navigate
+  if (PROFILE) {
+    alert(`Profile\nName: ${PROFILE.displayName}\nHandle: ${PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId}\nWallet: ${PROFILE.walletAddress || 'Not set'}`);
+  } else {
+    alert('Profile not loaded yet. Please wait.');
+  }
+});
+
 // ============================================
 // COMMUNITY STATS
 // ============================================
@@ -912,16 +1027,19 @@ async function loadCommunityStats() {
 // ============================================
 async function init() {
   try {
+    console.log('[Init] Starting...');
+    
     // Load TON price
     await getTONPrice();
+    console.log('[Init] TON Price:', TON_PRICE);
     
     // Load profile
     await loadProfile();
+    console.log('[Init] Profile loaded:', PROFILE);
     
     // Check if user has wallet address
     if (!userWalletAddress) {
-      // Show popup after a short delay
-      setTimeout(showWalletPopup, 500);
+      setTimeout(showWalletPopup, 600);
     }
     
     // Render posts
@@ -939,15 +1057,18 @@ async function init() {
     }, 300000);
     
     console.log('[Yong Social] Community feed initialized');
-    console.log('[Profile]', PROFILE);
-    console.log('[TON Price]', TON_PRICE);
     
   } catch (error) {
     console.error('[Init Error]', error);
   }
 }
 
-init();
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
