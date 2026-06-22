@@ -720,6 +720,11 @@ class TONPaymentSystem {
 
     showCountdownScreen(submission, bypassMode) {
         this.showPaymentOverlay();
+        // Hide pay button and price while pending
+        this.payBtn?.classList.add('hidden');
+        document.getElementById('priceInfo')?.classList.add('hidden');
+        document.getElementById('payAmount')?.classList.add('hidden');
+        document.getElementById('refreshPriceBtn')?.classList.add('hidden');
         if (this.statusIcon)  this.statusIcon.textContent  = '🕐';
         if (this.statusTitle) this.statusTitle.textContent = 'Verification Submitted';
 
@@ -759,6 +764,11 @@ class TONPaymentSystem {
 
     showSupportScreen() {
         this.showPaymentOverlay();
+        // Hide pay button and price while pending
+        this.payBtn?.classList.add('hidden');
+        document.getElementById('priceInfo')?.classList.add('hidden');
+        document.getElementById('payAmount')?.classList.add('hidden');
+        document.getElementById('refreshPriceBtn')?.classList.add('hidden');
         if (this.statusIcon)  this.statusIcon.textContent  = '⚠️';
         if (this.statusTitle) this.statusTitle.textContent = 'Still Under Review';
         if (this.statusDesc)  this.statusDesc.innerHTML = `
