@@ -212,6 +212,10 @@ const TON_CONFIG = {
       <div class="text-xs uppercase tracking-wider text-mute">Website Views · 24h</div>
       <div id="viewsTotal" class="text-3xl font-extrabold mt-1">—</div>
       <div id="viewsDelta" class="text-xs mt-1 text-mute">vs previous day</div>
+      <a href="https://www.yongsocial.com/" target="_blank" rel="noreferrer" class="btn-brand mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10A15.3 15.3 0 0 0 8 12a15.3 15.3 0 0 0 4-10z"/></svg>
+        Visit Website
+      </a>
     </div>
     <div class="card p-5">
       <div class="text-xs uppercase tracking-wider text-mute">Total Followers</div>
@@ -277,17 +281,7 @@ const TON_CONFIG = {
     <div id="nwTooltip" class="hidden absolute z-50 pointer-events-none bg-surface border border-line rounded-xl px-4 py-3 text-xs shadow-xl min-w-[160px]"></div>
   </section>
 
-  <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="card p-5 lg:col-span-2">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="font-semibold">Traffic</div>
-          <div class="text-xs text-mute">Hourly views · last 24 hours</div>
-        </div>
-        <span class="chip text-xs px-3 py-1 text-brand">Live</span>
-      </div>
-      <div class="h-64"><canvas id="viewsChart"></canvas></div>
-    </div>
+  <section class="grid grid-cols-1 gap-4">
     <div class="card p-5">
       <div class="flex items-center justify-between mb-3">
         <div class="font-semibold">Social Reach</div>
