@@ -13,7 +13,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<!-- Firebase SDK (compat) - loaded once -->
+<!-- Firebase SDK (compat) -->
 <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
@@ -1152,6 +1152,7 @@ class TONPaymentSystem {
 // GOOGLE AUTH - COMMUNITY ACCESS
 // ============================================
 let currentGoogleUser = null;
+let isProcessingRedirect = false;
 
 // Make handleCommunityAccess available globally
 window.handleCommunityAccess = async function() {
@@ -1194,20 +1195,29 @@ function showGoogleLinkingPopup(telegramId) {
     // Show overlay
     overlay.classList.add('active');
     
-    // Google Sign-In
+    // Google Sign-In - Using redirect instead of popup for better compatibility
     signInBtn.onclick = async function() {
         try {
             signInBtn.disabled = true;
             signInBtn.textContent = '⏳ Signing in...';
             
+            // Store the current Telegram ID in sessionStorage before redirect
+            const tgId = document.getElementById('tgIdInput').value.trim();
+            if (!tgId) {
+                error.textContent = 'Please enter your Telegram ID first.';
+                error.classList.remove('hidden');
+                signInBtn.disabled = false;
+                signInBtn.textContent = 'Sign in with Google';
+                return;
+            }
+            sessionStorage.setItem('ys.pendingLinkTgId', tgId);
+            
             const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await firebase.auth().signInWithPopup(provider);
-            currentGoogleUser = result.user;
+            // Use redirect instead of popup for better compatibility with WebView
+            await firebase.auth().signInWithRedirect(provider);
             
-            signInBtn.textContent = '✅ Signed in as ' + currentGoogleUser.displayName;
-            signInBtn.style.background = '#22c984';
-            
-            showToast('Google sign-in successful! Now verify your Telegram ID.', 'success');
+            // The page will redirect to Google, then back to this page
+            // The auth state listener will handle the rest
             
         } catch (error) {
             console.error('Google sign-in error:', error);
@@ -1323,6 +1333,172 @@ function showGoogleLinkingPopup(telegramId) {
         }
     };
 }
+
+// ============================================
+// HANDLE REDIRECT RESULT
+// ============================================
+// Handle redirect result when user comes back from Google
+firebase.auth().getRedirectResult().then(async (result) => {
+    if (result.user) {
+        currentGoogleUser = result.user;
+        isProcessingRedirect = true;
+        
+        console.log('[Google] Redirect result received for user:', currentGoogleUser.uid);
+        
+        // Check if we have a pending link
+        const pendingTgId = sessionStorage.getItem('ys.pendingLinkTgId');
+        if (pendingTgId) {
+            sessionStorage.removeItem('ys.pendingLinkTgId');
+            
+            // Update the sign-in button if it exists
+            const signInBtn = document.getElementById('googleSignInBtn');
+            if (signInBtn) {
+                signInBtn.textContent = '✅ Signed in as ' + currentGoogleUser.displayName;
+                signInBtn.style.background = '#22c984';
+                signInBtn.disabled = false;
+            }
+            
+            // Auto-verify and link
+            const overlay = document.getElementById('googleLinkingOverlay');
+            const status = document.getElementById('linkingStatus');
+            const error = document.getElementById('linkError');
+            const verifyBtn = document.getElementById('verifyLinkBtn');
+            
+            // Only proceed if the overlay is visible
+            if (overlay && overlay.classList.contains('active')) {
+                status.classList.remove('hidden');
+                if (verifyBtn) {
+                    verifyBtn.disabled = true;
+                    verifyBtn.textContent = '⏳ Linking...';
+                }
+                
+                try {
+                    // Check if the Telegram profile exists
+                    const profileSnap = await db.collection('profiles').doc(pendingTgId).get();
+                    
+                    if (!profileSnap.exists) {
+                        if (error) {
+                            error.textContent = '❌ Telegram ID not found. Copy it from your Yong Social Profile.';
+                            error.classList.remove('hidden');
+                        }
+                        if (status) status.classList.add('hidden');
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            verifyBtn.textContent = 'Verify & Link Account';
+                        }
+                        isProcessingRedirect = false;
+                        return;
+                    }
+                    
+                    const profileData = profileSnap.data();
+                    
+                    // Check if treasury-verified
+                    if (profileData.paymentStatus !== 'paid') {
+                        if (error) {
+                            error.textContent = '❌ Account not verified by treasury. Please complete payment first.';
+                            error.classList.remove('hidden');
+                        }
+                        if (status) status.classList.add('hidden');
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            verifyBtn.textContent = 'Verify & Link Account';
+                        }
+                        setTimeout(() => {
+                            if (overlay) overlay.classList.remove('active');
+                            window.location.hash = '#/profile';
+                        }, 2000);
+                        isProcessingRedirect = false;
+                        return;
+                    }
+                    
+                    // Check if this Google account is already linked to a different Telegram ID
+                    if (profileData.googleUid && profileData.googleUid !== currentGoogleUser.uid) {
+                        if (error) {
+                            error.textContent = '❌ This Google account is already linked to a different Telegram ID.';
+                            error.classList.remove('hidden');
+                        }
+                        if (status) status.classList.add('hidden');
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            verifyBtn.textContent = 'Verify & Link Account';
+                        }
+                        isProcessingRedirect = false;
+                        return;
+                    }
+                    
+                    // Check if this profile already has a googleUid
+                    if (profileData.googleUid && profileData.googleUid !== currentGoogleUser.uid) {
+                        if (error) {
+                            error.textContent = '❌ This Telegram ID is already linked to another Google account.';
+                            error.classList.remove('hidden');
+                        }
+                        if (status) status.classList.add('hidden');
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            verifyBtn.textContent = 'Verify & Link Account';
+                        }
+                        isProcessingRedirect = false;
+                        return;
+                    }
+                    
+                    // Link the accounts
+                    await db.collection('profiles').doc(pendingTgId).update({
+                        googleUid: currentGoogleUser.uid,
+                        googleEmail: currentGoogleUser.email,
+                        googleName: currentGoogleUser.displayName,
+                        linkedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    await db.collection('userLinks').doc(currentGoogleUser.uid).set({
+                        telegramId: pendingTgId,
+                        googleUid: currentGoogleUser.uid,
+                        googleEmail: currentGoogleUser.email,
+                        linkedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    
+                    if (status) {
+                        status.innerHTML = '<div style="color:#22c984;font-size:1.2rem;">✅ Account linked successfully!</div>';
+                    }
+                    showToast('✅ Account linked! Redirecting to Community...', 'success');
+                    
+                    setTimeout(() => {
+                        if (overlay) overlay.classList.remove('active');
+                        window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error('Auto-linking error:', error);
+                    if (error) {
+                        error.textContent = 'Error linking account: ' + error.message;
+                        error.classList.remove('hidden');
+                    }
+                    if (status) status.classList.add('hidden');
+                    if (verifyBtn) {
+                        verifyBtn.disabled = false;
+                        verifyBtn.textContent = 'Verify & Link Account';
+                    }
+                }
+            }
+        } else {
+            // User signed in but no pending link - just update the UI
+            const signInBtn = document.getElementById('googleSignInBtn');
+            if (signInBtn) {
+                signInBtn.textContent = '✅ Signed in as ' + currentGoogleUser.displayName;
+                signInBtn.style.background = '#22c984';
+                signInBtn.disabled = false;
+            }
+            showToast('Signed in as ' + currentGoogleUser.displayName, 'success');
+        }
+        isProcessingRedirect = false;
+    } else if (result.error) {
+        console.error('Redirect result error:', result.error);
+        showToast('Sign-in error: ' + result.error.message, 'error');
+        isProcessingRedirect = false;
+    }
+}).catch((error) => {
+    console.error('getRedirectResult error:', error);
+    isProcessingRedirect = false;
+});
 
 // ============================================
 // TOAST
