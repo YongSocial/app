@@ -194,6 +194,9 @@ const TON_CONFIG = {
   </div>
 </header>
 
+<!-- Community credibility bar — shown only to verified users -->
+<div id="communityBar" class="hidden border-b border-line bg-surface px-5 py-2 flex items-center justify-center gap-4 flex-wrap"></div>
+
 <main class="max-w-6xl mx-auto px-5 py-8">
 
 <!-- ===================== DASHBOARD ===================== -->
@@ -202,7 +205,7 @@ const TON_CONFIG = {
     <div class="card p-5">
       <div class="text-xs uppercase tracking-wider text-mute">Company Net Worth</div>
       <div id="netWorth" class="text-3xl font-extrabold mt-1">—</div>
-      <div id="netWorthDelta" class="text-xs mt-1 text-mute">cash + crypto, live</div>
+      <div id="netWorthDelta" class="text-xs mt-1 text-mute">base + crypto · updates daily at midnight UTC</div>
     </div>
     <div class="card p-5">
       <div class="text-xs uppercase tracking-wider text-mute">Website Views · 24h</div>
@@ -240,7 +243,7 @@ const TON_CONFIG = {
     <div class="flex items-center justify-between mb-4">
       <div>
         <div class="font-semibold">Crypto Holdings</div>
-        <div class="text-xs text-mute">Powered by CoinGecko · refreshes every 60s</div>
+        <div class="text-xs text-mute">Powered by CoinGecko · updates daily at midnight UTC</div>
       </div>
       <div class="text-right">
         <div class="text-xs text-mute">Total crypto value</div>
@@ -625,6 +628,7 @@ class TONPaymentSystem {
         if (fsStatus === 'paid') {
             this.updatePaymentBadge('paid', '✅ Profile Active');
             localStorage.removeItem('ys.paySubmission');
+            showCommunityBar(); // Only verified users see this
             return;
         }
 
@@ -663,7 +667,7 @@ class TONPaymentSystem {
             if (bypass) {
                 // Treasury flagged bypass on this exact submission — check Firestore now
                 const payStatus = await this.getPaymentDocStatus(submission.paymentDocId);
-                if (payStatus === 'approved') return; // profile should be 'paid', handled above
+                if (payStatus === 'approved') { showCommunityBar(); return; } // profile should be 'paid', handled above
                 if (payStatus === 'declined') { this.showDeclinedScreen(profileData?.declineReason || ''); return; }
                 if (payStatus === 'deleted')  { localStorage.removeItem('ys.paySubmission'); this.showDeletedScreen(profileData?.deleteReason || ''); return; }
                 this.showCountdownScreen(submission, true);
@@ -685,6 +689,7 @@ class TONPaymentSystem {
             if (payStatus === 'approved') {
                 this.updatePaymentBadge('paid', '✅ Profile Active');
                 localStorage.removeItem('ys.paySubmission');
+                showCommunityBar();
                 return;
             }
             if (payStatus === 'declined') {
@@ -1271,26 +1276,111 @@ function renderProfile() {
 // ============================================
 // CONFIG
 // ============================================
+// ── CONFIG (static shell — dynamic values loaded from Firestore below) ──────────
 const CONFIG = {
     company: { name: "Yong Social", site: "https://www.yongsocial.com/" },
     rssFeed: "https://www.yongsocial.com/feeds/posts/default?alt=rss",
-    baseNetWorthUSD: 4_200_000,
+    baseNetWorthUSD: 0,          // filled from Firestore
     cryptoHoldings: [
-        { id: "bitcoin", symbol: "BTC", amount: 2.5 },
-        { id: "ethereum", symbol: "ETH", amount: 40 },
-        { id: "solana", symbol: "SOL", amount: 1200 },
-        { id: "usd-coin", symbol: "USDC", amount: 250000 },
-        { id: "ripple", symbol: "XRP", amount: 50000 },
-        { id: "the-open-network", symbol: "TON", amount: 0 },
+        { id: "bitcoin",          symbol: "BTC",  amount: 0 },
+        { id: "ethereum",         symbol: "ETH",  amount: 0 },
+        { id: "solana",           symbol: "SOL",  amount: 0 },
+        { id: "usd-coin",         symbol: "USDC", amount: 0 },
+        { id: "ripple",           symbol: "XRP",  amount: 0 },
+        { id: "the-open-network", symbol: "TON",  amount: 0 },
     ],
     socials: [
-        { name: "X (Twitter)", handle: "@yongsocial", url: "https://x.com/yongsocial", count: 12400, icon: "x" },
-        { name: "Facebook", handle: "yongsocial", url: "https://facebook.com/yongsocial", count: 8900, icon: "fb" },
-        { name: "LinkedIn", handle: "yongsocial", url: "https://linkedin.com/company/yongsocial", count: 3100, icon: "li" },
-        { name: "YouTube", handle: "@yongsocial", url: "https://youtube.com/@yongsocial", count: 5200, icon: "yt" },
-        { name: "GitHub", handle: "yongsocial", url: "https://github.com/yongsocial", count: null, icon: "gh", live: true },
+        { name: "X (Twitter)", handle: "@yongsocial", url: "https://x.com/yongsocial",              count: 0,    icon: "x"  },
+        { name: "Facebook",    handle: "yongsocial",  url: "https://facebook.com/yongsocial",        count: 0,    icon: "fb" },
+        { name: "LinkedIn",    handle: "yongsocial",  url: "https://linkedin.com/company/yongsocial",count: 0,    icon: "li" },
+        { name: "YouTube",     handle: "@yongsocial", url: "https://youtube.com/@yongsocial",        count: 0,    icon: "yt" },
+        { name: "GitHub",      handle: "yongsocial",  url: "https://github.com/yongsocial",          count: null, icon: "gh", live: true },
     ],
 };
+
+// ── 24h UTC-midnight cache helpers ────────────────────────────────────────────
+function utcDay() { const n = new Date(); return `${n.getUTCFullYear()}-${n.getUTCMonth()}-${n.getUTCDate()}`; }
+function cachedToday(key) {
+    const c = store.get(key);
+    return (c && c._day === utcDay()) ? c : null;
+}
+function cacheToday(key, data) { store.set(key, { ...data, _day: utcDay() }); }
+
+// ── Load dashboard config from Firestore (treasury-managed) ──────────────────
+async function loadDashboardConfig() {
+    // Try cache first
+    const cached = cachedToday("ys.dashConfig");
+    if (cached) {
+        applyDashboardConfig(cached);
+        return;
+    }
+    try {
+        const snap = await getDoc(doc(db, "config", "dashboard"));
+        if (snap.exists()) {
+            const d = snap.data();
+            cacheToday("ys.dashConfig", d);
+            applyDashboardConfig(d);
+        }
+    } catch(e) { console.warn("dashConfig fetch failed", e); }
+}
+
+function applyDashboardConfig(d) {
+    // Base net worth
+    if (d.baseNetWorthUSD != null) CONFIG.baseNetWorthUSD = d.baseNetWorthUSD;
+    // Crypto holdings amounts
+    if (Array.isArray(d.cryptoHoldings)) {
+        d.cryptoHoldings.forEach(h => {
+            const c = CONFIG.cryptoHoldings.find(x => x.id === h.id);
+            if (c) c.amount = h.amount ?? 0;
+        });
+    }
+    // Social follower counts (non-GitHub)
+    if (d.socials) {
+        CONFIG.socials.forEach(s => {
+            if (s.icon !== "gh" && d.socials[s.icon] != null) {
+                s.count = d.socials[s.icon];
+            }
+        });
+    }
+}
+
+// ── Load community stats (total users + total staked TON) ────────────────────
+// Always fetches & caches; rendering is gated to verified (paid) users only.
+let _communityStatsData = null;
+
+async function loadCommunityStats() {
+    const cached = cachedToday("ys.communityStats");
+    if (cached) { _communityStatsData = cached; return; }
+    try {
+        const snap = await getDoc(doc(db, "config", "community"));
+        if (snap.exists()) {
+            const d = snap.data();
+            cacheToday("ys.communityStats", d);
+            _communityStatsData = d;
+        }
+    } catch(e) { console.warn("communityStats fetch failed", e); }
+}
+
+// Call this after confirming the user is verified (paymentStatus === 'paid')
+function showCommunityBar() {
+    if (!_communityStatsData) return;
+    const bar = document.getElementById("communityBar");
+    if (!bar) return;
+    const d = _communityStatsData;
+    bar.innerHTML = `
+        <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand2 inline-block"></span>
+            <span class="text-xs text-mute">Verified Members</span>
+            <span class="text-xs font-bold text-brand">${fmt.abbrev(d.totalUsers ?? 0)}</span>
+        </span>
+        <span class="text-mute text-xs">|</span>
+        <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span>
+            <span class="text-xs text-mute">Total Staked TON</span>
+            <span class="text-xs font-bold text-brand">${fmt.abbrev(d.totalStakedTON ?? 0)} TON</span>
+        </span>`;
+    bar.classList.remove("hidden");
+}
 
 // ============================================
 // POLLS
@@ -1486,12 +1576,18 @@ async function loadSocials() {
     const ghIdx = CONFIG.socials.findIndex(s => s.icon === "gh" && s.live);
     if (ghIdx >= 0) {
         const gh = CONFIG.socials[ghIdx];
-        try {
-            let r = await fetch(`https://api.github.com/users/${gh.handle}`);
-            if (!r.ok) r = await fetch(`https://api.github.com/orgs/${gh.handle}`);
-            const j = await r.json();
-            gh.count = j.followers ?? 0;
-        } catch { gh.count = gh.count ?? 0; }
+        const ghCached = cachedToday("ys.ghFollowers");
+        if (ghCached) {
+            gh.count = ghCached.count ?? 0;
+        } else {
+            try {
+                let r = await fetch(`https://api.github.com/users/${gh.handle}`);
+                if (!r.ok) r = await fetch(`https://api.github.com/orgs/${gh.handle}`);
+                const j = await r.json();
+                gh.count = j.followers ?? 0;
+                cacheToday("ys.ghFollowers", { count: gh.count });
+            } catch { gh.count = gh.count ?? 0; }
+        }
         const el = $(`#soc-${ghIdx} [data-count]`);
         if (el) el.textContent = fmt.abbrev(gh.count);
     }
@@ -1512,24 +1608,32 @@ async function loadCrypto() {
             <td class="py-3 text-mute">—</td>
             <td class="py-3 text-right text-mute">—</td>
         </tr>`).join("");
+
+    // 24h UTC-midnight cache for prices
     let prices = {};
-    try {
-        const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
-        prices = await r.json();
-        store.set("ys.prices", prices);
-    } catch { prices = store.get("ys.prices") || {}; }
+    const priceCached = cachedToday("ys.prices");
+    if (priceCached) {
+        prices = priceCached;
+    } else {
+        try {
+            const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+            prices = await r.json();
+            cacheToday("ys.prices", prices);
+        } catch { prices = store.get("ys.prices") || {}; }
+    }
+
     let cryptoTotal = 0;
     CONFIG.cryptoHoldings.forEach(c => {
-        const p = prices[c.id]?.usd ?? 0,
-            ch = prices[c.id]?.usd_24h_change ?? 0,
-            val = p * c.amount;
+        const p   = prices[c.id]?.usd ?? 0;
+        const ch  = prices[c.id]?.usd_24h_change ?? 0;
+        const val = p * c.amount;
         cryptoTotal += val;
         const row = body.querySelector(`tr[data-sym="${c.symbol}"]`);
         if (row) row.innerHTML = `
             <td class="py-3"><span class="font-semibold">${c.symbol}</span> <span class="text-mute text-xs">${c.id}</span></td>
             <td class="py-3">${fmt.num(c.amount)}</td>
             <td class="py-3">${p ? fmt.usdF(p) : "—"}</td>
-            <td class="py-3 ${ch >= 0 ? 'text-brand2' : 'text-danger'}">${fmt.pct(ch)}</td>
+            <td class="py-3 ${ch >= 0 ? "text-brand2" : "text-danger"}">${fmt.pct(ch)}</td>
             <td class="py-3 text-right font-medium">${fmt.usd(val)}</td>`;
     });
     $("#cryptoTotal").textContent = fmt.usd(cryptoTotal);
@@ -1732,11 +1836,15 @@ setInterval(() => {
 // BOOT
 // ============================================
 $("#yr").textContent = new Date().getFullYear();
-renderChart();
-loadSocials();
-loadCrypto();
-setInterval(loadCrypto, 60000);
-loadRecent();
+// Load treasury-managed config first, then render data
+(async () => {
+    await loadDashboardConfig();
+    renderChart();
+    loadSocials();
+    loadCrypto();
+    loadRecent();
+    loadCommunityStats();
+})();
 
 async function initApp() {
     try {
