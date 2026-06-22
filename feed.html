@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Yong Social · Feed</title>
+  <title>Yong Social · Community Feed</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  
+  <!-- Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -42,6 +50,7 @@
       transition: filter 0.15s;
     }
     .btn-brand:hover { filter: brightness(1.05); }
+    .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .app-shell {
       max-width: 1280px;
@@ -97,25 +106,42 @@
       padding: 0.1rem 0.45rem;
       border-radius: 9999px;
     }
-    .sidebar .post-btn {
-      margin-top: 1.5rem;
-      background: #d4b25a;
-      border: none;
-      color: #0b1120;
-      font-weight: 700;
-      padding: 0.7rem;
-      border-radius: 9999px;
-      width: 100%;
-      cursor: pointer;
-      font-size: 0.95rem;
-    }
-    .sidebar .post-btn:hover { filter: brightness(1.05); }
-    .sidebar-footer { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid #1f2940; }
 
-    .feed-col {
-      border-right: 1px solid #1f2940;
-      min-width: 0;
+    .sidebar-profile {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem;
+      border-radius: 9999px;
+      border: 1px solid #1f2940;
+      background: #0f1626;
     }
+    .sidebar-profile .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4b25a, #22c984);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #0b1120;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .sidebar-profile .info { flex: 1; min-width: 0; }
+    .sidebar-profile .name { font-weight: 600; font-size: 0.9rem; }
+    .sidebar-profile .handle { color: #8a93a8; font-size: 0.75rem; }
+    .sidebar-profile .avatar-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #1f2940;
+    }
+
+    .feed-col { border-right: 1px solid #1f2940; min-width: 0; }
     .feed-header {
       position: sticky;
       top: 0;
@@ -164,9 +190,14 @@
       font-weight: 700;
       background: #121a2d;
       border: 1px solid #1f2940;
+      font-size: 0.9rem;
     }
-    .tweet .pfp.binance { background: #f0b90b; color: #0b1120; }
-    .tweet .pfp.opay { background: #fff; color: #00b389; }
+    .tweet .pfp img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
     .tweet .content { flex: 1; min-width: 0; }
     .tweet .head {
       display: flex;
@@ -176,7 +207,7 @@
       font-size: 0.9rem;
     }
     .tweet .head .name { font-weight: 700; color: #e7ecf5; }
-    .tweet .head .verified { color: #f0b90b; }
+    .tweet .head .verified { color: #d4b25a; }
     .tweet .head .handle,
     .tweet .head .time { color: #8a93a8; }
     .tweet .head .right {
@@ -186,91 +217,10 @@
       gap: 0.5rem;
       align-items: center;
     }
-    .tweet .ad-badge {
-      border: 1px solid #8a93a8;
-      border-radius: 4px;
-      padding: 0 6px;
-      font-size: 0.6rem;
-      color: #8a93a8;
-    }
     .tweet .text {
       margin-top: 0.3rem;
       line-height: 1.4;
       font-size: 0.95rem;
-    }
-
-    .chat {
-      margin-top: 0.6rem;
-      background: #0b1320;
-      border-radius: 16px;
-      padding: 0.75rem;
-      border: 1px solid #1f2940;
-    }
-    .bubble {
-      max-width: 80%;
-      padding: 0.4rem 0.75rem;
-      border-radius: 14px;
-      margin: 0.3rem 0;
-      font-size: 0.85rem;
-      line-height: 1.3;
-    }
-    .bubble.me {
-      background: #d4b25a;
-      color: #0b1120;
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
-    }
-    .bubble.them {
-      background: #1f2940;
-      color: #e7ecf5;
-      border-bottom-left-radius: 4px;
-    }
-    .bubble.code {
-      background: #d4b25a;
-      color: #0b1120;
-      margin-left: auto;
-      font-family: 'SF Mono', Consolas, monospace;
-      white-space: pre;
-      font-size: 0.75rem;
-      border-bottom-right-radius: 4px;
-    }
-    .bubble .meta {
-      font-size: 0.6rem;
-      color: rgba(0,0,0,0.5);
-      margin-left: 0.5rem;
-    }
-    .bubble.them .meta { color: rgba(255,255,255,0.4); }
-    .check { color: #d4b25a; }
-
-    .video {
-      margin-top: 0.6rem;
-      border-radius: 16px;
-      overflow: hidden;
-      position: relative;
-      aspect-ratio: 16/10;
-      background: linear-gradient(135deg, #2a4a2a, #c89a3a);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .play {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.85);
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-    }
-    .video .brand {
-      position: absolute;
-      top: 0.75rem;
-      right: 1rem;
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.9rem;
     }
 
     .actions-row {
@@ -299,27 +249,18 @@
       border: 1px solid rgba(212, 178, 90, 0.25);
       background: rgba(212, 178, 90, 0.06);
       font-weight: 500;
-      cursor: default;
+      cursor: pointer;
       user-select: none;
+      transition: all 0.2s;
     }
-    .creator-support .diamond {
-      font-size: 0.9rem;
-      line-height: 1;
+    .creator-support:hover {
+      background: rgba(212, 178, 90, 0.15);
+      border-color: rgba(212, 178, 90, 0.5);
     }
-    .creator-support .value {
-      font-weight: 600;
-      color: #e7ecf5;
-      letter-spacing: 0.01em;
-    }
-    .creator-support.loading {
-      opacity: 0.5;
-      pointer-events: none;
-    }
+    .creator-support .diamond { font-size: 0.9rem; line-height: 1; }
+    .creator-support .value { font-weight: 600; color: #e7ecf5; letter-spacing: 0.01em; }
 
-    .widgets {
-      padding: 1.5rem 1rem;
-      background: #070b14;
-    }
+    .widgets { padding: 1.5rem 1rem; background: #070b14; }
     .widget {
       background: #0f1626;
       border: 1px solid #1f2940;
@@ -327,11 +268,7 @@
       padding: 1rem;
       margin-bottom: 1rem;
     }
-    .widget h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
+    .widget h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
     .trend {
       display: flex;
       justify-content: space-between;
@@ -400,14 +337,35 @@
       padding: 0;
       line-height: 1;
     }
-    .fab i {
-      display: flex;
+    .fab i { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+    /* Wallet Address Popup */
+    .wallet-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(7, 11, 20, 0.95);
+      backdrop-filter: blur(12px);
+      display: none;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      height: 100%;
+      padding: 1rem;
     }
+    .wallet-overlay.active { display: flex; }
+    .wallet-modal { max-width: 480px; width: 100%; }
+    .wallet-status { transition: all 0.3s ease; }
 
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #1f2940;
+      border-top-color: #d4b25a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive */
     @media (max-width: 1024px) {
       .app-shell { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -427,8 +385,43 @@
 </head>
 <body>
 
+<!-- ============================================ -->
+<!-- WALLET ADDRESS POPUP -->
+<!-- ============================================ -->
+<div id="walletOverlay" class="wallet-overlay">
+  <div class="wallet-modal card p-6">
+    <div id="walletContent" class="space-y-6">
+      <div id="walletStatus" class="wallet-status border-2 rounded-2xl p-6 text-center">
+        <div id="walletIcon" class="text-5xl mb-3">💎</div>
+        <h2 id="walletTitle" class="text-xl font-bold">Enter Your TON Wallet Address</h2>
+        <p id="walletDesc" class="text-sm text-mute mt-2">
+          To receive creator support, please enter your TON wallet address.
+          This will be saved to your profile.
+        </p>
+        <div class="mt-4">
+          <input id="walletInput" type="text" placeholder="UQ… or EQ…" 
+            class="w-full rounded-xl bg-surface2 border border-line px-4 py-3 text-sm outline-none focus:border-brand font-mono" />
+          <div id="walletError" class="text-xs text-danger mt-2 hidden"></div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button id="saveWalletBtn" class="btn-brand w-full rounded-xl py-3.5 font-semibold text-base">
+          💎 Save Wallet Address
+        </button>
+        <button id="skipWalletBtn" class="text-xs text-mute hover:text-white transition">Skip for now</button>
+        <p class="text-xs text-mute text-center">Your wallet address is stored securely in your profile.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- MAIN APP -->
+<!-- ============================================ -->
 <div class="app-shell">
 
+  <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">Yong <span>Social</span></div>
     <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
@@ -436,15 +429,21 @@
     <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i> Rocket</div>
     <div class="nav-item"><i class="fa-regular fa-bell"></i> Notifications <span class="badge">1</span></div>
     <div class="nav-item"><i class="fa-regular fa-envelope"></i> Messages</div>
-    <button class="post-btn">Post</button>
-    <div class="sidebar-footer">
-      <div style="color:#8a93a8; font-size:0.75rem; padding:0.25rem 0.5rem;">Yong Social · v2</div>
+    <button class="post-btn" style="background:#d4b25a;border:none;color:#0b1120;font-weight:700;padding:0.7rem;border-radius:9999px;width:100%;cursor:pointer;font-size:0.95rem;margin-top:1.5rem;">Post</button>
+
+    <div class="sidebar-profile" id="sidebarProfile">
+      <div id="sidebarAvatar" class="avatar">Y</div>
+      <div class="info">
+        <div id="sidebarName" class="name">Loading...</div>
+        <div id="sidebarHandle" class="handle">@user</div>
+      </div>
     </div>
   </aside>
 
+  <!-- CENTER FEED -->
   <section class="feed-col">
     <div class="feed-header">
-      <h2>Home</h2>
+      <h2>Community</h2>
       <div class="tabs">
         <div class="tab active">For you</div>
         <div class="tab">Following</div>
@@ -452,74 +451,12 @@
     </div>
 
     <main id="feed">
-      <article class="tweet">
-        <div class="pfp binance"><i class="fa-solid fa-diamond"></i></div>
-        <div class="content">
-          <div class="head">
-            <span class="name">Binance</span>
-            <i class="fa-solid fa-circle-check verified"></i>
-            <span class="handle">@binance</span>
-            <span class="time">· 3h</span>
-            <span class="right"><i class="fa-regular fa-bell-slash"></i><i class="fa-solid fa-ellipsis-vertical"></i></span>
-          </div>
-          <div class="text">I bStock you 1000</div>
-          <div class="chat">
-            <div class="bubble me">hello bStocks <span class="meta">8:03 pm <span class="check">✓✓</span></span></div>
-            <div class="bubble them">Say it 1000 times..... <span class="meta">8:04 pm</span></div>
-            <div class="bubble code">let i = 1;
-while (i &lt;= 1000) {
-  console.log("hello bStocks");
-  i++;
-}
-<span class="meta" style="display:block;text-align:right;margin-top:6px;">8:04 pm <span class="check">✓✓</span></span></div>
-          </div>
-          <div class="actions-row">
-            <div class="actions-left">
-              <div class="action"><i class="fa-regular fa-comment"></i> 93</div>
-              <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> 194</div>
-            </div>
-            <div class="creator-support" id="support1">
-              <span class="diamond">💎</span>
-              <span class="value" id="tonValue1">0.598802</span>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <article class="tweet">
-        <div class="pfp opay">O</div>
-        <div class="content">
-          <div class="head">
-            <span class="name">OPay</span>
-            <i class="fa-solid fa-circle-check verified"></i>
-            <span class="handle">@OPay_NG</span>
-            <span class="right"><span class="ad-badge">Ad</span><i class="fa-solid fa-ellipsis-vertical"></i></span>
-          </div>
-          <div class="text">
-            Ready to compete for your share of the ₦18 million prize pool? 🔥<br><br>
-            Before you hit "Apply," make sure you've got the essentials ready.<br><br>
-            In this video, we break down exactly what you should include to help your application stand out.<br><br>
-            OPayScholars26 NationalInnovationChallenge
-          </div>
-          <div class="video">
-            <div class="brand">OPay</div>
-            <div class="play"><i class="fa-solid fa-play"></i></div>
-          </div>
-          <div class="actions-row">
-            <div class="actions-left">
-              <div class="action"><i class="fa-regular fa-comment"></i> 28</div>
-              <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> 73</div>
-            </div>
-            <div class="creator-support" id="support2">
-              <span class="diamond">💎</span>
-              <span class="value" id="tonValue2">0.598802</span>
-            </div>
-          </div>
-        </div>
-      </article>
+      <!-- Posts will be rendered here -->
+      <div id="postsContainer"></div>
     </main>
   </section>
 
+  <!-- RIGHT WIDGETS -->
   <aside class="widgets">
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass"></i>
@@ -528,200 +465,411 @@ while (i &lt;= 1000) {
     <div class="widget">
       <h3>Trends for you</h3>
       <div class="trend">
-        <div><div class="trend-title">Binance</div><div class="trend-meta">93K posts</div></div>
+        <div><div class="trend-title">Yong Social</div><div class="trend-meta">1.2K posts</div></div>
         <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
       </div>
       <div class="trend">
-        <div><div class="trend-title">OPayScholars26</div><div class="trend-meta">42K posts</div></div>
+        <div><div class="trend-title">Creator Support</div><div class="trend-meta">340 posts</div></div>
         <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
       </div>
       <div class="trend">
-        <div><div class="trend-title">NationalInnovationChallenge</div><div class="trend-meta">18K posts</div></div>
+        <div><div class="trend-title">TON Community</div><div class="trend-meta">890 posts</div></div>
         <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
       </div>
     </div>
     <div class="widget">
-      <h3>Who to follow</h3>
-      <div class="trend">
-        <div><div class="trend-title">Binance</div><div class="trend-meta">@binance</div></div>
-        <button class="follow-btn">Follow</button>
-      </div>
-      <div class="trend">
-        <div><div class="trend-title">OPay</div><div class="trend-meta">@OPay_NG</div></div>
-        <button class="follow-btn">Follow</button>
+      <h3>Community Stats</h3>
+      <div id="communityStats" class="space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-mute">Members</span><span class="font-bold">—</span></div>
+        <div class="flex justify-between"><span class="text-mute">Posts</span><span class="font-bold">—</span></div>
       </div>
     </div>
   </aside>
 </div>
 
+<!-- MOBILE FAB -->
 <button class="fab"><i class="fa-solid fa-feather"></i></button>
 
+<!-- MOBILE BOTTOM NAV -->
 <nav class="bottomnav">
   <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
   <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i></div>
   <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i></div>
-  <div class="nav-item"><i class="fa-regular fa-bell"></i><span class="badge" style="background:#d4b25a;color:#0b1120;font-size:0.6rem;padding:0.05rem 0.4rem;border-radius:9999px;margin-left:0.1rem;">1</span></div>
+  <div class="nav-item"><i class="fa-regular fa-bell"></i></div>
   <div class="nav-item"><i class="fa-regular fa-envelope"></i></div>
 </nav>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
-
+<!-- ============================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================ -->
 <script>
 // ============================================
 // FIREBASE CONFIG
 // ============================================
 const firebaseConfig = {
-  apiKey: "AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME",
-  authDomain: "yong-social.firebaseapp.com",
-  projectId: "yong-social",
-  storageBucket: "yong-social.firebasestorage.app",
-  messagingSenderId: "178823074404",
-  appId: "1:178823074404:web:d1b4d76ea3a2d7c9170571"
+  apiKey: 'AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME',
+  authDomain: 'yong-social.firebaseapp.com',
+  projectId: 'yong-social',
+  storageBucket: 'yong-social.firebasestorage.app',
+  messagingSenderId: '178823074404',
+  appId: '1:178823074404:web:d1b4d76ea3a2d7c9170571'
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ============================================
-// TON PRICE SERVICE — CoinGecko Public API
+// TELEGRAM USER
 // ============================================
-const TON_PRICE_DOC = 'tonPriceCache';
-const CACHE_KEY = 'tonPriceData';
+const tg = window.Telegram?.WebApp || null;
+try { tg?.ready(); tg?.expand(); } catch {}
 
+function getTgUser() {
+  const u = tg?.initDataUnsafe?.user;
+  if (u) return { ...u, _source: 'telegram' };
+  
+  let cached = null;
+  try { cached = JSON.parse(localStorage.getItem('ys.devTgUser') || 'null'); } catch {}
+  if (cached) return { ...cached, _source: 'guest' };
+  
+  const id = Math.floor(100000 + Math.random() * 900000);
+  const g = { id, first_name: 'Guest', username: 'guest_' + id };
+  localStorage.setItem('ys.devTgUser', JSON.stringify(g));
+  return { ...g, _source: 'guest' };
+}
+
+const TG_USER = getTgUser();
+
+// ============================================
+// STATE
+// ============================================
+let PROFILE = null;
+let TON_PRICE = 2.50;
+let userWalletAddress = null;
+
+// ============================================
+// TON PRICE SERVICE (24h UTC cache)
+// ============================================
 function getUTCDay() {
   const now = new Date();
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}-${String(now.getUTCDate()).padStart(2,'0')}`;
 }
 
-async function getTONPriceFromFirestore() {
+async function getTONPrice() {
   try {
-    const doc = await db.collection('config').doc(TON_PRICE_DOC).get();
+    // Check Firestore cache first
+    const doc = await db.collection('config').doc('tonPriceCache').get();
     if (doc.exists) {
       const data = doc.data();
       const cachedDay = data.day || '';
       const today = getUTCDay();
-      // If it's the same day, use cached value
-      if (cachedDay === today && data.price && data.timestamp) {
-        const age = Date.now() - data.timestamp;
-        // Also ensure it's not older than 24h (86400000ms)
+      if (cachedDay === today && data.price) {
+        const age = Date.now() - (data.timestamp || 0);
         if (age < 86400000) {
+          TON_PRICE = data.price;
           return data.price;
         }
       }
     }
-    return null;
-  } catch (e) {
-    console.warn('Firestore read error:', e);
-    return null;
-  }
-}
-
-async function saveTONPriceToFirestore(price) {
-  try {
-    await db.collection('config').doc(TON_PRICE_DOC).set({
-      price: price,
-      day: getUTCDay(),
-      timestamp: Date.now(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    console.log('[TON Price] Saved to Firestore:', price);
-  } catch (e) {
-    console.warn('Firestore write error:', e);
-  }
-}
-
-async function fetchLiveTONPrice() {
-  try {
-    // CoinGecko public API — no key required
-    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd';
-    const response = await fetch(url, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Check localStorage fallback
+    try {
+      const local = localStorage.getItem('ys.tonPrice');
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (parsed.day === getUTCDay() && parsed.price) {
+          TON_PRICE = parsed.price;
+          return parsed.price;
+        }
+      }
+    } catch (e) {}
+    
+    // Fetch live from CoinGecko public API
+    const response = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd'
+    );
+    
+    if (!response.ok) throw new Error('Price fetch failed');
     
     const data = await response.json();
     const price = data['the-open-network']?.usd;
     
     if (!price || typeof price !== 'number') {
-      throw new Error('Invalid price data received');
+      throw new Error('Invalid price data');
     }
     
-    console.log('[TON Price] Live fetch:', price);
-    return price;
-  } catch (error) {
-    console.warn('[TON Price] Fetch error:', error);
-    return null;
-  }
-}
-
-async function getTONPrice() {
-  // 1. Try Firestore cache first
-  const cached = await getTONPriceFromFirestore();
-  if (cached !== null) {
-    console.log('[TON Price] Using Firestore cache:', cached);
-    return cached;
-  }
-  
-  // 2. Try localStorage fallback
-  try {
-    const local = localStorage.getItem(CACHE_KEY);
-    if (local) {
-      const parsed = JSON.parse(local);
-      const today = getUTCDay();
-      if (parsed.day === today && parsed.price) {
-        console.log('[TON Price] Using localStorage cache:', parsed.price);
-        // Write back to Firestore for future use
-        await saveTONPriceToFirestore(parsed.price);
-        return parsed.price;
-      }
-    }
-  } catch (e) {}
-  
-  // 3. Fetch live from CoinGecko
-  const livePrice = await fetchLiveTONPrice();
-  if (livePrice !== null) {
+    TON_PRICE = price;
+    
     // Save to Firestore
-    await saveTONPriceToFirestore(livePrice);
-    // Also save to localStorage as backup
     try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        price: livePrice,
+      await db.collection('config').doc('tonPriceCache').set({
+        price: price,
+        day: getUTCDay(),
+        timestamp: Date.now()
+      }, { merge: true });
+    } catch (e) {}
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem('ys.tonPrice', JSON.stringify({
+        price: price,
         day: getUTCDay()
       }));
     } catch (e) {}
-    return livePrice;
+    
+    return price;
+  } catch (error) {
+    console.warn('[TON Price] Error:', error);
+    return TON_PRICE || 2.50;
   }
-  
-  // 4. Ultimate fallback
-  console.warn('[TON Price] Using hardcoded fallback: 2.50');
-  return 2.50;
 }
 
 // ============================================
-// UPDATE CREATOR SUPPORT BUTTONS
+// LOAD PROFILE
 // ============================================
-async function updateCreatorSupport() {
-  const price = await getTONPrice();
-  // $1 worth of TON = 1 / price
-  const tonValue = 1 / price;
-  const displayValue = tonValue.toFixed(6);
+async function loadProfile() {
+  const ref = db.collection('profiles').doc(String(TG_USER.id));
+  const snap = await ref.get();
   
-  // Update all creator support buttons
-  document.querySelectorAll('.creator-support .value').forEach(el => {
-    el.textContent = displayValue;
-  });
+  const base = {
+    telegramId: TG_USER.id,
+    username: TG_USER.username || null,
+    firstName: TG_USER.first_name || null,
+    lastName: TG_USER.last_name || null,
+    photoUrl: TG_USER.photo_url || null,
+    languageCode: TG_USER.language_code || null,
+    isPremium: !!TG_USER.is_premium,
+  };
   
-  // Remove loading state
-  document.querySelectorAll('.creator-support').forEach(el => {
-    el.classList.remove('loading');
-  });
+  if (!snap.exists) {
+    PROFILE = {
+      ...base,
+      displayName: [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 
+                   TG_USER.username || ('tg_' + TG_USER.id),
+      bio: '',
+      walletAddress: null,
+      paymentStatus: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastSeenAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    await ref.set(PROFILE);
+  } else {
+    PROFILE = { ...snap.data(), ...base };
+    await ref.update({ ...base, lastSeenAt: firebase.firestore.FieldValue.serverTimestamp() });
+  }
+  
+  userWalletAddress = PROFILE.walletAddress || null;
+  updateSidebar();
+  return PROFILE;
+}
+
+function updateSidebar() {
+  const avatar = document.getElementById('sidebarAvatar');
+  const name = document.getElementById('sidebarName');
+  const handle = document.getElementById('sidebarHandle');
+  
+  if (!PROFILE) return;
+  
+  if (PROFILE.photoUrl) {
+    avatar.innerHTML = `<img src="${PROFILE.photoUrl}" alt="" class="avatar-img" />`;
+  } else {
+    avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
+  }
+  
+  name.textContent = PROFILE.displayName || 'Yong User';
+  handle.textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
+}
+
+// ============================================
+// WALLET POPUP
+// ============================================
+function showWalletPopup() {
+  document.getElementById('walletOverlay').classList.add('active');
+  document.getElementById('walletInput').value = userWalletAddress || '';
+  document.getElementById('walletError').classList.add('hidden');
+}
+
+function hideWalletPopup() {
+  document.getElementById('walletOverlay').classList.remove('active');
+}
+
+document.getElementById('saveWalletBtn').addEventListener('click', async () => {
+  const input = document.getElementById('walletInput');
+  const error = document.getElementById('walletError');
+  const wallet = input.value.trim();
+  
+  if (!wallet) {
+    error.textContent = 'Please enter a TON wallet address';
+    error.classList.remove('hidden');
+    return;
+  }
+  
+  if (!wallet.match(/^[UQ][A-Za-z0-9_-]{40,48}$/)) {
+    error.textContent = 'Please enter a valid TON wallet address (starts with UQ or EQ)';
+    error.classList.remove('hidden');
+    return;
+  }
+  
+  error.classList.add('hidden');
+  
+  try {
+    const ref = db.collection('profiles').doc(String(TG_USER.id));
+    await ref.update({
+      walletAddress: wallet,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    PROFILE.walletAddress = wallet;
+    userWalletAddress = wallet;
+    
+    // Show success briefly
+    const btn = document.getElementById('saveWalletBtn');
+    btn.textContent = '✅ Saved!';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+      hideWalletPopup();
+      btn.textContent = '💎 Save Wallet Address';
+      btn.disabled = false;
+    }, 1000);
+    
+  } catch (err) {
+    error.textContent = 'Error saving: ' + err.message;
+    error.classList.remove('hidden');
+  }
+});
+
+document.getElementById('skipWalletBtn').addEventListener('click', () => {
+  hideWalletPopup();
+});
+
+// ============================================
+// CREATOR SUPPORT — Opens wallet with pre-filled amount
+// ============================================
+function getSupportAmount() {
+  // $1 worth of TON = 1 / TON_PRICE
+  return (1 / TON_PRICE).toFixed(6);
+}
+
+function openCreatorSupport(postCreatorAddress) {
+  if (!postCreatorAddress) {
+    alert('This creator hasn\'t set a wallet address yet.');
+    return;
+  }
+  
+  const amount = getSupportAmount();
+  const amountNano = Math.floor(parseFloat(amount) * 1e9);
+  const comment = encodeURIComponent('Creator support from Yong Social');
+  
+  // Build wallet links
+  const links = {
+    tonkeeper: `https://app.tonkeeper.com/transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
+    tonhub: `https://tonhub.com/transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
+    mytonwallet: `https://connect.mytonwallet.org/transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
+    native: `ton://transfer/${postCreatorAddress}?amount=${amountNano}&text=${comment}`,
+  };
+  
+  // Open Tonkeeper by default (most popular)
+  const tgApp = window.Telegram?.WebApp;
+  if (tgApp?.openLink) {
+    tgApp.openLink(links.tonkeeper, { try_instant_view: false });
+  } else {
+    window.open(links.tonkeeper, '_blank');
+  }
+  
+  // Also show a small notification that the wallet opened
+  const status = document.createElement('div');
+  status.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-50 card px-6 py-3 text-sm';
+  status.innerHTML = `
+    💎 Opening wallet for ${amount} TON support...
+    <br><span class="text-xs text-mute">If wallet doesn't open, tap the link again.</span>
+  `;
+  document.body.appendChild(status);
+  setTimeout(() => status.remove(), 3000);
+}
+
+// ============================================
+// RENDER POSTS
+// ============================================
+const samplePosts = [
+  {
+    id: 'post1',
+    author: {
+      name: 'Yong Social',
+      handle: '@yongsocial',
+      pfp: 'Y',
+      wallet: 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB'
+    },
+    time: '2h ago',
+    content: 'Welcome to the Yong Social Community Feed! 🎉\n\nThis is where creators and supporters connect. Tap the 💎 button on any post to support the creator with $1 worth of TON.\n\nBuild the future of social finance together.',
+    comments: 12,
+    likes: 47,
+    verified: true
+  },
+  {
+    id: 'post2',
+    author: {
+      name: 'Crypto Builder',
+      handle: '@cryptobuilder',
+      pfp: 'C',
+      wallet: 'EQD4FPq-PRThBocPiwAcVFN4jXjC5xy5sbXHq5E6gcmW2bnC'
+    },
+    time: '5h ago',
+    content: 'Just deployed my first smart contract on TON! 🚀\n\nThe ecosystem is growing fast and Yong Social is making it easier for creators to get support directly from their community.\n\nWho else is building on TON?',
+    comments: 8,
+    likes: 23,
+    verified: false
+  },
+  {
+    id: 'post3',
+    author: {
+      name: 'TON Community',
+      handle: '@toncommunity',
+      pfp: 'T',
+      wallet: 'EQCxE6mUtQJKFnGfaROHKOa1rT1wFW9ifJNf4hFwJmQYqV5T'
+    },
+    time: '8h ago',
+    content: 'TON adoption is accelerating! 📈\n\nWith over 100M active wallets and growing, the infrastructure for creator economies is stronger than ever.\n\nYong Social is leading the charge in social finance. Join the movement!',
+    comments: 5,
+    likes: 18,
+    verified: true
+  }
+];
+
+function renderPosts() {
+  const container = document.getElementById('postsContainer');
+  
+  if (!container) return;
+  
+  container.innerHTML = samplePosts.map(post => `
+    <article class="tweet" data-post="${post.id}">
+      <div class="pfp ${post.author.pfp === 'Y' ? 'yong' : ''}">
+        ${post.author.pfp.length === 1 ? post.author.pfp : ''}
+      </div>
+      <div class="content">
+        <div class="head">
+          <span class="name">${post.author.name}</span>
+          ${post.verified ? '<i class="fa-solid fa-circle-check verified"></i>' : ''}
+          <span class="handle">${post.author.handle}</span>
+          <span class="time">· ${post.time}</span>
+          <span class="right"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+        </div>
+        <div class="text">${post.content.replace(/\n/g, '<br>')}</div>
+        
+        <div class="actions-row">
+          <div class="actions-left">
+            <div class="action"><i class="fa-regular fa-comment"></i> ${post.comments}</div>
+            <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> ${post.likes}</div>
+          </div>
+          <div class="creator-support" onclick="openCreatorSupport('${post.author.wallet}')">
+            <span class="diamond">💎</span>
+            <span class="value">${getSupportAmount()}</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
 }
 
 // ============================================
@@ -742,20 +890,64 @@ document.querySelectorAll('.bottomnav .nav-item').forEach(item => {
 });
 
 // ============================================
+// COMMUNITY STATS
+// ============================================
+async function loadCommunityStats() {
+  try {
+    const snap = await db.collection('config').doc('community').get();
+    if (snap.exists) {
+      const data = snap.data();
+      document.querySelector('#communityStats .flex:first-child .font-bold').textContent = 
+        (data.totalUsers || 0).toLocaleString();
+      document.querySelector('#communityStats .flex:last-child .font-bold').textContent = 
+        (data.totalPosts || 0).toLocaleString();
+    }
+  } catch (e) {
+    console.warn('Community stats error:', e);
+  }
+}
+
+// ============================================
 // INIT
 // ============================================
-// Show loading state
-document.querySelectorAll('.creator-support').forEach(el => {
-  el.classList.add('loading');
-});
+async function init() {
+  try {
+    // Load TON price
+    await getTONPrice();
+    
+    // Load profile
+    await loadProfile();
+    
+    // Check if user has wallet address
+    if (!userWalletAddress) {
+      // Show popup after a short delay
+      setTimeout(showWalletPopup, 500);
+    }
+    
+    // Render posts
+    renderPosts();
+    
+    // Load community stats
+    loadCommunityStats();
+    
+    // Update creator support amounts every 5 minutes
+    setInterval(() => {
+      const value = getSupportAmount();
+      document.querySelectorAll('.creator-support .value').forEach(el => {
+        el.textContent = value;
+      });
+    }, 300000);
+    
+    console.log('[Yong Social] Community feed initialized');
+    console.log('[Profile]', PROFILE);
+    console.log('[TON Price]', TON_PRICE);
+    
+  } catch (error) {
+    console.error('[Init Error]', error);
+  }
+}
 
-// Fetch and update TON price
-updateCreatorSupport();
-
-// Refresh price every 5 minutes (300000ms) while page is open
-setInterval(updateCreatorSupport, 300000);
-
-console.log('[Yong Social] Feed loaded — TON price updates every 5min');
+init();
 </script>
 </body>
 </html>
