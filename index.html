@@ -563,6 +563,11 @@ class TONPriceService {
 // ============================================
 // TON PAYMENT SYSTEM
 // ============================================
+// Escape helper for dynamic reason strings inside innerHTML
+function escStr(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 class TONPaymentSystem {
     constructor(config) {
         this.config = config;
@@ -590,30 +595,247 @@ class TONPaymentSystem {
 
     async init() {
         try {
-            // 1. Fetch live TON price and compute amount
             await this.updatePriceAndAmount();
-
-            // 2. Check if already paid — skip gate if so
-            const paid = await this.checkPaymentStatus();
-            if (!paid) {
-                setTimeout(() => this.showPaymentOverlay(), 500);
-            }
-
-            // 3. Wire pay button
             this.payBtn?.addEventListener('click', () => this.processPayment());
+            document.getElementById('refreshPriceBtn')?.addEventListener('click', () => this.updatePriceAndAmount(true));
 
-            // 4. Refresh price button
-            document.getElementById('refreshPriceBtn')?.addEventListener('click', () => {
-                this.updatePriceAndAmount(true);
-            });
-
-            console.log('TON Payment System initialized');
+            // Central gate: checks Firestore + localStorage state and decides what to show
+            await this.evaluateGate();
         } catch (err) {
             console.error('TON Payment init error:', err);
-            // Even on error — still gate unpaid users
-            const paid = await this.checkPaymentStatus().catch(() => false);
-            if (!paid) this.showPaymentOverlay();
+            await this.evaluateGate().catch(() => this.showPaymentOverlay());
         }
+    }
+
+    // ── GATE LOGIC ──────────────────────────────────────────────
+    // Called on every app open. Single source of truth for what the user sees.
+    async evaluateGate() {
+        const userId = this.getUserId();
+
+        // 1. Check Firestore profile for definitive status
+        let profileData = null;
+        try {
+            const snap = await getDoc(doc(db, 'profiles', userId));
+            if (snap.exists()) profileData = snap.data();
+        } catch (e) { console.warn('Profile fetch failed', e); }
+
+        const fsStatus = profileData?.paymentStatus || 'pending';
+
+        // ── APPROVED ─────────────────────────────────────────────
+        if (fsStatus === 'paid') {
+            this.updatePaymentBadge('paid', '✅ Profile Active');
+            // Clear any stored submission data
+            localStorage.removeItem('ys.paySubmission');
+            return; // Access granted — no overlay
+        }
+
+        // ── DECLINED ─────────────────────────────────────────────
+        if (fsStatus === 'declined') {
+            const reason = profileData?.declineReason || '';
+            this.showDeclinedScreen(reason);
+            return;
+        }
+
+        // ── DELETED (fraud/scam) ──────────────────────────────────
+        if (fsStatus === 'deleted') {
+            const reason = profileData?.deleteReason || '';
+            // Clear submission cache so they start fresh
+            localStorage.removeItem('ys.paySubmission');
+            this.showDeletedScreen(reason);
+            return;
+        }
+
+        // ── Check localStorage for a pending submission ───────────
+        let submission = null;
+        try { submission = JSON.parse(localStorage.getItem('ys.paySubmission') || 'null'); } catch {}
+
+        // If we have a submission record in localStorage
+        if (submission && submission.userId === userId) {
+            const bypass = profileData?.bypassCountdown === true;
+
+            // If bypass flag set by treasury — check Firestore immediately (no wait)
+            if (bypass) {
+                // Re-read payment doc status
+                const payStatus = await this.getPaymentDocStatus(submission.paymentDocId);
+                if (payStatus === 'approved') {
+                    // shouldn't reach here since profile would be 'paid', but handle anyway
+                    return;
+                } else if (payStatus === 'declined') {
+                    const reason = profileData?.declineReason || '';
+                    this.showDeclinedScreen(reason);
+                    return;
+                } else if (payStatus === 'deleted') {
+                    localStorage.removeItem('ys.paySubmission');
+                    this.showDeletedScreen(profileData?.deleteReason || '');
+                    return;
+                }
+                // Still submitted/pending with bypass — show countdown screen at 0
+                this.showCountdownScreen(submission, true);
+                return;
+            }
+
+            const submittedAt = submission.submittedAt; // ms timestamp
+            const elapsed = Date.now() - submittedAt;
+            const SEVENTY_TWO_H = 72 * 60 * 60 * 1000;
+
+            if (elapsed < SEVENTY_TWO_H) {
+                // Still within 72h — show countdown, do NOT check Firestore payment status
+                this.showCountdownScreen(submission, false);
+                return;
+            }
+
+            // 72h elapsed — NOW check Firestore for result
+            const payStatus = await this.getPaymentDocStatus(submission.paymentDocId);
+
+            if (payStatus === 'approved') {
+                // Profile should already be 'paid' — but handle edge case
+                this.updatePaymentBadge('paid', '✅ Profile Active');
+                localStorage.removeItem('ys.paySubmission');
+                return;
+            } else if (payStatus === 'declined') {
+                this.showDeclinedScreen(profileData?.declineReason || '');
+                return;
+            } else if (payStatus === 'deleted') {
+                localStorage.removeItem('ys.paySubmission');
+                this.showDeletedScreen(profileData?.deleteReason || '');
+                return;
+            }
+
+            // Still pending after 72h — show support screen + reset 72h
+            submission.submittedAt = Date.now(); // reset countdown
+            localStorage.setItem('ys.paySubmission', JSON.stringify(submission));
+            this.showSupportScreen();
+            return;
+        }
+
+        // ── No submission on record — show payment gate ───────────
+        this.showPaymentOverlay();
+    }
+
+    async getPaymentDocStatus(paymentDocId) {
+        if (!paymentDocId) return 'submitted';
+        try {
+            const snap = await getDoc(doc(db, 'payments', paymentDocId));
+            return snap.exists() ? (snap.data().status || 'submitted') : 'submitted';
+        } catch { return 'submitted'; }
+    }
+
+    // ── SCREENS ──────────────────────────────────────────────────
+
+    showCountdownScreen(submission, bypassMode) {
+        this.showPaymentOverlay();
+        if (this.statusIcon)  this.statusIcon.textContent  = '🕐';
+        if (this.statusTitle) this.statusTitle.textContent = 'Verification Submitted';
+
+        const updateTimer = () => {
+            const remaining = bypassMode ? 0 : Math.max(0, (submission.submittedAt + 72 * 3600000) - Date.now());
+            const h  = Math.floor(remaining / 3600000);
+            const m  = Math.floor((remaining % 3600000) / 60000);
+            const s  = Math.floor((remaining % 60000) / 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const countdownEl = document.getElementById('payCountdown');
+            if (countdownEl) countdownEl.textContent = bypassMode ? 'Being reviewed…' : `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+        };
+
+        if (this.statusDesc) this.statusDesc.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mt-2">
+                <div class="text-xs text-mute text-center">Verification submitted successfully.<br>Your payment is under review by our team.</div>
+                <div class="bg-surface2 rounded-xl px-6 py-4 text-center">
+                    <div class="text-xs text-mute mb-1">${bypassMode ? 'Status' : 'Time remaining'}</div>
+                    <div id="payCountdown" class="text-2xl font-bold text-brand font-mono">—</div>
+                </div>
+                <p class="text-xs text-mute text-center">Check back after the countdown. You'll be notified on your next visit.</p>
+            </div>`;
+
+        updateTimer();
+        if (!bypassMode) {
+            this._countdownInterval = setInterval(() => {
+                updateTimer();
+                const remaining = Math.max(0, (submission.submittedAt + 72 * 3600000) - Date.now());
+                if (remaining === 0) {
+                    clearInterval(this._countdownInterval);
+                    // Re-evaluate now that time is up
+                    this.evaluateGate();
+                }
+            }, 1000);
+        }
+    }
+
+    showSupportScreen() {
+        this.showPaymentOverlay();
+        if (this.statusIcon)  this.statusIcon.textContent  = '⚠️';
+        if (this.statusTitle) this.statusTitle.textContent = 'Still Under Review';
+        if (this.statusDesc)  this.statusDesc.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mt-2">
+                <p class="text-sm text-mute text-center">Your verification is taking longer than expected.<br>Please contact support for assistance.</p>
+                <a href="mailto:yongsocial@outlook.com" class="btn-brand rounded-xl px-5 py-2.5 text-sm flex items-center gap-2">
+                    ✉️ Contact Support
+                </a>
+                <p class="text-xs text-mute">yongsocial@outlook.com</p>
+                <div class="bg-surface2 rounded-xl px-6 py-3 text-center mt-1">
+                    <div class="text-xs text-mute mb-1">Next check in</div>
+                    <div id="payCountdown" class="text-xl font-bold text-brand font-mono">72h 00m 00s</div>
+                </div>
+            </div>`;
+
+        // Restart 72h countdown (already reset in evaluateGate)
+        const resetAt = Date.now();
+        const tick = () => {
+            const remaining = Math.max(0, resetAt + 72 * 3600000 - Date.now());
+            const h  = Math.floor(remaining / 3600000);
+            const m  = Math.floor((remaining % 3600000) / 60000);
+            const s  = Math.floor((remaining % 60000) / 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const el = document.getElementById('payCountdown');
+            if (el) el.textContent = `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+            if (remaining > 0) this._countdownInterval = setTimeout(tick, 1000);
+        };
+        tick();
+    }
+
+    showDeclinedScreen(reason) {
+        this.showPaymentOverlay();
+        if (this.statusIcon)  this.statusIcon.textContent  = '❌';
+        if (this.statusTitle) this.statusTitle.textContent = 'Verification Declined';
+        if (this.statusDesc)  this.statusDesc.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mt-2">
+                ${reason ? `<div class="bg-surface2 rounded-xl px-4 py-3 text-sm text-left w-full">
+                    <div class="text-xs text-mute mb-1">Reason from reviewer</div>
+                    <div class="text-red-400">${escStr(reason)}</div>
+                </div>` : ''}
+                <p class="text-sm text-mute text-center">Your payment verification was declined.<br>Please contact support or try again.</p>
+                <a href="mailto:yongsocial@outlook.com" class="btn-brand rounded-xl px-5 py-2.5 text-sm flex items-center gap-2">
+                    ✉️ Contact Support
+                </a>
+                <p class="text-xs text-mute">yongsocial@outlook.com</p>
+            </div>`;
+    }
+
+    showDeletedScreen(reason) {
+        // Show payment gate again — they must restart
+        this.showPaymentOverlay();
+        if (this.statusIcon)  this.statusIcon.textContent  = '🚫';
+        if (this.statusTitle) this.statusTitle.textContent = 'Verification Removed';
+        if (this.statusDesc)  this.statusDesc.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mt-2">
+                ${reason ? `<div class="bg-surface2 rounded-xl px-4 py-3 text-sm text-left w-full">
+                    <div class="text-xs text-mute mb-1">Reason</div>
+                    <div class="text-red-400">${escStr(reason)}</div>
+                </div>` : ''}
+                <p class="text-sm text-mute text-center">Your previous verification request was removed.<br>Please make a new payment to gain access.</p>
+                <a href="mailto:yongsocial@outlook.com" class="btn-brand rounded-xl px-5 py-2.5 text-sm flex items-center gap-2">
+                    ✉️ Contact Support
+                </a>
+                <p class="text-xs text-mute">yongsocial@outlook.com</p>
+                <button id="restartPayBtn" class="btn-brand rounded-xl px-6 py-2.5 text-sm mt-1">💎 Make New Payment</button>
+            </div>`;
+        document.getElementById('restartPayBtn')?.addEventListener('click', () => {
+            if (this.statusIcon)  this.statusIcon.textContent  = '💎';
+            if (this.statusTitle) this.statusTitle.textContent = 'Pay to Access Yong Social';
+            this.updatePriceAndAmount();
+            this.payBtn?.classList.remove('hidden');
+            if (this.statusDesc) this.statusDesc.innerHTML = '';
+        });
     }
 
     async updatePriceAndAmount(forceRefresh = false) {
@@ -771,8 +993,8 @@ class TONPaymentSystem {
 
     async submitPaymentRecord(userId, comment) {
         const walletInput = document.getElementById('senderWalletInput');
-        const errEl = document.getElementById('submitPaymentError');
-        const submitBtn = document.getElementById('submitPaymentBtn');
+        const errEl       = document.getElementById('submitPaymentError');
+        const submitBtn   = document.getElementById('submitPaymentBtn');
         const senderWallet = walletInput?.value.trim();
 
         if (!senderWallet || senderWallet.length < 20) {
@@ -782,14 +1004,15 @@ class TONPaymentSystem {
         }
 
         errEl.classList.add('hidden');
-        submitBtn.disabled = true;
+        submitBtn.disabled    = true;
         submitBtn.textContent = 'Submitting…';
 
         try {
             const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js');
-            const refCode = comment; // e.g. ys_123456
+            const refCode = comment;
+            const now     = Date.now();
 
-            await addDoc(collection(db, 'payments'), {
+            const docRef = await addDoc(collection(db, 'payments'), {
                 userId:       userId,
                 refCode:      refCode,
                 senderWallet: senderWallet,
@@ -799,45 +1022,53 @@ class TONPaymentSystem {
                 createdAt:    serverTimestamp(),
             });
 
-            if (this.statusIcon)  this.statusIcon.textContent  = '🕐';
-            if (this.statusTitle) this.statusTitle.textContent = 'Submitted — Pending Review';
-            if (this.statusDesc)  this.statusDesc.innerHTML = `
-                <div class="flex flex-col items-center gap-2 mt-2">
-                    <p class="text-sm text-center text-mute">Your payment is being verified on the TON blockchain.<br>This usually takes just a few minutes.</p>
-                    <p class="text-xs text-mute">You'll gain access as soon as it's approved. You can close this for now.</p>
-                    <button id="closeOverlayBtn" class="btn-ghost rounded-xl px-6 py-2.5 text-sm mt-2">Close</button>
-                </div>`;
-            document.getElementById('closeOverlayBtn')?.addEventListener('click', () => this.hidePaymentOverlay());
+            // Save submission to localStorage — submittedAt is the source of truth for countdown
+            const submissionData = {
+                userId,
+                paymentDocId: docRef.id,
+                submittedAt:  now,
+                refCode,
+            };
+            localStorage.setItem('ys.paySubmission', JSON.stringify(submissionData));
 
-            // Start polling for approval
-            this.pollForApproval(userId);
+            // Show success notification — countdown starts from now
+            this.showSubmittedSuccessScreen(submissionData);
 
         } catch (err) {
             errEl.textContent = 'Error submitting: ' + err.message;
             errEl.classList.remove('hidden');
-            submitBtn.disabled = false;
+            submitBtn.disabled    = false;
             submitBtn.textContent = 'Submit for Review';
         }
     }
 
-    pollForApproval(userId) {
-        const MAX = 72; // 6 minutes
-        let attempts = 0;
-        const check = async () => {
-            const paid = await this.checkPaymentStatus();
-            if (paid) {
-                if (this.statusIcon)  this.statusIcon.textContent  = '🎉';
-                if (this.statusTitle) this.statusTitle.textContent = 'Payment Approved!';
-                if (this.statusDesc)  this.statusDesc.innerHTML    = `<p class="text-brand2 font-semibold mt-2">Your profile is now active.</p>`;
-                await loadProfile();
-                renderProfile();
-                setTimeout(() => this.hidePaymentOverlay(), 2500);
-                return;
-            }
-            attempts++;
-            if (attempts < MAX) this._pollTimer = setTimeout(check, 5000);
+    showSubmittedSuccessScreen(submission) {
+        if (this.statusIcon)  this.statusIcon.textContent  = '✅';
+        if (this.statusTitle) this.statusTitle.textContent = 'Verification Submitted Successfully';
+        if (this.statusDesc)  this.statusDesc.innerHTML = `
+            <div class="flex flex-col items-center gap-3 mt-2">
+                <div class="bg-surface2 rounded-xl px-5 py-4 text-center w-full">
+                    <p class="text-sm font-semibold text-brand2">Verification Submitted Successfully For Review</p>
+                    <p class="text-xs text-mute mt-1">Check back after the countdown below.</p>
+                    <div class="mt-3">
+                        <div class="text-xs text-mute mb-1">Time until review complete</div>
+                        <div id="payCountdown" class="text-2xl font-bold text-brand font-mono">72h 00m 00s</div>
+                    </div>
+                </div>
+                <p class="text-xs text-mute text-center">When you return to the app after the countdown,<br>we'll check if your payment has been verified.</p>
+            </div>`;
+
+        const tick = () => {
+            const remaining = Math.max(0, (submission.submittedAt + 72 * 3600000) - Date.now());
+            const h   = Math.floor(remaining / 3600000);
+            const m   = Math.floor((remaining % 3600000) / 60000);
+            const s   = Math.floor((remaining % 60000) / 1000);
+            const pad = n => String(n).padStart(2, '0');
+            const el  = document.getElementById('payCountdown');
+            if (el) el.textContent = `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+            if (remaining > 0) this._countdownInterval = setTimeout(tick, 1000);
         };
-        this._pollTimer = setTimeout(check, 5000);
+        tick();
     }
 
     updatePaymentBadge(status, text) {
