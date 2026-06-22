@@ -247,7 +247,7 @@
     .feed-col { border-right: 1px solid #1f2940; min-width: 0; }
     
     /* ============================================ */
-    /* ROTATING TICKER - Like stock market ticker */
+    /* ROTATING TICKER - Clean, no header */
     /* ============================================ */
     .ticker-wrapper {
       overflow: hidden;
@@ -256,26 +256,6 @@
       padding: 0.4rem 0;
       position: relative;
       z-index: 5;
-    }
-    .ticker-wrapper .ticker-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1.5rem;
-      margin-bottom: 0.2rem;
-    }
-    .ticker-wrapper .ticker-header h2 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #d4b25a;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .ticker-wrapper .ticker-header .update-time {
-      font-size: 0.6rem;
-      font-weight: 400;
-      color: #5a6378;
     }
     .ticker-track {
       display: flex;
@@ -330,6 +310,7 @@
       padding: 0.3rem 0;
       color: #5a6378;
       font-size: 0.8rem;
+      width: 100%;
     }
     .ticker-loading .spinner {
       width: 16px;
@@ -784,12 +765,8 @@
   <section class="feed-col">
     <!-- Feed View -->
     <div id="feedView">
-      <!-- Rotating Ticker -->
+      <!-- Rotating Ticker - No header -->
       <div class="ticker-wrapper">
-        <div class="ticker-header">
-          <h2>📊 Crypto Market</h2>
-          <span class="update-time" id="tickerUpdateTime">Loading...</span>
-        </div>
         <div id="tickerTrack" class="ticker-track">
           <div class="ticker-loading">
             <div class="spinner"></div>
@@ -902,8 +879,6 @@ let TON_PRICE = 2.50;
 let userWalletAddress = null;
 let currentUser = null;
 let cryptoData = [];
-let cryptoUpdateTime = '';
-let tickerInterval = null;
 
 // ============================================
 // VIEW SWITCHING
@@ -1046,9 +1021,7 @@ async function fetchTickerData() {
         const age = Date.now() - (data.timestamp || 0);
         if (age < 86400000) {
           cryptoData = data.prices;
-          cryptoUpdateTime = data.updatedAt || 'Cached';
           renderTicker();
-          document.getElementById('tickerUpdateTime').textContent = 'Updated: ' + cryptoUpdateTime;
           return;
         }
       }
@@ -1074,23 +1047,18 @@ async function fetchTickerData() {
       image: coin.image
     }));
     
-    const now = new Date();
-    cryptoUpdateTime = now.toLocaleString();
-    
     // Save to Firestore cache
     try {
       await db.collection('config').doc('cryptoCache').set({
         prices: cryptoData,
         day: today,
-        timestamp: Date.now(),
-        updatedAt: cryptoUpdateTime
+        timestamp: Date.now()
       }, { merge: true });
     } catch (e) {
       console.warn('Crypto cache save error:', e);
     }
     
     renderTicker();
-    document.getElementById('tickerUpdateTime').textContent = 'Updated: ' + cryptoUpdateTime;
     
   } catch (error) {
     console.error('Crypto fetch error:', error);
