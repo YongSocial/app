@@ -381,169 +381,158 @@
       word-wrap: break-word;
     }
 
-    /* Post Images - Instagram 4:5 aspect ratio */
+    /* Post Images - Inline Video Player */
     .post-images {
       margin-top: 0.6rem;
       border-radius: 12px;
       overflow: hidden;
       position: relative;
-      background: #0f1626;
+      background: #000;
       aspect-ratio: 4 / 5;
       width: 100%;
       cursor: pointer;
+      user-select: none;
     }
-    .post-images .thumbnail-img {
+
+    /* Slides */
+    .post-images .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .post-images .slide.active { opacity: 1; }
+    .post-images .slide img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .post-images .play-overlay {
+
+    /* Single image (no player UI) */
+    .post-images.single-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Watermark */
+    .post-images .watermark {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      pointer-events: none;
+      z-index: 10;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    }
+
+    /* Big center play button (shown before playing) */
+    .post-images .center-play {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.3);
-      transition: background 0.3s;
-      cursor: pointer;
+      z-index: 15;
+      background: rgba(0,0,0,0.28);
+      transition: opacity 0.2s;
     }
-    .post-images .play-overlay:hover {
-      background: rgba(0,0,0,0.45);
-    }
-    .post-images .play-overlay .play-btn {
-      width: 56px;
-      height: 56px;
+    .post-images .center-play.hidden { display: none; }
+    .post-images .center-play .play-btn {
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       background: rgba(212, 178, 90, 0.92);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: #0b1120;
       border: none;
       cursor: pointer;
-      transition: transform 0.2s;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      transition: transform 0.15s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-    .post-images .play-overlay .play-btn:hover {
-      transform: scale(1.08);
-    }
-    .post-images .image-count-badge {
+    .post-images .center-play .play-btn:hover { transform: scale(1.08); }
+
+    /* Bottom controls bar */
+    .post-images .video-controls {
       position: absolute;
-      bottom: 12px;
-      right: 12px;
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-weight: 600;
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.1);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      padding: 0 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.72));
+      display: none;
+      flex-direction: column;
+      gap: 5px;
     }
-    .post-images .image-count-badge i {
-      margin-right: 0.3rem;
+    .post-images.playing .video-controls { display: flex; }
+
+    /* Progress bar */
+    .post-images .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+    .post-images .progress-fill {
+      height: 100%;
+      background: #d4b25a;
+      border-radius: 2px;
+      transition: width 0.2s linear;
+      width: 0%;
     }
 
-    /* Slideshow Modal */
-    .slideshow-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      background: rgba(7, 11, 20, 0.98);
-      backdrop-filter: blur(20px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .slideshow-overlay.active { display: flex; }
-    .slideshow-container {
-      max-width: 900px;
-      width: 100%;
-      max-height: 90vh;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .slideshow-container .slideshow-image-wrapper {
-      width: 100%;
-      max-height: 80vh;
+    /* Controls row */
+    .post-images .ctrl-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: #070b14;
-      border-radius: 12px;
-      overflow: hidden;
-      aspect-ratio: 4 / 5;
-      position: relative;
+      gap: 8px;
     }
-    .slideshow-container .slideshow-image-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .slideshow-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-    .slideshow-nav:hover { background: rgba(255,255,255,0.2); }
-    .slideshow-nav.prev { left: -50px; }
-    .slideshow-nav.next { right: -50px; }
-    .slideshow-close {
-      position: absolute;
-      top: -50px;
-      right: 0;
+    .post-images .ctrl-btn {
       background: none;
       border: none;
       color: #fff;
-      font-size: 1.8rem;
+      font-size: 1rem;
       cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-      z-index: 10;
+      padding: 2px 4px;
+      line-height: 1;
+      opacity: 0.9;
+      transition: opacity 0.15s;
     }
-    .slideshow-close:hover { opacity: 1; }
-    .slideshow-dots {
+    .post-images .ctrl-btn:hover { opacity: 1; }
+    .post-images .time-display {
+      color: rgba(255,255,255,0.85);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      flex: 1;
+    }
+    .post-images .slide-dots {
       display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 1rem;
+      gap: 4px;
+      align-items: center;
+      margin-right: 4px;
     }
-    .slideshow-dots .dot {
-      width: 8px;
-      height: 8px;
+    .post-images .slide-dot {
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
-      background: #5a6378;
-      cursor: pointer;
+      background: rgba(255,255,255,0.4);
       transition: background 0.2s, transform 0.2s;
-      border: none;
     }
-    .slideshow-dots .dot.active {
+    .post-images .slide-dot.active {
       background: #d4b25a;
-      transform: scale(1.3);
-    }
-    .slideshow-counter {
-      color: #8a93a8;
-      text-align: center;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
+      transform: scale(1.4);
     }
 
     /* Reactions */
@@ -1166,21 +1155,7 @@
   </div>
 </div>
 
-<!-- ============================================ -->
-<!-- SLIDESHOW OVERLAY -->
-<!-- ============================================ -->
-<div id="slideshowOverlay" class="slideshow-overlay" onclick="closeSlideshow(event)">
-  <div class="slideshow-container" onclick="event.stopPropagation()">
-    <button class="slideshow-close" onclick="closeSlideshow()">✕</button>
-    <button class="slideshow-nav prev" onclick="changeSlide(-1)">‹</button>
-    <div class="slideshow-image-wrapper">
-      <img id="slideshowImage" src="" alt="Slideshow" />
-    </div>
-    <button class="slideshow-nav next" onclick="changeSlide(1)">›</button>
-    <div class="slideshow-dots" id="slideshowDots"></div>
-    <div class="slideshow-counter" id="slideshowCounter">1 / 1</div>
-  </div>
-</div>
+
 
 <!-- ============================================ -->
 <!-- WALLET ADDRESS POPUP -->
@@ -1892,44 +1867,114 @@ function handleReaction(postId, reactionKey) {
 }
 
 // ============================================
-// SLIDESHOW
+// INLINE IMAGE VIDEO PLAYER
 // ============================================
-function openSlideshow(images, index) {
-  slideshowImages = images;
-  slideshowIndex = index;
-  document.getElementById('slideshowOverlay').classList.add('active');
-  updateSlideshow();
+const _players = {}; // postId → { timer, elapsed, playing, idx, total }
+
+function startPlayer(postId) {
+  const vp = document.getElementById('vp-' + postId);
+  if (!vp) return;
+  const cp = document.getElementById('cp-' + postId);
+  cp.classList.add('hidden');
+  vp.classList.add('playing');
+  if (!_players[postId]) {
+    _players[postId] = { timer: null, elapsed: 0, playing: true, idx: 0, total: parseInt(vp.dataset.total) };
+  } else {
+    _players[postId].playing = true;
+  }
+  _tickPlayer(postId);
 }
 
-function closeSlideshow(event) {
-  if (event && event.target !== event.currentTarget) return;
-  document.getElementById('slideshowOverlay').classList.remove('active');
+function togglePlayer(postId) {
+  const p = _players[postId];
+  if (!p) return;
+  const btn = document.getElementById('ppbtn-' + postId);
+  if (p.playing) {
+    p.playing = false;
+    clearTimeout(p.timer);
+    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+  } else {
+    p.playing = true;
+    btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    _tickPlayer(postId);
+  }
 }
 
-function changeSlide(direction) {
-  slideshowIndex = (slideshowIndex + direction + slideshowImages.length) % slideshowImages.length;
-  updateSlideshow();
+function _tickPlayer(postId) {
+  const p = _players[postId];
+  if (!p || !p.playing) return;
+  clearTimeout(p.timer);
+  const SLIDE_DUR = 5000; // ms per slide
+  const TICK = 100;
+  const totalMs = p.total * SLIDE_DUR;
+
+  const pf = document.getElementById('pf-' + postId);
+  const td = document.getElementById('td-' + postId);
+  const sd = document.getElementById('sd-' + postId);
+  const vp = document.getElementById('vp-' + postId);
+
+  function tick() {
+    if (!_players[postId]?.playing) return;
+    p.elapsed += TICK;
+    if (p.elapsed >= totalMs) {
+      // loop
+      p.elapsed = 0;
+    }
+    const pct = (p.elapsed / totalMs) * 100;
+    if (pf) pf.style.width = pct + '%';
+
+    const elSec = Math.floor(p.elapsed / 1000);
+    const totSec = Math.floor(totalMs / 1000);
+    const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    if (td) td.textContent = `${fmt(elSec)} / ${fmt(totSec)}`;
+
+    const newIdx = Math.floor(p.elapsed / SLIDE_DUR) % p.total;
+    if (newIdx !== p.idx) {
+      // transition slide
+      const slides = vp.querySelectorAll('.slide');
+      slides[p.idx]?.classList.remove('active');
+      slides[newIdx]?.classList.add('active');
+      // update dots
+      const dots = sd?.querySelectorAll('.slide-dot');
+      dots?.[p.idx]?.classList.remove('active');
+      dots?.[newIdx]?.classList.add('active');
+      p.idx = newIdx;
+    }
+
+    p.timer = setTimeout(tick, TICK);
+  }
+  tick();
 }
 
-function updateSlideshow() {
-  const img = document.getElementById('slideshowImage');
-  img.src = slideshowImages[slideshowIndex];
-  
-  const dots = document.getElementById('slideshowDots');
-  dots.innerHTML = slideshowImages.map((_, i) => `
-    <button class="dot ${i === slideshowIndex ? 'active' : ''}" onclick="slideshowIndex=${i};updateSlideshow();"></button>
-  `).join('');
-  
-  document.getElementById('slideshowCounter').textContent = `${slideshowIndex + 1} / ${slideshowImages.length}`;
+function seekPlayer(event, postId) {
+  const p = _players[postId];
+  if (!p) return;
+  const bar = event.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const totalMs = p.total * 5000;
+  p.elapsed = Math.floor(ratio * totalMs / 100) * 100;
 }
 
-// Keyboard navigation for slideshow
-document.addEventListener('keydown', function(e) {
-  if (!document.getElementById('slideshowOverlay').classList.contains('active')) return;
-  if (e.key === 'ArrowLeft') changeSlide(-1);
-  if (e.key === 'ArrowRight') changeSlide(1);
-  if (e.key === 'Escape') closeSlideshow();
-});
+function downloadPlayerImage(postId) {
+  const vp = document.getElementById('vp-' + postId);
+  if (!vp) return;
+  const p = _players[postId];
+  const idx = p ? p.idx : 0;
+  try {
+    const images = JSON.parse(vp.dataset.images || '[]');
+    const url = images[idx] || images[0];
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'yongsocial-image.jpg';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch(e) { console.error(e); }
+}
 
 // ============================================
 // RENDER POSTS
@@ -1973,17 +2018,38 @@ function renderPosts() {
         </div>
         ${post.content ? `<div class="text">${post.content.replace(/\n/g, '<br>')}</div>` : ''}
         
-        ${thumbnail ? `
-          <div class="post-images" onclick="${hasMultipleImages ? `openSlideshow(images, 0)` : `window.open('${thumbnail}', '_blank')`}">
-            <img src="${thumbnail}" alt="Post image" class="thumbnail-img" loading="lazy" />
-            ${hasMultipleImages ? `
-              <div class="play-overlay">
-                <button class="play-btn"><i class="fa-solid fa-play"></i></button>
+        ${thumbnail ? (() => {
+          const imgs = images;
+          const postId = post.id;
+          if (!hasMultipleImages) {
+            return `<div class="post-images single-img"><img src="${thumbnail}" alt="Post image" loading="lazy" /></div>`;
+          }
+          const slides = imgs.map((url, i) => `
+            <div class="slide${i === 0 ? ' active' : ''}">
+              <img src="${url}" alt="Slide ${i+1}" loading="lazy" />
+            </div>`).join('');
+          const dots = imgs.map((_, i) => `<span class="slide-dot${i === 0 ? ' active' : ''}"></span>`).join('');
+          const totalSecs = imgs.length * 5;
+          return `
+          <div class="post-images" id="vp-${postId}" data-images='${JSON.stringify(imgs)}' data-total="${imgs.length}">
+            ${slides}
+            <div class="watermark">YongSocial</div>
+            <div class="center-play" id="cp-${postId}">
+              <button class="play-btn" onclick="startPlayer('${postId}')"><i class="fa-solid fa-play"></i></button>
+            </div>
+            <div class="video-controls">
+              <div class="progress-bar" onclick="seekPlayer(event,'${postId}')">
+                <div class="progress-fill" id="pf-${postId}"></div>
               </div>
-              <div class="image-count-badge"><i class="fa-regular fa-images"></i> ${images.length}</div>
-            ` : ''}
-          </div>
-        ` : ''}
+              <div class="ctrl-row">
+                <button class="ctrl-btn" id="ppbtn-${postId}" onclick="togglePlayer('${postId}')"><i class="fa-solid fa-pause"></i></button>
+                <span class="time-display" id="td-${postId}">0:00 / ${Math.floor(totalSecs/60)}:${String(totalSecs%60).padStart(2,'0')}</span>
+                <div class="slide-dots" id="sd-${postId}">${dots}</div>
+                <button class="ctrl-btn" onclick="downloadPlayerImage('${postId}')"><i class="fa-solid fa-download"></i></button>
+              </div>
+            </div>
+          </div>`;
+        })() : ''}
         
         <div class="actions-row">
           <div class="reactions">
