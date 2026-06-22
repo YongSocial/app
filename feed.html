@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yong Social · Feed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #070b14;
+      color: #e7ecf5;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .card {
+      background: linear-gradient(180deg, #0f1626, #0b1120);
+      border: 1px solid #1f2940;
+      border-radius: 18px;
+    }
+    .chip {
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      color: #8a93a8;
+    }
+    .btn-brand {
+      background: #d4b25a;
+      color: #0b1120;
+      font-weight: 600;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .btn-brand:hover { filter: brightness(1.05); }
+
+    .app-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 240px 1fr 300px;
+      gap: 0;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 1.5rem 1rem;
+      border-right: 1px solid #1f2940;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #070b14;
+    }
+    .sidebar .brand {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sidebar .brand span { color: #d4b25a; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 9999px;
+      color: #8a93a8;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: 0.1s;
+      cursor: default;
+      margin-bottom: 0.25rem;
+    }
+    .nav-item i { width: 1.4rem; font-size: 1.2rem; text-align: center; }
+    .nav-item.active { background: #121a2d; border: 1px solid #1f2940; color: #d4b25a; }
+    .nav-item:hover { background: rgba(255,255,255,0.04); }
+    .nav-item .badge {
+      margin-left: auto;
+      background: #d4b25a;
+      color: #0b1120;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+    }
+    .sidebar .post-btn {
+      margin-top: 1.5rem;
+      background: #d4b25a;
+      border: none;
+      color: #0b1120;
+      font-weight: 700;
+      padding: 0.7rem;
+      border-radius: 9999px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .sidebar .post-btn:hover { filter: brightness(1.05); }
+    .sidebar-footer { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid #1f2940; }
+
+    .feed-col {
+      border-right: 1px solid #1f2940;
+      min-width: 0;
+    }
+    .feed-header {
+      position: sticky;
+      top: 0;
+      background: rgba(7,11,20,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid #1f2940;
+    }
+    .feed-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-top: 0.5rem;
+      border-bottom: 1px solid #1f2940;
+    }
+    .tab {
+      padding: 0.6rem 0;
+      font-weight: 500;
+      color: #8a93a8;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: 0.1s;
+      font-size: 0.9rem;
+    }
+    .tab.active { color: #d4b25a; border-bottom-color: #d4b25a; }
+
+    .tweet {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #1f2940;
+    }
+    .tweet .pfp {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      background: #121a2d;
+      border: 1px solid #1f2940;
+    }
+    .tweet .pfp.binance { background: #f0b90b; color: #0b1120; }
+    .tweet .pfp.opay { background: #fff; color: #00b389; }
+    .tweet .content { flex: 1; min-width: 0; }
+    .tweet .head {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .tweet .head .name { font-weight: 700; color: #e7ecf5; }
+    .tweet .head .verified { color: #f0b90b; }
+    .tweet .head .handle,
+    .tweet .head .time { color: #8a93a8; }
+    .tweet .head .right {
+      margin-left: auto;
+      color: #8a93a8;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .tweet .ad-badge {
+      border: 1px solid #8a93a8;
+      border-radius: 4px;
+      padding: 0 6px;
+      font-size: 0.6rem;
+      color: #8a93a8;
+    }
+    .tweet .text {
+      margin-top: 0.3rem;
+      line-height: 1.4;
+      font-size: 0.95rem;
+    }
+
+    .chat {
+      margin-top: 0.6rem;
+      background: #0b1320;
+      border-radius: 16px;
+      padding: 0.75rem;
+      border: 1px solid #1f2940;
+    }
+    .bubble {
+      max-width: 80%;
+      padding: 0.4rem 0.75rem;
+      border-radius: 14px;
+      margin: 0.3rem 0;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+    .bubble.me {
+      background: #d4b25a;
+      color: #0b1120;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.them {
+      background: #1f2940;
+      color: #e7ecf5;
+      border-bottom-left-radius: 4px;
+    }
+    .bubble.code {
+      background: #d4b25a;
+      color: #0b1120;
+      margin-left: auto;
+      font-family: 'SF Mono', Consolas, monospace;
+      white-space: pre;
+      font-size: 0.75rem;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble .meta {
+      font-size: 0.6rem;
+      color: rgba(0,0,0,0.5);
+      margin-left: 0.5rem;
+    }
+    .bubble.them .meta { color: rgba(255,255,255,0.4); }
+    .check { color: #d4b25a; }
+
+    .video {
+      margin-top: 0.6rem;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, #2a4a2a, #c89a3a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .video .brand {
+      position: absolute;
+      top: 0.75rem;
+      right: 1rem;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+    }
+    .actions-left {
+      display: flex;
+      gap: 1.5rem;
+      color: #8a93a8;
+      font-size: 0.8rem;
+    }
+    .action { display: flex; align-items: center; gap: 0.25rem; cursor: pointer; }
+    .action.liked { color: #f91880; }
+
+    .creator-support {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: #d4b25a;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(212, 178, 90, 0.25);
+      background: rgba(212, 178, 90, 0.06);
+      font-weight: 500;
+      cursor: default;
+      user-select: none;
+    }
+    .creator-support .diamond {
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+    .creator-support .value {
+      font-weight: 600;
+      color: #e7ecf5;
+      letter-spacing: 0.01em;
+    }
+    .creator-support.loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .widgets {
+      padding: 1.5rem 1rem;
+      background: #070b14;
+    }
+    .widget {
+      background: #0f1626;
+      border: 1px solid #1f2940;
+      border-radius: 18px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .widget h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .trend {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #1f2940;
+    }
+    .trend:last-child { border-bottom: none; }
+    .trend-title { font-weight: 600; font-size: 0.9rem; }
+    .trend-meta { color: #8a93a8; font-size: 0.75rem; margin-top: 0.1rem; }
+    .follow-btn {
+      background: #e7ecf5;
+      color: #0b1120;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.2rem 0.9rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .follow-btn:hover { filter: brightness(0.9); }
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #0f1626;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+      color: #8a93a8;
+      font-size: 0.9rem;
+    }
+
+    .bottomnav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #070b14;
+      border-top: 1px solid #1f2940;
+      padding: 0.5rem 0;
+      justify-content: space-around;
+      z-index: 20;
+    }
+    .bottomnav .nav-item { font-size: 1.2rem; color: #8a93a8; cursor: default; }
+    .bottomnav .nav-item.active { color: #d4b25a; }
+
+    .fab {
+      display: none;
+      position: fixed;
+      bottom: 5rem;
+      right: 1.5rem;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #d4b25a;
+      color: #0b1120;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      padding: 0;
+      line-height: 1;
+    }
+    .fab i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 1024px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .widgets { display: none; }
+      .feed-col { border-right: none; }
+      .bottomnav { display: flex; }
+      .fab { display: flex; }
+      main { padding-bottom: 5rem; }
+      .feed-header { padding: 0.5rem 1rem; }
+      .tweet { padding: 0.75rem 1rem; }
+      .tabs { gap: 2.5rem; }
+    }
+    @media (min-width: 1024px) {
+      .bottomnav, .fab { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">Yong <span>Social</span></div>
+    <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
+    <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i> Explore</div>
+    <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i> Rocket</div>
+    <div class="nav-item"><i class="fa-regular fa-bell"></i> Notifications <span class="badge">1</span></div>
+    <div class="nav-item"><i class="fa-regular fa-envelope"></i> Messages</div>
+    <button class="post-btn">Post</button>
+    <div class="sidebar-footer">
+      <div style="color:#8a93a8; font-size:0.75rem; padding:0.25rem 0.5rem;">Yong Social · v2</div>
+    </div>
+  </aside>
+
+  <section class="feed-col">
+    <div class="feed-header">
+      <h2>Home</h2>
+      <div class="tabs">
+        <div class="tab active">For you</div>
+        <div class="tab">Following</div>
+      </div>
+    </div>
+
+    <main id="feed">
+      <article class="tweet">
+        <div class="pfp binance"><i class="fa-solid fa-diamond"></i></div>
+        <div class="content">
+          <div class="head">
+            <span class="name">Binance</span>
+            <i class="fa-solid fa-circle-check verified"></i>
+            <span class="handle">@binance</span>
+            <span class="time">· 3h</span>
+            <span class="right"><i class="fa-regular fa-bell-slash"></i><i class="fa-solid fa-ellipsis-vertical"></i></span>
+          </div>
+          <div class="text">I bStock you 1000</div>
+          <div class="chat">
+            <div class="bubble me">hello bStocks <span class="meta">8:03 pm <span class="check">✓✓</span></span></div>
+            <div class="bubble them">Say it 1000 times..... <span class="meta">8:04 pm</span></div>
+            <div class="bubble code">let i = 1;
+while (i &lt;= 1000) {
+  console.log("hello bStocks");
+  i++;
+}
+<span class="meta" style="display:block;text-align:right;margin-top:6px;">8:04 pm <span class="check">✓✓</span></span></div>
+          </div>
+          <div class="actions-row">
+            <div class="actions-left">
+              <div class="action"><i class="fa-regular fa-comment"></i> 93</div>
+              <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> 194</div>
+            </div>
+            <div class="creator-support" id="support1">
+              <span class="diamond">💎</span>
+              <span class="value" id="tonValue1">0.598802</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="tweet">
+        <div class="pfp opay">O</div>
+        <div class="content">
+          <div class="head">
+            <span class="name">OPay</span>
+            <i class="fa-solid fa-circle-check verified"></i>
+            <span class="handle">@OPay_NG</span>
+            <span class="right"><span class="ad-badge">Ad</span><i class="fa-solid fa-ellipsis-vertical"></i></span>
+          </div>
+          <div class="text">
+            Ready to compete for your share of the ₦18 million prize pool? 🔥<br><br>
+            Before you hit "Apply," make sure you've got the essentials ready.<br><br>
+            In this video, we break down exactly what you should include to help your application stand out.<br><br>
+            OPayScholars26 NationalInnovationChallenge
+          </div>
+          <div class="video">
+            <div class="brand">OPay</div>
+            <div class="play"><i class="fa-solid fa-play"></i></div>
+          </div>
+          <div class="actions-row">
+            <div class="actions-left">
+              <div class="action"><i class="fa-regular fa-comment"></i> 28</div>
+              <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> 73</div>
+            </div>
+            <div class="creator-support" id="support2">
+              <span class="diamond">💎</span>
+              <span class="value" id="tonValue2">0.598802</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+  </section>
+
+  <aside class="widgets">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </div>
+    <div class="widget">
+      <h3>Trends for you</h3>
+      <div class="trend">
+        <div><div class="trend-title">Binance</div><div class="trend-meta">93K posts</div></div>
+        <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
+      </div>
+      <div class="trend">
+        <div><div class="trend-title">OPayScholars26</div><div class="trend-meta">42K posts</div></div>
+        <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
+      </div>
+      <div class="trend">
+        <div><div class="trend-title">NationalInnovationChallenge</div><div class="trend-meta">18K posts</div></div>
+        <i class="fa-solid fa-ellipsis" style="color:#8a93a8;"></i>
+      </div>
+    </div>
+    <div class="widget">
+      <h3>Who to follow</h3>
+      <div class="trend">
+        <div><div class="trend-title">Binance</div><div class="trend-meta">@binance</div></div>
+        <button class="follow-btn">Follow</button>
+      </div>
+      <div class="trend">
+        <div><div class="trend-title">OPay</div><div class="trend-meta">@OPay_NG</div></div>
+        <button class="follow-btn">Follow</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<button class="fab"><i class="fa-solid fa-feather"></i></button>
+
+<nav class="bottomnav">
+  <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i></div>
+  <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i></div>
+  <div class="nav-item"><i class="fa-regular fa-bell"></i><span class="badge" style="background:#d4b25a;color:#0b1120;font-size:0.6rem;padding:0.05rem 0.4rem;border-radius:9999px;margin-left:0.1rem;">1</span></div>
+  <div class="nav-item"><i class="fa-regular fa-envelope"></i></div>
+</nav>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ============================================
+// FIREBASE CONFIG
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME",
+  authDomain: "yong-social.firebaseapp.com",
+  projectId: "yong-social",
+  storageBucket: "yong-social.firebasestorage.app",
+  messagingSenderId: "178823074404",
+  appId: "1:178823074404:web:d1b4d76ea3a2d7c9170571"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ============================================
+// TON PRICE SERVICE — CoinGecko Public API
+// ============================================
+const TON_PRICE_DOC = 'tonPriceCache';
+const CACHE_KEY = 'tonPriceData';
+
+function getUTCDay() {
+  const now = new Date();
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}-${String(now.getUTCDate()).padStart(2,'0')}`;
+}
+
+async function getTONPriceFromFirestore() {
+  try {
+    const doc = await db.collection('config').doc(TON_PRICE_DOC).get();
+    if (doc.exists) {
+      const data = doc.data();
+      const cachedDay = data.day || '';
+      const today = getUTCDay();
+      // If it's the same day, use cached value
+      if (cachedDay === today && data.price && data.timestamp) {
+        const age = Date.now() - data.timestamp;
+        // Also ensure it's not older than 24h (86400000ms)
+        if (age < 86400000) {
+          return data.price;
+        }
+      }
+    }
+    return null;
+  } catch (e) {
+    console.warn('Firestore read error:', e);
+    return null;
+  }
+}
+
+async function saveTONPriceToFirestore(price) {
+  try {
+    await db.collection('config').doc(TON_PRICE_DOC).set({
+      price: price,
+      day: getUTCDay(),
+      timestamp: Date.now(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    console.log('[TON Price] Saved to Firestore:', price);
+  } catch (e) {
+    console.warn('Firestore write error:', e);
+  }
+}
+
+async function fetchLiveTONPrice() {
+  try {
+    // CoinGecko public API — no key required
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd';
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const price = data['the-open-network']?.usd;
+    
+    if (!price || typeof price !== 'number') {
+      throw new Error('Invalid price data received');
+    }
+    
+    console.log('[TON Price] Live fetch:', price);
+    return price;
+  } catch (error) {
+    console.warn('[TON Price] Fetch error:', error);
+    return null;
+  }
+}
+
+async function getTONPrice() {
+  // 1. Try Firestore cache first
+  const cached = await getTONPriceFromFirestore();
+  if (cached !== null) {
+    console.log('[TON Price] Using Firestore cache:', cached);
+    return cached;
+  }
+  
+  // 2. Try localStorage fallback
+  try {
+    const local = localStorage.getItem(CACHE_KEY);
+    if (local) {
+      const parsed = JSON.parse(local);
+      const today = getUTCDay();
+      if (parsed.day === today && parsed.price) {
+        console.log('[TON Price] Using localStorage cache:', parsed.price);
+        // Write back to Firestore for future use
+        await saveTONPriceToFirestore(parsed.price);
+        return parsed.price;
+      }
+    }
+  } catch (e) {}
+  
+  // 3. Fetch live from CoinGecko
+  const livePrice = await fetchLiveTONPrice();
+  if (livePrice !== null) {
+    // Save to Firestore
+    await saveTONPriceToFirestore(livePrice);
+    // Also save to localStorage as backup
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        price: livePrice,
+        day: getUTCDay()
+      }));
+    } catch (e) {}
+    return livePrice;
+  }
+  
+  // 4. Ultimate fallback
+  console.warn('[TON Price] Using hardcoded fallback: 2.50');
+  return 2.50;
+}
+
+// ============================================
+// UPDATE CREATOR SUPPORT BUTTONS
+// ============================================
+async function updateCreatorSupport() {
+  const price = await getTONPrice();
+  // $1 worth of TON = 1 / price
+  const tonValue = 1 / price;
+  const displayValue = tonValue.toFixed(6);
+  
+  // Update all creator support buttons
+  document.querySelectorAll('.creator-support .value').forEach(el => {
+    el.textContent = displayValue;
+  });
+  
+  // Remove loading state
+  document.querySelectorAll('.creator-support').forEach(el => {
+    el.classList.remove('loading');
+  });
+}
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.bottomnav .nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.bottomnav .nav-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ============================================
+// INIT
+// ============================================
+// Show loading state
+document.querySelectorAll('.creator-support').forEach(el => {
+  el.classList.add('loading');
+});
+
+// Fetch and update TON price
+updateCreatorSupport();
+
+// Refresh price every 5 minutes (300000ms) while page is open
+setInterval(updateCreatorSupport, 300000);
+
+console.log('[Yong Social] Feed loaded — TON price updates every 5min');
+</script>
+</body>
+</html>
