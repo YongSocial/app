@@ -612,7 +612,7 @@ class TONPaymentSystem {
     async evaluateGate() {
         const userId = this.getUserId();
 
-        // 1. Check Firestore profile for definitive status
+        // 1. Read Firestore profile
         let profileData = null;
         try {
             const snap = await getDoc(doc(db, 'profiles', userId));
@@ -621,94 +621,90 @@ class TONPaymentSystem {
 
         const fsStatus = profileData?.paymentStatus || 'pending';
 
-        // ── APPROVED ─────────────────────────────────────────────
+        // ── APPROVED — always wins ────────────────────────────────
         if (fsStatus === 'paid') {
             this.updatePaymentBadge('paid', '✅ Profile Active');
-            // Clear any stored submission data
             localStorage.removeItem('ys.paySubmission');
-            return; // Access granted — no overlay
-        }
-
-        // ── DECLINED ─────────────────────────────────────────────
-        if (fsStatus === 'declined') {
-            const reason = profileData?.declineReason || '';
-            this.showDeclinedScreen(reason);
             return;
         }
 
-        // ── DELETED (fraud/scam) ──────────────────────────────────
-        if (fsStatus === 'deleted') {
-            const reason = profileData?.deleteReason || '';
-            // Clear submission cache so they start fresh
-            localStorage.removeItem('ys.paySubmission');
-            this.showDeletedScreen(reason);
-            return;
-        }
-
-        // ── Check localStorage for a pending submission ───────────
+        // ── Read localStorage submission ──────────────────────────
         let submission = null;
         try { submission = JSON.parse(localStorage.getItem('ys.paySubmission') || 'null'); } catch {}
 
-        // If we have a submission record in localStorage
-        if (submission && submission.userId === userId) {
-            const bypass = profileData?.bypassCountdown === true;
+        // Validate submission belongs to this user
+        if (submission && submission.userId !== userId) submission = null;
 
-            // If bypass flag set by treasury — check Firestore immediately (no wait)
+        // ── KEY FIX: if user has a NEWER submission than the profile's last review,
+        //    it means they resubmitted after a decline/delete — honour the new submission.
+        const reviewedAtMs = profileData?.reviewedAt?.toMillis
+            ? profileData.reviewedAt.toMillis()
+            : (profileData?.reviewedAt?.seconds ? profileData.reviewedAt.seconds * 1000 : 0);
+
+        const submissionIsNewer = submission && submission.submittedAt > (reviewedAtMs || 0);
+
+        // ── DECLINED — only show if no newer submission ───────────
+        if (fsStatus === 'declined' && !submissionIsNewer) {
+            this.showDeclinedScreen(profileData?.declineReason || '');
+            return;
+        }
+
+        // ── DELETED — only show if no newer submission ────────────
+        if (fsStatus === 'deleted' && !submissionIsNewer) {
+            localStorage.removeItem('ys.paySubmission');
+            this.showDeletedScreen(profileData?.deleteReason || '');
+            return;
+        }
+
+        // ── Active submission in localStorage ─────────────────────
+        if (submission) {
+            const bypass = profileData?.bypassCountdown === true && !submissionIsNewer;
+
             if (bypass) {
-                // Re-read payment doc status
+                // Treasury flagged bypass on this exact submission — check Firestore now
                 const payStatus = await this.getPaymentDocStatus(submission.paymentDocId);
-                if (payStatus === 'approved') {
-                    // shouldn't reach here since profile would be 'paid', but handle anyway
-                    return;
-                } else if (payStatus === 'declined') {
-                    const reason = profileData?.declineReason || '';
-                    this.showDeclinedScreen(reason);
-                    return;
-                } else if (payStatus === 'deleted') {
-                    localStorage.removeItem('ys.paySubmission');
-                    this.showDeletedScreen(profileData?.deleteReason || '');
-                    return;
-                }
-                // Still submitted/pending with bypass — show countdown screen at 0
+                if (payStatus === 'approved') return; // profile should be 'paid', handled above
+                if (payStatus === 'declined') { this.showDeclinedScreen(profileData?.declineReason || ''); return; }
+                if (payStatus === 'deleted')  { localStorage.removeItem('ys.paySubmission'); this.showDeletedScreen(profileData?.deleteReason || ''); return; }
                 this.showCountdownScreen(submission, true);
                 return;
             }
 
-            const submittedAt = submission.submittedAt; // ms timestamp
-            const elapsed = Date.now() - submittedAt;
-            const SEVENTY_TWO_H = 72 * 60 * 60 * 1000;
+            const elapsed = Date.now() - submission.submittedAt;
+            const H72 = 72 * 60 * 60 * 1000;
 
-            if (elapsed < SEVENTY_TWO_H) {
-                // Still within 72h — show countdown, do NOT check Firestore payment status
+            if (elapsed < H72) {
+                // Within 72h — show countdown only, no Firestore check
                 this.showCountdownScreen(submission, false);
                 return;
             }
 
-            // 72h elapsed — NOW check Firestore for result
+            // 72h up — check Firestore for result
             const payStatus = await this.getPaymentDocStatus(submission.paymentDocId);
 
             if (payStatus === 'approved') {
-                // Profile should already be 'paid' — but handle edge case
                 this.updatePaymentBadge('paid', '✅ Profile Active');
                 localStorage.removeItem('ys.paySubmission');
                 return;
-            } else if (payStatus === 'declined') {
+            }
+            if (payStatus === 'declined') {
                 this.showDeclinedScreen(profileData?.declineReason || '');
                 return;
-            } else if (payStatus === 'deleted') {
+            }
+            if (payStatus === 'deleted') {
                 localStorage.removeItem('ys.paySubmission');
                 this.showDeletedScreen(profileData?.deleteReason || '');
                 return;
             }
 
-            // Still pending after 72h — show support screen + reset 72h
-            submission.submittedAt = Date.now(); // reset countdown
+            // Still pending — show support + reset 72h
+            submission.submittedAt = Date.now();
             localStorage.setItem('ys.paySubmission', JSON.stringify(submission));
             this.showSupportScreen();
             return;
         }
 
-        // ── No submission on record — show payment gate ───────────
+        // ── No submission — show payment gate ─────────────────────
         this.showPaymentOverlay();
     }
 
@@ -1021,6 +1017,17 @@ class TONPaymentSystem {
                 status:       'submitted',
                 createdAt:    serverTimestamp(),
             });
+
+            // Reset profile status so old decline/delete doesn't block the gate
+            try {
+                const { doc: fsDoc, setDoc: fsSetDoc } = await import('https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js');
+                await fsSetDoc(fsDoc(db, 'profiles', userId), {
+                    paymentStatus:   'submitted',
+                    bypassCountdown: false,
+                    declineReason:   null,
+                    deleteReason:    null,
+                }, { merge: true });
+            } catch (e) { console.warn('Profile reset failed', e); }
 
             // Save submission to localStorage — submittedAt is the source of truth for countdown
             const submissionData = {
