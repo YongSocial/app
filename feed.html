@@ -113,25 +113,6 @@
       border: 1px solid #1f2940;
       color: #d4b25a;
     }
-    .nav-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #121a2d;
-      border: 1px solid #1f2940;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      color: #d4b25a;
-    }
-    .nav-avatar img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
 
     /* App shell */
     .app-shell {
@@ -246,9 +227,7 @@
 
     .feed-col { border-right: 1px solid #1f2940; min-width: 0; }
     
-    /* ============================================ */
-    /* ROTATING TICKER - Clean, no header */
-    /* ============================================ */
+    /* Rotating Ticker */
     .ticker-wrapper {
       overflow: hidden;
       background: #0f1626;
@@ -383,15 +362,46 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
-    .actions-left {
+    .reactions {
       display: flex;
-      gap: 1.5rem;
-      color: #8a93a8;
-      font-size: 0.8rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
-    .action { display: flex; align-items: center; gap: 0.25rem; cursor: pointer; }
-    .action.liked { color: #f91880; }
+    .reaction-btn {
+      background: transparent;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      color: #8a93a8;
+      font-family: 'Inter', sans-serif;
+    }
+    .reaction-btn:hover {
+      border-color: #d4b25a;
+      background: rgba(212, 178, 90, 0.05);
+    }
+    .reaction-btn.active {
+      border-color: #d4b25a;
+      background: rgba(212, 178, 90, 0.1);
+      color: #d4b25a;
+    }
+    .reaction-btn .emoji {
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .reaction-btn .count {
+      font-size: 0.7rem;
+      font-weight: 600;
+      min-width: 12px;
+    }
 
     .creator-support {
       display: flex;
@@ -680,6 +690,9 @@
       .profile-header { flex-direction: column; text-align: center; }
       .profile-info .bio { margin-left: auto; margin-right: auto; }
       .ticker-item { font-size: 0.7rem; padding: 0.15rem 0.8rem; }
+      .reactions { gap: 0.3rem; }
+      .reaction-btn { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
+      .reaction-btn .emoji { font-size: 0.85rem; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -765,7 +778,7 @@
   <section class="feed-col">
     <!-- Feed View -->
     <div id="feedView">
-      <!-- Rotating Ticker - No header -->
+      <!-- Rotating Ticker -->
       <div class="ticker-wrapper">
         <div id="tickerTrack" class="ticker-track">
           <div class="ticker-loading">
@@ -879,6 +892,9 @@ let TON_PRICE = 2.50;
 let userWalletAddress = null;
 let currentUser = null;
 let cryptoData = [];
+
+// Post reactions state
+const postReactions = {};
 
 // ============================================
 // VIEW SWITCHING
@@ -1005,13 +1021,12 @@ function getSupportAmount() {
 }
 
 // ============================================
-// ROTATING TICKER - CoinGecko Top 30
+// ROTATING TICKER
 // ============================================
 async function fetchTickerData() {
   const track = document.getElementById('tickerTrack');
   
   try {
-    // Check Firestore cache first
     const cacheDoc = await db.collection('config').doc('cryptoCache').get();
     const today = getUTCDay();
     
@@ -1027,7 +1042,6 @@ async function fetchTickerData() {
       }
     }
     
-    // Fetch from CoinGecko
     track.innerHTML = '<div class="ticker-loading"><div class="spinner"></div> Loading crypto prices...</div>';
     
     const response = await fetch(
@@ -1047,16 +1061,13 @@ async function fetchTickerData() {
       image: coin.image
     }));
     
-    // Save to Firestore cache
     try {
       await db.collection('config').doc('cryptoCache').set({
         prices: cryptoData,
         day: today,
         timestamp: Date.now()
       }, { merge: true });
-    } catch (e) {
-      console.warn('Crypto cache save error:', e);
-    }
+    } catch (e) {}
     
     renderTicker();
     
@@ -1073,8 +1084,6 @@ async function fetchTickerData() {
 
 function renderTicker() {
   const track = document.getElementById('tickerTrack');
-  
-  // Duplicate the data for seamless scrolling
   const items = [...cryptoData, ...cryptoData];
   
   track.innerHTML = items.map(coin => `
@@ -1087,6 +1096,64 @@ function renderTicker() {
       <span class="divider">|</span>
     </div>
   `).join('');
+}
+
+// ============================================
+// REACTION HANDLERS
+// ============================================
+const REACTION_EMOJIS = {
+  like: '👍',
+  dislike: '👎',
+  celebrate: '🎉',
+  angry: '😡',
+  diamond: '💎'
+};
+
+function handleReaction(postId, reactionKey) {
+  if (!postReactions[postId]) {
+    postReactions[postId] = {
+      like: 0,
+      dislike: 0,
+      celebrate: 0,
+      angry: 0,
+      diamond: 0,
+      userReaction: null
+    };
+  }
+  
+  const post = postReactions[postId];
+  
+  // If user already reacted with the same reaction, remove it (toggle off)
+  if (post.userReaction === reactionKey) {
+    post[reactionKey] = Math.max(0, post[reactionKey] - 1);
+    post.userReaction = null;
+  } else {
+    // If user had a different reaction, remove that one first
+    if (post.userReaction && post[post.userReaction] > 0) {
+      post[post.userReaction] = Math.max(0, post[post.userReaction] - 1);
+    }
+    post[reactionKey] = (post[reactionKey] || 0) + 1;
+    post.userReaction = reactionKey;
+  }
+  
+  updateReactionUI(postId);
+}
+
+function updateReactionUI(postId) {
+  const post = postReactions[postId];
+  if (!post) return;
+  
+  const container = document.querySelector(`[data-post="${postId}"] .reactions`);
+  if (!container) return;
+  
+  const buttons = container.querySelectorAll('.reaction-btn');
+  buttons.forEach(btn => {
+    const key = btn.dataset.reaction;
+    const count = post[key] || 0;
+    const countEl = btn.querySelector('.count');
+    if (countEl) countEl.textContent = count > 0 ? count : '';
+    btn.classList.toggle('active', post.userReaction === key);
+  });
 }
 
 // ============================================
@@ -1185,8 +1252,6 @@ const samplePosts = [
     },
     time: '2h ago',
     content: 'Welcome to the Yong Social Community Feed! 🎉\n\nThis is where creators and supporters connect. Tap the 💎 button on any post to support the creator with $1 worth of TON.\n\nBuild the future of social finance together.',
-    comments: 12,
-    likes: 47,
     verified: true
   },
   {
@@ -1199,8 +1264,6 @@ const samplePosts = [
     },
     time: '5h ago',
     content: 'Just deployed my first smart contract on TON! 🚀\n\nThe ecosystem is growing fast and Yong Social is making it easier for creators to get support directly from their community.\n\nWho else is building on TON?',
-    comments: 8,
-    likes: 23,
     verified: false
   },
   {
@@ -1213,17 +1276,32 @@ const samplePosts = [
     },
     time: '8h ago',
     content: 'TON adoption is accelerating! 📈\n\nWith over 100M active wallets and growing, the infrastructure for creator economies is stronger than ever.\n\nYong Social is leading the charge in social finance. Join the movement!',
-    comments: 5,
-    likes: 18,
     verified: true
   }
 ];
+
+// Initialize reactions for sample posts
+samplePosts.forEach(post => {
+  if (!postReactions[post.id]) {
+    postReactions[post.id] = {
+      like: Math.floor(Math.random() * 50) + 10,
+      dislike: Math.floor(Math.random() * 10),
+      celebrate: Math.floor(Math.random() * 20) + 5,
+      angry: Math.floor(Math.random() * 5),
+      diamond: Math.floor(Math.random() * 15) + 3,
+      userReaction: null
+    };
+  }
+});
 
 function renderPosts() {
   const container = document.getElementById('postsContainer');
   if (!container) return;
   
-  container.innerHTML = samplePosts.map(post => `
+  container.innerHTML = samplePosts.map(post => {
+    const reactions = postReactions[post.id] || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0, userReaction: null };
+    
+    return `
     <article class="tweet" data-post="${post.id}">
       <div class="pfp">${post.author.pfp}</div>
       <div class="content">
@@ -1236,9 +1314,27 @@ function renderPosts() {
         </div>
         <div class="text">${post.content.replace(/\n/g, '<br>')}</div>
         <div class="actions-row">
-          <div class="actions-left">
-            <div class="action"><i class="fa-regular fa-comment"></i> ${post.comments}</div>
-            <div class="action liked" onclick="this.classList.toggle('liked')"><i class="fa-solid fa-heart"></i> ${post.likes}</div>
+          <div class="reactions">
+            <button class="reaction-btn ${reactions.userReaction === 'like' ? 'active' : ''}" data-reaction="like" onclick="handleReaction('${post.id}', 'like')">
+              <span class="emoji">👍</span>
+              <span class="count">${reactions.like > 0 ? reactions.like : ''}</span>
+            </button>
+            <button class="reaction-btn ${reactions.userReaction === 'dislike' ? 'active' : ''}" data-reaction="dislike" onclick="handleReaction('${post.id}', 'dislike')">
+              <span class="emoji">👎</span>
+              <span class="count">${reactions.dislike > 0 ? reactions.dislike : ''}</span>
+            </button>
+            <button class="reaction-btn ${reactions.userReaction === 'celebrate' ? 'active' : ''}" data-reaction="celebrate" onclick="handleReaction('${post.id}', 'celebrate')">
+              <span class="emoji">🎉</span>
+              <span class="count">${reactions.celebrate > 0 ? reactions.celebrate : ''}</span>
+            </button>
+            <button class="reaction-btn ${reactions.userReaction === 'angry' ? 'active' : ''}" data-reaction="angry" onclick="handleReaction('${post.id}', 'angry')">
+              <span class="emoji">😡</span>
+              <span class="count">${reactions.angry > 0 ? reactions.angry : ''}</span>
+            </button>
+            <button class="reaction-btn ${reactions.userReaction === 'diamond' ? 'active' : ''}" data-reaction="diamond" onclick="handleReaction('${post.id}', 'diamond')">
+              <span class="emoji">💎</span>
+              <span class="count">${reactions.diamond > 0 ? reactions.diamond : ''}</span>
+            </button>
           </div>
           <div class="creator-support" onclick="openCreatorSupport('${post.author.wallet}')">
             <span class="diamond">💎</span>
@@ -1247,7 +1343,7 @@ function renderPosts() {
         </div>
       </div>
     </article>
-  `).join('');
+  `}).join('');
 }
 
 // ============================================
@@ -1354,7 +1450,6 @@ auth.onAuthStateChanged(async (user) => {
         await getTONPrice();
         updateProfileView();
         
-        // Fetch crypto data for ticker
         await fetchTickerData();
         
         setInterval(() => {
