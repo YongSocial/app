@@ -50,21 +50,106 @@
     .btn-brand:hover { filter: brightness(1.05); }
     .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* Header - same as main app */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(8px);
+      background: rgba(7, 11, 20, 0.8);
+      border-bottom: 1px solid #1f2940;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      cursor: pointer;
+    }
+    .header-brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .header-brand .title {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .header-brand .subtitle {
+      font-size: 0.6875rem;
+      color: #8a93a8;
+      margin-top: -0.125rem;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .nav-link {
+      padding: 0.5rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #8a93a8;
+      cursor: pointer;
+      transition: 0.15s;
+      background: transparent;
+      border: none;
+    }
+    .nav-link:hover { color: #e7ecf5; }
+    .nav-link.active {
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      color: #d4b25a;
+    }
+    .nav-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: #d4b25a;
+    }
+    .nav-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Main app shell */
     .app-shell {
       max-width: 1280px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 240px 1fr 300px;
       gap: 0;
-      min-height: 100vh;
+      min-height: calc(100vh - 64px);
     }
 
+    /* Sidebar - removed Messages */
     .sidebar {
       padding: 1.5rem 1rem;
       border-right: 1px solid #1f2940;
       position: sticky;
-      top: 0;
-      height: 100vh;
+      top: 64px;
+      height: calc(100vh - 64px);
       display: flex;
       flex-direction: column;
       background: #070b14;
@@ -89,8 +174,12 @@
       font-weight: 500;
       font-size: 0.95rem;
       transition: 0.1s;
-      cursor: default;
+      cursor: pointer;
       margin-bottom: 0.25rem;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
     }
     .nav-item i { width: 1.4rem; font-size: 1.2rem; text-align: center; }
     .nav-item.active { background: #121a2d; border: 1px solid #1f2940; color: #d4b25a; }
@@ -137,6 +226,22 @@
       border-radius: 50%;
       object-fit: cover;
       border: 1px solid #1f2940;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      border-radius: 9999px;
+      padding: 0.4rem 1rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+    }
+    .logout-btn:hover {
+      background: #ef4444;
+      color: #fff;
     }
 
     .feed-col { border-right: 1px solid #1f2940; min-width: 0; }
@@ -300,6 +405,78 @@
       font-size: 0.9rem;
     }
 
+    /* Profile View */
+    #profileView {
+      display: none;
+      padding: 2rem 1.5rem;
+    }
+    #profileView.active { display: block; }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4b25a, #22c984);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b1120;
+      flex-shrink: 0;
+    }
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .profile-info h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .profile-info .handle {
+      color: #8a93a8;
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+    .profile-info .bio {
+      color: #8a93a8;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      max-width: 400px;
+    }
+    .profile-details {
+      background: #0f1626;
+      border: 1px solid #1f2940;
+      border-radius: 18px;
+      padding: 1.5rem;
+      max-width: 500px;
+    }
+    .profile-details .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #1f2940;
+    }
+    .profile-details .row:last-child { border-bottom: none; }
+    .profile-details .label { color: #8a93a8; font-size: 0.85rem; }
+    .profile-details .value { font-weight: 500; font-size: 0.9rem; word-break: break-all; }
+    .profile-details .value .wallet-address {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: #121a2d;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #1f2940;
+    }
+
+    /* Bottom nav */
     .bottomnav {
       display: none;
       position: fixed;
@@ -312,7 +489,7 @@
       justify-content: space-around;
       z-index: 20;
     }
-    .bottomnav .nav-item { font-size: 1.2rem; color: #8a93a8; cursor: default; }
+    .bottomnav .nav-item { font-size: 1.2rem; color: #8a93a8; cursor: pointer; }
     .bottomnav .nav-item.active { color: #d4b25a; }
 
     .fab {
@@ -361,22 +538,6 @@
     @keyframes slideUp {
       from { opacity: 0; transform: translateX(-50%) translateY(20px); }
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    .logout-btn {
-      background: transparent;
-      border: 1px solid #ef4444;
-      color: #ef4444;
-      border-radius: 9999px;
-      padding: 0.4rem 1rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 0.5rem;
-    }
-    .logout-btn:hover {
-      background: #ef4444;
-      color: #fff;
     }
 
     /* Wallet Popup */
@@ -453,6 +614,7 @@
     .wallet-actions .btn-skip:hover { color: #e7ecf5; }
     .wallet-footer { font-size: 0.7rem; color: #5a6378; text-align: center; margin-top: 0.75rem; }
 
+    /* Responsive */
     @media (max-width: 1024px) {
       .app-shell { grid-template-columns: 1fr; }
       .sidebar { display: none; }
@@ -464,6 +626,8 @@
       .feed-header { padding: 0.5rem 1rem; }
       .tweet { padding: 0.75rem 1rem; }
       .tabs { gap: 2.5rem; }
+      .profile-header { flex-direction: column; text-align: center; }
+      .profile-info .bio { margin-left: auto; margin-right: auto; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -471,6 +635,26 @@
   </style>
 </head>
 <body>
+
+<!-- ============================================ -->
+<!-- HEADER - Same as main app -->
+<!-- ============================================ -->
+<header>
+  <div class="header-inner">
+    <a href="https://www.yongsocial.com/" target="_blank" rel="noreferrer" class="header-brand">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu_7mdnTHeYcrLaxRY0veIDVO6Pb0Pk4ngLKZupHTxufcBF3hwrlsgIxyXHfiDu_NywzKTnvLoGuh37Lv6k1Qkl0Q5HlHFn_sOa6ow8cL2TGXee1kSl6Uohtv_SggJ1UBhfNpUG4ClC1kPMkpC7Am3wX3cmDve4a95uvhmjNfF97aP2-hUVpX_Wk2dh56a/s1200/file_00000000814c720aa68fca8155db1cab_copy_1200x630.png" alt="Yong Social" />
+      <div>
+        <div class="title">Yong Social</div>
+        <div class="subtitle">Finance · Crypto · Wealth Building</div>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <button class="nav-link active" data-view="feed" onclick="switchView('feed')">Dashboard</button>
+      <button class="nav-link" data-view="profile" onclick="switchView('profile')">Profile</button>
+      <button class="nav-link" onclick="window.location.href='https://yongsocial.github.io/sphere/'">← Back</button>
+    </nav>
+  </div>
+</header>
 
 <!-- ============================================ -->
 <!-- WALLET ADDRESS POPUP -->
@@ -511,11 +695,9 @@
   <!-- LEFT SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">Yong <span>Social</span></div>
-    <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
-    <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i> Explore</div>
-    <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i> Rocket</div>
-    <div class="nav-item"><i class="fa-regular fa-bell"></i> Notifications <span class="badge">1</span></div>
-    <button class="post-btn" style="background:#d4b25a;border:none;color:#0b1120;font-weight:700;padding:0.7rem;border-radius:9999px;width:100%;cursor:pointer;font-size:0.95rem;margin-top:1.5rem;">Post</button>
+    <button class="nav-item active" onclick="switchView('feed')"><i class="fa-solid fa-house"></i> Home</button>
+    <button class="nav-item" onclick="switchView('profile')"><i class="fa-regular fa-user"></i> Profile</button>
+    <button class="nav-item" onclick="window.location.href='https://yongsocial.github.io/sphere/'"><i class="fa-solid fa-arrow-left"></i> Back to App</button>
 
     <div class="sidebar-profile" id="sidebarProfile">
       <div id="sidebarAvatar" class="avatar">Y</div>
@@ -529,17 +711,45 @@
 
   <!-- CENTER FEED -->
   <section class="feed-col">
-    <div class="feed-header">
-      <h2>Community</h2>
-      <div class="tabs">
-        <div class="tab active">For you</div>
-        <div class="tab">Following</div>
+    <!-- Feed View -->
+    <div id="feedView">
+      <div class="feed-header">
+        <h2>Community</h2>
+        <div class="tabs">
+          <div class="tab active">For you</div>
+          <div class="tab">Following</div>
+        </div>
       </div>
+      <main id="feed">
+        <div id="postsContainer"></div>
+      </main>
     </div>
 
-    <main id="feed">
-      <div id="postsContainer"></div>
-    </main>
+    <!-- Profile View -->
+    <div id="profileView">
+      <div class="profile-header">
+        <div id="profileAvatar" class="profile-avatar">Y</div>
+        <div class="profile-info">
+          <h2 id="profileName">Loading...</h2>
+          <div class="handle" id="profileHandle">@user</div>
+          <div class="bio" id="profileBio">No bio yet.</div>
+        </div>
+      </div>
+      <div class="profile-details">
+        <div class="row">
+          <span class="label">Telegram ID</span>
+          <span class="value" id="profileTgId">—</span>
+        </div>
+        <div class="row">
+          <span class="label">Wallet Address</span>
+          <span class="value" id="profileWallet">Not set</span>
+        </div>
+        <div class="row">
+          <span class="label">Account Status</span>
+          <span class="value" id="profileStatus">—</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- RIGHT WIDGETS -->
@@ -578,11 +788,9 @@
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="bottomnav">
-  <div class="nav-item active"><i class="fa-solid fa-house"></i></div>
-  <div class="nav-item"><i class="fa-solid fa-magnifying-glass"></i></div>
-  <div class="nav-item"><i class="fa-solid fa-rocket" style="color:#d4b25a;"></i></div>
-  <div class="nav-item"><i class="fa-regular fa-bell"></i></div>
-  <div class="nav-item" id="mobileProfileBtn"><i class="fa-regular fa-user"></i></div>
+  <div class="nav-item active" onclick="switchView('feed')"><i class="fa-solid fa-house"></i></div>
+  <div class="nav-item" onclick="switchView('profile')"><i class="fa-regular fa-user"></i></div>
+  <div class="nav-item" onclick="window.location.href='https://yongsocial.github.io/sphere/'"><i class="fa-solid fa-arrow-left"></i></div>
 </nav>
 
 <!-- ============================================ -->
@@ -590,7 +798,7 @@
 <!-- ============================================ -->
 <script>
 // ============================================
-// FIREBASE CONFIG
+// FIREBASE INITIALIZATION
 // ============================================
 const firebaseConfig = {
   apiKey: 'AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME',
@@ -601,7 +809,10 @@ const firebaseConfig = {
   appId: '1:178823074404:web:d1b4d76ea3a2d7c9170571'
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -612,6 +823,75 @@ let PROFILE = null;
 let TON_PRICE = 2.50;
 let userWalletAddress = null;
 let currentUser = null;
+
+// ============================================
+// VIEW SWITCHING
+// ============================================
+function switchView(view) {
+  const feedView = document.getElementById('feedView');
+  const profileView = document.getElementById('profileView');
+  const feedTab = document.querySelector('.tab.active');
+  
+  if (view === 'feed') {
+    feedView.style.display = 'block';
+    profileView.classList.remove('active');
+    profileView.style.display = 'none';
+    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+    document.querySelector('.nav-link[data-view="feed"]')?.classList.add('active');
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector('.sidebar .nav-item:first-child')?.classList.add('active');
+    document.querySelectorAll('.bottomnav .nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector('.bottomnav .nav-item:first-child')?.classList.add('active');
+    // Update profile view if needed
+    if (PROFILE) updateProfileView();
+  } else if (view === 'profile') {
+    feedView.style.display = 'none';
+    profileView.style.display = 'block';
+    profileView.classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+    document.querySelector('.nav-link[data-view="profile"]')?.classList.add('active');
+    document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector('.sidebar .nav-item:nth-child(2)')?.classList.add('active');
+    document.querySelectorAll('.bottomnav .nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector('.bottomnav .nav-item:nth-child(2)')?.classList.add('active');
+    if (PROFILE) updateProfileView();
+  }
+}
+
+function updateProfileView() {
+  if (!PROFILE) return;
+  
+  const avatar = document.getElementById('profileAvatar');
+  if (PROFILE.photoUrl) {
+    avatar.innerHTML = `<img src="${PROFILE.photoUrl}" alt="" />`;
+  } else {
+    avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
+  }
+  
+  document.getElementById('profileName').textContent = PROFILE.displayName || 'Yong User';
+  document.getElementById('profileHandle').textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
+  document.getElementById('profileBio').textContent = PROFILE.bio || 'No bio yet.';
+  document.getElementById('profileTgId').textContent = PROFILE.telegramId;
+  
+  // Wallet address
+  const walletEl = document.getElementById('profileWallet');
+  if (PROFILE.walletAddress) {
+    walletEl.innerHTML = `<span class="wallet-address">${PROFILE.walletAddress}</span>`;
+  } else {
+    walletEl.textContent = 'Not set';
+    walletEl.style.color = '#8a93a8';
+  }
+  
+  // Status
+  const statusEl = document.getElementById('profileStatus');
+  if (PROFILE.paymentStatus === 'paid') {
+    statusEl.innerHTML = '✅ Treasury Verified';
+    statusEl.style.color = '#22c984';
+  } else {
+    statusEl.innerHTML = '⏳ Pending Verification';
+    statusEl.style.color = '#d4b25a';
+  }
+}
 
 // ============================================
 // TOAST
@@ -677,7 +957,6 @@ function getSupportAmount() {
 // ============================================
 async function loadProfileByGoogleUid(googleUid) {
   try {
-    // First check userLinks collection
     const linkSnap = await db.collection('userLinks').doc(googleUid).get();
     if (linkSnap.exists) {
       const telegramId = linkSnap.data().telegramId;
@@ -686,17 +965,18 @@ async function loadProfileByGoogleUid(googleUid) {
         PROFILE = profileSnap.data();
         userWalletAddress = PROFILE.walletAddress || null;
         updateSidebar();
+        updateProfileView();
         return true;
       }
     }
     
-    // Fallback: search profiles for googleUid
     const querySnap = await db.collection('profiles').where('googleUid', '==', googleUid).get();
     if (!querySnap.empty) {
       const doc = querySnap.docs[0];
       PROFILE = doc.data();
       userWalletAddress = PROFILE.walletAddress || null;
       updateSidebar();
+      updateProfileView();
       return true;
     }
     
@@ -885,6 +1165,7 @@ document.getElementById('saveWalletBtn').addEventListener('click', async () => {
     
     PROFILE.walletAddress = wallet;
     userWalletAddress = wallet;
+    updateProfileView();
     
     btn.textContent = '✅ Saved!';
     showToast('Wallet address saved successfully!', 'success');
@@ -913,19 +1194,6 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     this.classList.add('active');
   });
-});
-
-document.querySelectorAll('.bottomnav .nav-item').forEach(item => {
-  item.addEventListener('click', function() {
-    document.querySelectorAll('.bottomnav .nav-item').forEach(i => i.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
-document.getElementById('mobileProfileBtn')?.addEventListener('click', function() {
-  if (PROFILE) {
-    showToast(`Profile: ${PROFILE.displayName}\nHandle: ${PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId}\nWallet: ${PROFILE.walletAddress || 'Not set'}`, 'success');
-  }
 });
 
 // ============================================
@@ -957,8 +1225,8 @@ auth.onAuthStateChanged(async (user) => {
         renderPosts();
         loadCommunityStats();
         await getTONPrice();
+        updateProfileView();
         
-        // Update support amounts periodically
         setInterval(() => {
           const value = getSupportAmount();
           document.querySelectorAll('.creator-support .value').forEach(el => {
@@ -966,7 +1234,6 @@ auth.onAuthStateChanged(async (user) => {
           });
         }, 300000);
         
-        // Check if user has wallet address
         if (!userWalletAddress) {
           setTimeout(showWalletPopup, 600);
         }
@@ -983,7 +1250,6 @@ auth.onAuthStateChanged(async (user) => {
       showToast('Error loading profile: ' + error.message, 'error');
     }
   } else {
-    // Not signed in - redirect to main app
     document.getElementById('logoutBtn').style.display = 'none';
     showToast('Please sign in to access the community.', 'error');
     setTimeout(() => {
@@ -996,6 +1262,17 @@ auth.onAuthStateChanged(async (user) => {
 // INIT
 // ============================================
 console.log('[Feed] Initializing...');
+
+auth.getRedirectResult().then((result) => {
+  if (result.user) {
+    console.log('[Feed] Redirect sign-in successful:', result.user.uid);
+  }
+}).catch((error) => {
+  console.error('[Feed] Redirect error:', error);
+});
+
+// Default view
+switchView('feed');
 </script>
 </body>
 </html>
