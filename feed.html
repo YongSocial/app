@@ -119,17 +119,17 @@
       color: #d4b25a;
     }
 
-    /* App shell */
+    /* App shell - full width feed on desktop */
     .app-shell {
       max-width: 1280px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 200px 1fr;
       gap: 0;
       min-height: calc(100vh - 64px);
     }
 
-    /* Sidebar */
+    /* Sidebar - removed logout */
     .sidebar {
       padding: 1.5rem 1rem;
       border-right: 1px solid #1f2940;
@@ -202,19 +202,22 @@
       color: #0b1120;
       font-size: 0.9rem;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+    .sidebar-profile .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .sidebar-profile .info { flex: 1; min-width: 0; }
     .sidebar-profile .name { font-weight: 600; font-size: 0.9rem; }
     .sidebar-profile .handle { color: #8a93a8; font-size: 0.75rem; }
-    .sidebar-profile .avatar-img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #1f2940;
-    }
 
-    .feed-col { min-width: 0; }
+    .feed-col { 
+      border-right: 1px solid #1f2940; 
+      min-width: 0;
+      width: 100%;
+    }
     
     /* Rotating Ticker */
     .ticker-wrapper {
@@ -366,6 +369,31 @@
       line-height: 1.4;
       font-size: 0.95rem;
       word-wrap: break-word;
+    }
+    .tweet .read-more {
+      color: #d4b25a;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 0.3rem;
+      font-size: 0.85rem;
+    }
+    .tweet .read-more:hover { text-decoration: underline; }
+
+    /* YouTube Embed */
+    .youtube-embed {
+      margin-top: 0.6rem;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      background: #000;
+    }
+    .youtube-embed iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
     /* Post Images - Inline Video Player */
@@ -638,41 +666,6 @@
     }
     .post-menu-dropdown button:hover { background: rgba(239,68,68,0.08); }
 
-    /* YouTube Embed */
-    .yt-embed-wrap {
-      margin-top: 0.6rem;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-    }
-    .yt-embed-wrap iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: block;
-    }
-
-    /* RSS Read More */
-    .rss-read-more {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      margin-top: 0.4rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #d4b25a;
-      cursor: pointer;
-      border: none;
-      background: none;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-      text-decoration: none;
-    }
-    .rss-read-more:hover { text-decoration: underline; }
-
     /* Link Preview Card */
     .link-preview {
       margin-top: 0.6rem;
@@ -924,49 +917,6 @@
       margin-left: auto;
     }
 
-    /* Widgets */
-    .widgets { padding: 1.5rem 1rem; background: #070b14; }
-    .widget {
-      background: #0f1626;
-      border: 1px solid #1f2940;
-      border-radius: 18px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .widget h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .trend {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #1f2940;
-    }
-    .trend:last-child { border-bottom: none; }
-    .trend-title { font-weight: 600; font-size: 0.9rem; }
-    .trend-meta { color: #8a93a8; font-size: 0.75rem; margin-top: 0.1rem; }
-    .follow-btn {
-      background: #e7ecf5;
-      color: #0b1120;
-      border: none;
-      border-radius: 9999px;
-      padding: 0.2rem 0.9rem;
-      font-weight: 700;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    .follow-btn:hover { filter: brightness(0.9); }
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: #0f1626;
-      border: 1px solid #1f2940;
-      border-radius: 9999px;
-      padding: 0.6rem 1rem;
-      margin-bottom: 1rem;
-      color: #8a93a8;
-      font-size: 0.9rem;
-    }
-
     /* Profile View */
     #profileView {
       display: none;
@@ -1191,12 +1141,8 @@
       .reactions { gap: 0.3rem; }
       .reaction-btn { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
       .reaction-btn .emoji { font-size: 0.85rem; }
-      .slideshow-nav.prev { left: 10px; }
-      .slideshow-nav.next { right: 10px; }
-      .slideshow-close { top: -40px; }
       .post-modal { padding: 1.25rem; }
       .post-images { aspect-ratio: 4 / 5; }
-      .slideshow-container .slideshow-image-wrapper { aspect-ratio: 4 / 5; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -1275,8 +1221,6 @@
   </div>
 </div>
 
-
-
 <!-- ============================================ -->
 <!-- WALLET ADDRESS POPUP -->
 <!-- ============================================ -->
@@ -1305,7 +1249,7 @@
 <!-- ============================================ -->
 <div class="app-shell">
 
-  <!-- LEFT SIDEBAR -->
+  <!-- LEFT SIDEBAR - removed logout -->
   <aside class="sidebar">
     <div class="brand">Yong <span>Social</span></div>
     <button class="nav-item active" onclick="switchView('feed')"><i class="fa-solid fa-house"></i> Home</button>
@@ -1324,7 +1268,7 @@
     </div>
   </aside>
 
-  <!-- CENTER FEED -->
+  <!-- CENTER FEED - full width on desktop -->
   <section class="feed-col">
     <!-- Feed View -->
     <div id="feedView">
@@ -1369,9 +1313,6 @@
       </div>
     </div>
   </section>
-
-  <!-- Community stats hidden div kept for JS compatibility -->
-  <div id="communityStats" style="display:none;"></div>
 </div>
 
 <!-- MOBILE FAB -->
@@ -1424,25 +1365,17 @@ let userWalletAddress = null;
 let currentUser = null;
 let cryptoData = [];
 let allPosts = [];
-let rssPostsCache = { data: [], timestamp: 0 };
-const RSS_TTL       = 15 * 60 * 1000; // 15 min
-const RSS_FEED_URL  = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
-const RSS_PROXY     = 'https://api.rss2json.com/v1/api.json?rss_url=';
-const YONG_LOGO     = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu_7mdnTHeYcrLaxRY0veIDVO6Pb0Pk4ngLKZupHTxufcBF3hwrlsgIxyXHfiDu_NywzKTnvLoGuh37Lv6k1Qkl0Q5HlHFn_sOa6ow8cL2TGXee1kSl6Uohtv_SggJ1UBhfNpUG4ClC1kPMkpC7Am3wX3cmDve4a95uvhmjNfF97aP2-hUVpX_Wk2dh56a/s1200/file_00000000814c720aa68fca8155db1cab_copy_1200x630.png';
-const YONG_TREASURY = 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB';
 let postsCache = { data: [], timestamp: 0 };
 let selectedFiles = [];
 let isSubmitting = false;
 let newPostsCount = 0;
 let unsubscribePosts = null;
-let slideshowImages = [];
-let slideshowIndex = 0;
 
 // ============================================
 // AD MANAGER
 // ============================================
 const AdManager = {
-  COOLDOWN: 60000, // 60 seconds
+  COOLDOWN: 60000,
   lastAdTime: 0,
 
   _counters() {
@@ -1467,7 +1400,6 @@ const AdManager = {
     return true;
   },
 
-  // Call after every reaction
   onReaction() {
     const c = this._counters();
     c.reaction++;
@@ -1475,7 +1407,6 @@ const AdManager = {
     this._save(c);
   },
 
-  // Call on app open (after auth resolves)
   onAppOpen() {
     const c = this._counters();
     c.appOpen++;
@@ -1483,7 +1414,6 @@ const AdManager = {
     this._save(c);
   },
 
-  // Call after successful post submit (pass postNumber: session post count)
   onPost() {
     const c = this._counters();
     c.post++;
@@ -1491,7 +1421,6 @@ const AdManager = {
     this._save(c);
   },
 
-  // Call on every dashboard<->profile tab switch
   onTabSwitch() {
     if (this._skipNext) { this._skipNext = false; return; }
     const c = this._counters();
@@ -1705,13 +1634,39 @@ function renderTicker() {
 }
 
 // ============================================
+// YOUTUBE EMBED DETECTION
+// ============================================
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+function isYouTubeUrl(url) {
+  return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+}
+
+function getYouTubeEmbedUrl(url) {
+  const id = extractYouTubeId(url);
+  if (!id) return null;
+  // Use youtube-nocookie for privacy and allow autoplay
+  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+}
+
+// ============================================
 // POST FUNCTIONS
 // ============================================
 function openPostPopup() {
   const overlay = document.getElementById('postOverlay');
   overlay.classList.add('active');
   
-  // Set profile avatar and name in popup
   const avatarEl = document.getElementById('postPopupAvatar');
   const nameEl = document.getElementById('postPopupName');
   
@@ -1778,7 +1733,6 @@ function removeImage(index) {
   renderImagePreviews();
 }
 
-// Character counter
 document.getElementById('postContent').addEventListener('input', function() {
   const count = this.value.length;
   document.getElementById('charCount').textContent = count;
@@ -1920,7 +1874,6 @@ async function submitPost() {
 // LOAD POSTS FROM FIRESTORE
 // ============================================
 function loadPosts() {
-  // Check cache first
   const now = Date.now();
   if (postsCache.data.length > 0 && (now - postsCache.timestamp) < CACHE_TTL) {
     allPosts = postsCache.data;
@@ -1928,7 +1881,6 @@ function loadPosts() {
     return;
   }
   
-  // Set up real-time listener
   if (unsubscribePosts) {
     unsubscribePosts();
   }
@@ -1949,7 +1901,6 @@ function loadPosts() {
         }
       });
       
-      // Check if we have new posts
       if (newPosts.length > 0) {
         const existingIds = new Set(allPosts.map(p => p.id));
         const freshNewPosts = newPosts.filter(p => !existingIds.has(p.id));
@@ -1963,19 +1914,12 @@ function loadPosts() {
           }
         }
         
-        // Add new posts to the beginning
         allPosts = [...newPosts, ...allPosts];
       }
       
-      // Update cache
       postsCache.data = allPosts;
       postsCache.timestamp = Date.now();
-
-      // Merge with RSS posts and render
-      loadRssPosts().then(rssPosts => {
-        allPosts = mergeFeedPosts(postsCache.data, rssPosts);
-        renderPosts();
-      }).catch(() => renderPosts());
+      renderPosts();
     }, (error) => {
       console.error('Posts listener error:', error);
     });
@@ -1984,196 +1928,9 @@ function loadPosts() {
 function loadNewPosts() {
   newPostsCount = 0;
   document.getElementById('newPostsBanner').classList.remove('show');
-  
-  // Force refresh cache
   postsCache.timestamp = 0;
   loadPosts();
-  
-  // Scroll to top
   document.querySelector('.feed-col').scrollTop = 0;
-}
-
-// ============================================
-// RSS FEED SYSTEM
-// ============================================
-
-// Stable ID from RSS item URL — keeps reactions linked across fetches
-function rssPostId(url) {
-  let hash = 0;
-  for (let i = 0; i < url.length; i++) {
-    hash = ((hash << 5) - hash) + url.charCodeAt(i);
-    hash |= 0;
-  }
-  return 'rss_' + Math.abs(hash).toString(36);
-}
-
-// Strip HTML tags from RSS description
-function stripHtml(html) {
-  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
-             .replace(/&amp;/g, '&').replace(/&lt;/g, '<')
-             .replace(/&gt;/g, '>').replace(/&quot;/g, '"')
-             .replace(/&#39;/g, "'").trim();
-}
-
-// Extract first image from RSS item content
-function extractRssImage(item) {
-  const src = (item.enclosure?.link) ||
-    (item.content || item.description || '').match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
-    (item.thumbnail) || null;
-  return src || null;
-}
-
-async function loadRssPosts() {
-  const now = Date.now();
-  // Return cache if fresh
-  if (rssPostsCache.data.length > 0 && (now - rssPostsCache.timestamp) < RSS_TTL) {
-    return rssPostsCache.data;
-  }
-
-  try {
-    const res  = await fetch(RSS_PROXY + encodeURIComponent(RSS_FEED_URL));
-    const json = await res.json();
-    if (json.status !== 'ok' || !Array.isArray(json.items)) return rssPostsCache.data;
-
-    const posts = json.items.map(item => {
-      const id        = rssPostId(item.link || item.guid || item.title);
-      const pubDate   = item.pubDate ? new Date(item.pubDate).getTime() : now;
-      const imgUrl    = extractRssImage(item);
-      const snippet   = stripHtml(item.description || item.content || '').slice(0, 280);
-      const title     = item.title || '';
-      const content   = title + (snippet ? '\n\n' + snippet : '');
-
-      return {
-        id,
-        isRss:      true,
-        rssUrl:     item.link || item.guid,
-        userId:     'yong_team',
-        author: {
-          name:   'Yong Team',
-          handle: '@YongTeam',
-          pfp:    YONG_LOGO,
-          wallet: YONG_TREASURY,
-        },
-        content,
-        imageUrls:  imgUrl ? [imgUrl] : [],
-        createdAt:  pubDate,
-        reactions:  { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 },
-      };
-    });
-
-    // Hydrate reactions from Firestore for each RSS post
-    const hydratedPosts = await hydrateRssReactions(posts);
-    rssPostsCache = { data: hydratedPosts, timestamp: now };
-    return hydratedPosts;
-  } catch(e) {
-    console.warn('RSS fetch failed:', e);
-    return rssPostsCache.data;
-  }
-}
-
-// Batch-fetch rssReactions docs for the current page of RSS posts
-async function hydrateRssReactions(rssPosts) {
-  if (!rssPosts.length) return rssPosts;
-  try {
-    const ids  = rssPosts.map(p => p.id);
-    // Firestore 'in' queries support up to 30 items; RSS feeds rarely exceed that
-    const chunks = [];
-    for (let i = 0; i < ids.length; i += 30) chunks.push(ids.slice(i, i + 30));
-
-    const reactionMap = {};
-    for (const chunk of chunks) {
-      const snap = await db.collection('rssReactions')
-        .where(firebase.firestore.FieldPath.documentId(), 'in', chunk)
-        .get();
-      snap.forEach(d => { reactionMap[d.id] = d.data(); });
-    }
-
-    return rssPosts.map(p => {
-      const stored = reactionMap[p.id];
-      if (!stored) return p;
-      return {
-        ...p,
-        reactions: stored.reactions || p.reactions,
-        // carry forward per-user reaction keys
-        ...Object.fromEntries(
-          Object.entries(stored).filter(([k]) => k.startsWith('userReaction_'))
-        ),
-      };
-    });
-  } catch(e) {
-    console.warn('hydrateRssReactions failed:', e);
-    return rssPosts;
-  }
-}
-
-// Merge Firestore posts + RSS posts sorted by date, deduplicated
-function mergeFeedPosts(firestorePosts, rssPosts) {
-  const seen = new Set();
-  return [...firestorePosts, ...rssPosts]
-    .filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; })
-    .sort((a, b) => b.createdAt - a.createdAt);
-}
-
-// Handle reaction on an RSS post — stored in rssReactions/{postId}
-async function handleRssReaction(postId, reactionKey) {
-  if (!PROFILE) { showToast('Please sign in to react.', 'error'); return; }
-
-  const post = allPosts.find(p => p.id === postId);
-  if (!post) return;
-
-  const userReactionKey  = `userReaction_${PROFILE.telegramId}`;
-  const currentReaction  = post[userReactionKey] || null;
-
-  let firestoreUpdate;
-
-  if (currentReaction === reactionKey) {
-    // Unreact
-    post.reactions[reactionKey] = Math.max(0, post.reactions[reactionKey] - 1);
-    delete post[userReactionKey];
-    firestoreUpdate = {
-      reactions:       post.reactions,
-      [userReactionKey]: firebase.firestore.FieldValue.delete(),
-    };
-  } else if (currentReaction) {
-    showToast('You can only unreact, not change your reaction.', 'error');
-    return;
-  } else {
-    post.reactions[reactionKey] = (post.reactions[reactionKey] || 0) + 1;
-    post[userReactionKey] = reactionKey;
-    firestoreUpdate = {
-      reactions:       post.reactions,
-      [userReactionKey]: reactionKey,
-    };
-  }
-
-  // Ad trigger
-  AdManager.onReaction();
-
-  // Update cached copy
-  const idx = rssPostsCache.data.findIndex(p => p.id === postId);
-  if (idx !== -1) rssPostsCache.data[idx] = { ...rssPostsCache.data[idx], ...post };
-
-  renderPosts();
-
-  try {
-    await db.collection('rssReactions').doc(postId).set(firestoreUpdate, { merge: true });
-  } catch(e) {
-    console.error('rssReaction write failed:', e);
-    loadPosts(); // revert
-  }
-}
-
-// ============================================
-// OPEN RSS POST IN TELEGRAM BROWSER
-// ============================================
-function openRssPost(url) {
-  if (!url) return;
-  const tg = window.Telegram?.WebApp;
-  if (tg?.openLink) {
-    tg.openLink(url, { try_instant_view: true });
-  } else {
-    window.open(url, '_blank');
-  }
 }
 
 // ============================================
@@ -2188,17 +1945,13 @@ function handleReaction(postId, reactionKey) {
   const post = allPosts.find(p => p.id === postId);
   if (!post) return;
   
-  // Check if user already reacted
   const userReactionKey = `userReaction_${PROFILE.telegramId}`;
   const currentReaction = post[userReactionKey] || null;
   
-  // Update local state
   if (currentReaction === reactionKey) {
-    // Remove reaction (toggle off)
     post.reactions[reactionKey] = Math.max(0, post.reactions[reactionKey] - 1);
     delete post[userReactionKey];
   } else {
-    // Remove previous reaction if any
     if (currentReaction && post.reactions[currentReaction] > 0) {
       post.reactions[currentReaction] = Math.max(0, post.reactions[currentReaction] - 1);
     }
@@ -2206,113 +1959,16 @@ function handleReaction(postId, reactionKey) {
     post[userReactionKey] = reactionKey;
   }
   
-  // Ad trigger
   AdManager.onReaction();
-
-  // Update UI
   renderPosts();
   
-  // Update Firestore
   db.collection('posts').doc(postId).update({
     reactions: post.reactions
   }).catch(error => {
     console.error('Reaction update error:', error);
-    // Revert on error
     loadPosts();
   });
 }
-
-// ============================================
-// INLINE IMAGE VIDEO PLAYER
-// ============================================
-const _players = {}; // postId → { timer, elapsed, playing, idx, total }
-
-function startPlayer(postId) {
-  const vp = document.getElementById('vp-' + postId);
-  if (!vp) return;
-  const cp = document.getElementById('cp-' + postId);
-  cp.classList.add('hidden');
-  vp.classList.add('playing');
-  if (!_players[postId]) {
-    _players[postId] = { timer: null, elapsed: 0, playing: true, idx: 0, total: parseInt(vp.dataset.total) };
-  } else {
-    _players[postId].playing = true;
-  }
-  _tickPlayer(postId);
-}
-
-function togglePlayer(postId) {
-  const p = _players[postId];
-  if (!p) return;
-  const btn = document.getElementById('ppbtn-' + postId);
-  if (p.playing) {
-    p.playing = false;
-    clearTimeout(p.timer);
-    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-  } else {
-    p.playing = true;
-    btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    _tickPlayer(postId);
-  }
-}
-
-function _tickPlayer(postId) {
-  const p = _players[postId];
-  if (!p || !p.playing) return;
-  clearTimeout(p.timer);
-  const SLIDE_DUR = 5000; // ms per slide
-  const TICK = 100;
-  const totalMs = p.total * SLIDE_DUR;
-
-  const pf = document.getElementById('pf-' + postId);
-  const td = document.getElementById('td-' + postId);
-  const sd = document.getElementById('sd-' + postId);
-  const vp = document.getElementById('vp-' + postId);
-
-  function tick() {
-    if (!_players[postId]?.playing) return;
-    p.elapsed += TICK;
-    if (p.elapsed >= totalMs) {
-      // loop
-      p.elapsed = 0;
-    }
-    const pct = (p.elapsed / totalMs) * 100;
-    if (pf) pf.style.width = pct + '%';
-
-    const elSec = Math.floor(p.elapsed / 1000);
-    const totSec = Math.floor(totalMs / 1000);
-    const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-    if (td) td.textContent = `${fmt(elSec)} / ${fmt(totSec)}`;
-
-    const newIdx = Math.floor(p.elapsed / SLIDE_DUR) % p.total;
-    if (newIdx !== p.idx) {
-      // transition slide
-      const slides = vp.querySelectorAll('.slide');
-      slides[p.idx]?.classList.remove('active');
-      slides[newIdx]?.classList.add('active');
-      // update dots
-      const dots = sd?.querySelectorAll('.slide-dot');
-      dots?.[p.idx]?.classList.remove('active');
-      dots?.[newIdx]?.classList.add('active');
-      p.idx = newIdx;
-    }
-
-    p.timer = setTimeout(tick, TICK);
-  }
-  tick();
-}
-
-function seekPlayer(event, postId) {
-  const p = _players[postId];
-  if (!p) return;
-  const bar = event.currentTarget;
-  const rect = bar.getBoundingClientRect();
-  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-  const totalMs = p.total * 5000;
-  p.elapsed = Math.floor(ratio * totalMs / 100) * 100;
-}
-
-
 
 // ============================================
 // RENDER POSTS
@@ -2340,8 +1996,26 @@ function renderPosts() {
     const hasMultipleImages = images.length > 1;
     const thumbnail = images.length > 0 ? images[0] : null;
     
+    // Check for YouTube URL in content
+    const youtubeMatch = post.content ? extractYouTubeId(post.content) : null;
+    const hasYoutube = youtubeMatch !== null;
+    
+    // For RSS posts, truncate content and add read more
+    let displayContent = post.content || '';
+    let showReadMore = false;
+    let fullContent = post.content || '';
+    
+    if (post.isRss) {
+      // For RSS posts, show a snippet with read more
+      const maxLength = 280;
+      if (displayContent.length > maxLength) {
+        displayContent = displayContent.substring(0, maxLength);
+        showReadMore = true;
+      }
+    }
+    
     return `
-    <article class="tweet" data-post="${post.id}">
+    <article class="tweet" data-post="${post.id}" ${post.isRss ? `style="cursor:pointer"` : ''}>
       <div class="pfp">
         ${post.author?.pfp && post.author.pfp.startsWith('http') 
           ? `<img src="${post.author.pfp}" alt="" />` 
@@ -2355,7 +2029,7 @@ function renderPosts() {
           <span class="time">· ${timeAgo(post.createdAt)}</span>
           <span class="right">
             ${post.isRss ? `
-            <button class="post-menu-btn" onclick="event.stopPropagation();openRssPost('${post.rssUrl}')" title="Read article">
+            <button class="post-menu-btn" onclick="event.stopPropagation();window.open('${post.rssUrl || '#'}','_blank')" title="Read article">
               <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </button>` : `
             <div class="post-menu-wrap">
@@ -2367,26 +2041,18 @@ function renderPosts() {
             </div>`}
           </span>
         </div>
-        ${post.content ? (() => {
-          const ytId = extractYouTubeId(post.content);
-          if (post.isRss) {
-            // RSS: truncate at 180 chars, show ... Read more
-            const plain = post.content;
-            const truncated = plain.length > 180 ? plain.slice(0, 180).trimEnd() + '…' : plain;
-            return `<div class="text">${linkifyText(truncated)}</div>
-              <a class="rss-read-more" href="${post.rssUrl}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()">
-                Read more <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i>
-              </a>`;
-          }
-          return `<div class="text">${linkifyText(post.content)}</div>${ytId ? youtubeEmbedHtml(ytId) : ''}`;
-        })() : ''}
         
-        ${!thumbnail && post.content && !extractYouTubeId(post.content) ? (() => {
-          const url = extractFirstUrl(post.content);
-          return url ? `<div id="lp-${post.id}" class="link-preview-placeholder"></div>` : '';
-        })() : ''}
+        ${displayContent ? `<div class="text">${linkifyText(displayContent)}${showReadMore ? '...' : ''}</div>` : ''}
         
-        ${thumbnail ? (() => {
+        ${showReadMore ? `<span class="read-more" onclick="event.stopPropagation();window.open('${post.rssUrl || '#'}','_blank')">Read more →</span>` : ''}
+        
+        ${hasYoutube ? `
+          <div class="youtube-embed">
+            <iframe src="https://www.youtube-nocookie.com/embed/${youtubeMatch}?autoplay=0&rel=0" allowfullscreen loading="lazy"></iframe>
+          </div>
+        ` : ''}
+        
+        ${!hasYoutube && thumbnail ? (() => {
           const imgs = images;
           const postId = post.id;
           if (!hasMultipleImages) {
@@ -2418,25 +2084,30 @@ function renderPosts() {
           </div>`;
         })() : ''}
         
+        {!hasYoutube && !thumbnail && post.content ? (() => {
+          const url = extractFirstUrl(post.content);
+          return url ? `<div id="lp-${post.id}" class="link-preview-placeholder"></div>` : '';
+        })() : ''}
+        
         <div class="actions-row">
           <div class="reactions" onclick="event.stopPropagation()">
-            <button class="reaction-btn ${userReaction === 'like' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','like')` : `handleReaction('${post.id}','like')`}">
+            <button class="reaction-btn ${userReaction === 'like' ? 'active' : ''}" onclick="handleReaction('${post.id}','like')">
               <span class="emoji">👍</span>
               <span class="count">${reactions.like > 0 ? reactions.like : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'dislike' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','dislike')` : `handleReaction('${post.id}','dislike')`}">
+            <button class="reaction-btn ${userReaction === 'dislike' ? 'active' : ''}" onclick="handleReaction('${post.id}','dislike')">
               <span class="emoji">👎</span>
               <span class="count">${reactions.dislike > 0 ? reactions.dislike : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'celebrate' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','celebrate')` : `handleReaction('${post.id}','celebrate')`}">
+            <button class="reaction-btn ${userReaction === 'celebrate' ? 'active' : ''}" onclick="handleReaction('${post.id}','celebrate')">
               <span class="emoji">🎉</span>
               <span class="count">${reactions.celebrate > 0 ? reactions.celebrate : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'angry' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','angry')` : `handleReaction('${post.id}','angry')`}">
+            <button class="reaction-btn ${userReaction === 'angry' ? 'active' : ''}" onclick="handleReaction('${post.id}','angry')">
               <span class="emoji">😡</span>
               <span class="count">${reactions.angry > 0 ? reactions.angry : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'diamond' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','diamond')` : `handleReaction('${post.id}','diamond')`}">
+            <button class="reaction-btn ${userReaction === 'diamond' ? 'active' : ''}" onclick="handleReaction('${post.id}','diamond')">
               <span class="emoji">💎</span>
               <span class="count">${reactions.diamond > 0 ? reactions.diamond : ''}</span>
             </button>
@@ -2456,9 +2127,40 @@ function renderPosts() {
   allPosts.forEach(post => {
     if (!post.imageUrls?.length && post.content) {
       const url = extractFirstUrl(post.content);
-      if (url) fetchLinkPreview(url, post.id);
+      if (url && !isYouTubeUrl(url)) {
+        fetchLinkPreview(url, post.id);
+      }
     }
   });
+}
+
+// ============================================
+// POST MENU / DELETE
+// ============================================
+function togglePostMenu(e, postId) {
+  e.stopPropagation();
+  const menu = document.getElementById('menu-' + postId);
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.post-menu-dropdown.open').forEach(m => m.classList.remove('open'));
+  if (!isOpen) menu.classList.add('open');
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.post-menu-dropdown.open').forEach(m => m.classList.remove('open'));
+});
+
+async function deletePost(postId) {
+  if (!confirm('Delete this post?')) return;
+  try {
+    await db.collection('posts').doc(postId).delete();
+    allPosts = allPosts.filter(p => p.id !== postId);
+    postsCache.data = allPosts;
+    renderPosts();
+    showToast('Post deleted.', 'success');
+  } catch(e) {
+    showToast('Delete failed: ' + e.message, 'error');
+  }
 }
 
 // ============================================
@@ -2482,22 +2184,51 @@ function timeAgo(timestamp) {
 }
 
 // ============================================
-// YOUTUBE HELPERS
+// LINK PREVIEW
 // ============================================
-function extractYouTubeId(text) {
-  if (!text) return null;
-  // Matches: youtu.be/ID, youtube.com/watch?v=ID, /shorts/ID, /live/ID, /embed/ID
-  const m = text.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|(?:shorts|live|embed)\/))([A-Za-z0-9_-]{11})/);
-  return m ? m[1] : null;
+const OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
+const _ogCache = {};
+
+function extractFirstUrl(text) {
+  const m = text.match(/https?:\/\/[^\s]+/);
+  return m ? m[0] : null;
 }
 
-function youtubeEmbedHtml(videoId) {
-  // nocookie domain, lazy load, allow fullscreen
-  return `<div class="yt-embed-wrap">
-    <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-      allowfullscreen loading="lazy"></iframe>
-  </div>`;
+function linkifyText(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/(https?:\/\/[^\s<]+)/g, (match) => {
+      // Don't linkify if it's a YouTube URL (we handle that separately)
+      if (isYouTubeUrl(match)) return match;
+      return `<a href="${match}" target="_blank" rel="noopener" style="color:#d4b25a;text-decoration:underline;word-break:break-all;">${match}</a>`;
+    });
+}
+
+async function fetchLinkPreview(url, postId) {
+  const el = document.getElementById('lp-' + postId);
+  if (!el) return;
+
+  if (_ogCache[url]) { renderLinkPreview(el, _ogCache[url], url); return; }
+
+  try {
+    const res = await fetch(OG_PROXY + '?url=' + encodeURIComponent(url));
+    const data = await res.json();
+    if (data.error) return;
+    _ogCache[url] = data;
+    renderLinkPreview(el, data, url);
+  } catch(e) { /* silently fail */ }
+}
+
+function renderLinkPreview(el, data, url) {
+  el.outerHTML = `
+    <a class="link-preview${data.image ? '' : ' no-img'}" href="${url}" target="_blank" rel="noopener">
+      ${data.image ? `<img class="lp-img" src="${data.image}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img');this.remove();" />` : ''}
+      <div class="lp-body">
+        <div class="lp-site">${data.siteName || new URL(url).hostname}</div>
+        ${data.title ? `<div class="lp-title">${data.title}</div>` : ''}
+        ${data.description ? `<div class="lp-desc">${data.description}</div>` : ''}
+      </div>
+    </a>`;
 }
 
 // ============================================
@@ -2656,27 +2387,11 @@ document.getElementById('saveWalletBtn').addEventListener('click', async () => {
 document.getElementById('skipWalletBtn').addEventListener('click', hideWalletPopup);
 
 // ============================================
-// LOGOUT
-// ============================================
-document.getElementById('logoutBtn').addEventListener('click', async function() {
-  try {
-    await auth.signOut();
-    showToast('Logged out successfully', 'success');
-    setTimeout(() => {
-      window.location.href = 'https://yongsocial.github.io/sphere/';
-    }, 1000);
-  } catch (error) {
-    showToast('Logout error: ' + error.message, 'error');
-  }
-});
-
-// ============================================
 // AUTH STATE LISTENER
 // ============================================
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     currentUser = user;
-    document.getElementById('logoutBtn').style.display = 'block';
     
     try {
       const profileFound = await loadProfileByGoogleUid(user.uid);
@@ -2712,7 +2427,6 @@ auth.onAuthStateChanged(async (user) => {
       showToast('Error loading profile: ' + error.message, 'error');
     }
   } else {
-    document.getElementById('logoutBtn').style.display = 'none';
     showToast('Please sign in to access the community.', 'error');
     setTimeout(() => {
       window.location.href = 'https://yongsocial.github.io/sphere/';
@@ -2721,77 +2435,90 @@ auth.onAuthStateChanged(async (user) => {
 });
 
 // ============================================
-// POST MENU / DELETE
+// INLINE IMAGE VIDEO PLAYER
 // ============================================
-function togglePostMenu(e, postId) {
-  e.stopPropagation();
-  const menu = document.getElementById('menu-' + postId);
-  if (!menu) return;
-  const isOpen = menu.classList.contains('open');
-  // close all open menus
-  document.querySelectorAll('.post-menu-dropdown.open').forEach(m => m.classList.remove('open'));
-  if (!isOpen) menu.classList.add('open');
+const _players = {};
+
+function startPlayer(postId) {
+  const vp = document.getElementById('vp-' + postId);
+  if (!vp) return;
+  const cp = document.getElementById('cp-' + postId);
+  cp.classList.add('hidden');
+  vp.classList.add('playing');
+  if (!_players[postId]) {
+    _players[postId] = { timer: null, elapsed: 0, playing: true, idx: 0, total: parseInt(vp.dataset.total) };
+  } else {
+    _players[postId].playing = true;
+  }
+  _tickPlayer(postId);
 }
 
-document.addEventListener('click', () => {
-  document.querySelectorAll('.post-menu-dropdown.open').forEach(m => m.classList.remove('open'));
-});
-
-async function deletePost(postId) {
-  if (!confirm('Delete this post?')) return;
-  try {
-    await db.collection('posts').doc(postId).delete();
-    allPosts = allPosts.filter(p => p.id !== postId);
-    postsCache.data = allPosts;
-    renderPosts();
-    showToast('Post deleted.', 'success');
-  } catch(e) {
-    showToast('Delete failed: ' + e.message, 'error');
+function togglePlayer(postId) {
+  const p = _players[postId];
+  if (!p) return;
+  const btn = document.getElementById('ppbtn-' + postId);
+  if (p.playing) {
+    p.playing = false;
+    clearTimeout(p.timer);
+    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+  } else {
+    p.playing = true;
+    btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    _tickPlayer(postId);
   }
 }
 
-// ============================================
-// LINK PREVIEW
-// ============================================
-const OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
-const _ogCache = {};
+function _tickPlayer(postId) {
+  const p = _players[postId];
+  if (!p || !p.playing) return;
+  clearTimeout(p.timer);
+  const SLIDE_DUR = 5000;
+  const TICK = 100;
+  const totalMs = p.total * SLIDE_DUR;
 
-function extractFirstUrl(text) {
-  const m = text.match(/https?:\/\/[^\s]+/);
-  return m ? m[0] : null;
+  const pf = document.getElementById('pf-' + postId);
+  const td = document.getElementById('td-' + postId);
+  const sd = document.getElementById('sd-' + postId);
+  const vp = document.getElementById('vp-' + postId);
+
+  function tick() {
+    if (!_players[postId]?.playing) return;
+    p.elapsed += TICK;
+    if (p.elapsed >= totalMs) {
+      p.elapsed = 0;
+    }
+    const pct = (p.elapsed / totalMs) * 100;
+    if (pf) pf.style.width = pct + '%';
+
+    const elSec = Math.floor(p.elapsed / 1000);
+    const totSec = Math.floor(totalMs / 1000);
+    const fmt = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    if (td) td.textContent = `${fmt(elSec)} / ${fmt(totSec)}`;
+
+    const newIdx = Math.floor(p.elapsed / SLIDE_DUR) % p.total;
+    if (newIdx !== p.idx) {
+      const slides = vp.querySelectorAll('.slide');
+      slides[p.idx]?.classList.remove('active');
+      slides[newIdx]?.classList.add('active');
+      const dots = sd?.querySelectorAll('.slide-dot');
+      dots?.[p.idx]?.classList.remove('active');
+      dots?.[newIdx]?.classList.add('active');
+      p.idx = newIdx;
+    }
+
+    p.timer = setTimeout(tick, TICK);
+  }
+  tick();
 }
 
-function linkifyText(text) {
-  return text
-    .replace(/\n/g, '<br>')
-    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:#d4b25a;text-decoration:underline;word-break:break-all;">$1</a>');
-}
-
-async function fetchLinkPreview(url, postId) {
-  const el = document.getElementById('lp-' + postId);
-  if (!el) return;
-
-  if (_ogCache[url]) { renderLinkPreview(el, _ogCache[url], url); return; }
-
-  try {
-    const res = await fetch(OG_PROXY + '?url=' + encodeURIComponent(url));
-    const data = await res.json();
-    if (data.error) return;
-    _ogCache[url] = data;
-    renderLinkPreview(el, data, url);
-  } catch(e) { /* silently fail */ }
-}
-
-function renderLinkPreview(el, data, url) {
-  el.outerHTML = `
-    <a class="link-preview${data.image ? '' : ' no-img'}" href="${url}" target="_blank" rel="noopener">
-      ${data.image ? `<img class="lp-img" src="${data.image}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-img');this.remove();" />` : ''}
-      <div class="lp-body">
-        <div class="lp-site">${data.siteName || new URL(url).hostname}</div>
-        ${data.title ? `<div class="lp-title">${data.title}</div>` : ''}
-        ${data.description ? `<div class="lp-desc">${data.description}</div>` : ''}
-      </div>
-    </a>`;
+function seekPlayer(event, postId) {
+  const p = _players[postId];
+  if (!p) return;
+  const bar = event.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const totalMs = p.total * 5000;
+  p.elapsed = Math.floor(ratio * totalMs / 100) * 100;
 }
 
 // ============================================
@@ -2807,7 +2534,6 @@ auth.getRedirectResult().then((result) => {
   console.error('[Feed] Redirect error:', error);
 });
 
-// Default view (skip ad counter on init)
 AdManager._skipNext = true;
 switchView('feed');
 </script>
