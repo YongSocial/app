@@ -1940,7 +1940,7 @@ async function loadRssPosts() {
 }
 
 // ============================================
-// LOAD POSTS FROM FIRESTORE
+// LOAD POSTS FROM FIRESTORE - FIXED: Reads user reactions
 // ============================================
 function loadPosts() {
   var now = Date.now();
@@ -1970,6 +1970,12 @@ function loadPosts() {
             createdAt: data.createdAt?.toMillis?.() || Date.now(),
             reactions: data.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 }
           };
+          // Copy all user reaction fields from the document
+          for (var key in data) {
+            if (key.indexOf('userReaction_') === 0) {
+              post[key] = data[key];
+            }
+          }
           newPosts.push(post);
         }
       });
@@ -2029,7 +2035,7 @@ function loadNewPosts() {
 }
 
 // ============================================
-// REACTION HANDLERS - FIXED: Prevents multiple reactions
+// REACTION HANDLERS - FIXED: Properly stores and retrieves user reactions
 // ============================================
 function handleReaction(postId, reactionKey) {
   if (!PROFILE) {
@@ -2067,12 +2073,17 @@ function handleReaction(postId, reactionKey) {
   AdManager.onReaction();
   renderPosts();
   
-  // Update Firestore
+  // Update Firestore - store the user's reaction
   var updateData = {
     reactions: post.reactions
   };
   // Store the user's reaction in the post doc for persistence
-  updateData[userReactionKey] = post[userReactionKey] || null;
+  if (post[userReactionKey]) {
+    updateData[userReactionKey] = post[userReactionKey];
+  } else {
+    // If removing reaction, delete the field
+    updateData[userReactionKey] = firebase.firestore.FieldValue.delete();
+  }
   
   db.collection('posts').doc(postId).update(updateData).catch(function(error) {
     console.error('Reaction update error:', error);
@@ -2081,7 +2092,7 @@ function handleReaction(postId, reactionKey) {
 }
 
 // ============================================
-// RENDER POSTS - FIXED: Reactions and support properly positioned below content
+// RENDER POSTS - FIXED: Shows user reactions properly
 // ============================================
 function renderPosts() {
   var container = document.getElementById('postsContainer');
@@ -2101,7 +2112,9 @@ function renderPosts() {
   for (var i = 0; i < allPosts.length; i++) {
     var post = allPosts[i];
     var reactions = post.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 };
-    var userReaction = post['userReaction_' + (PROFILE?.telegramId)] || null;
+    // Check if the user has reacted - look for the userReaction_ field
+    var userReactionKey = 'userReaction_' + (PROFILE?.telegramId || '');
+    var userReaction = post[userReactionKey] || null;
     var images = post.imageUrls || [];
     var hasMultipleImages = images.length > 1;
     var thumbnail = images.length > 0 ? images[0] : null;
