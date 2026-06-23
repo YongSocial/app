@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
   
+  <!-- Ad SDK -->
+  <script src='//libtl.com/sdk.js' data-zone='11190801' data-sdk='show_11190801'></script>
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
@@ -1445,9 +1448,73 @@ let slideshowImages = [];
 let slideshowIndex = 0;
 
 // ============================================
+// AD MANAGER
+// ============================================
+const AdManager = {
+  COOLDOWN: 60000, // 60 seconds
+  lastAdTime: 0,
+
+  _counters() {
+    const raw = sessionStorage.getItem('_adCtrs');
+    return raw ? JSON.parse(raw) : { reaction: 0, appOpen: 0, post: 0, tabSwitch: 0 };
+  },
+
+  _save(ctrs) {
+    sessionStorage.setItem('_adCtrs', JSON.stringify(ctrs));
+  },
+
+  _canShow() {
+    return Date.now() - this.lastAdTime >= this.COOLDOWN;
+  },
+
+  _show() {
+    if (!this._canShow()) return false;
+    try {
+      if (typeof show_11190801 === 'function') show_11190801();
+    } catch(e) {}
+    this.lastAdTime = Date.now();
+    return true;
+  },
+
+  // Call after every reaction
+  onReaction() {
+    const c = this._counters();
+    c.reaction++;
+    if (c.reaction % 3 === 0) this._show();
+    this._save(c);
+  },
+
+  // Call on app open (after auth resolves)
+  onAppOpen() {
+    const c = this._counters();
+    c.appOpen++;
+    if (c.appOpen % 3 === 0) this._show();
+    this._save(c);
+  },
+
+  // Call after successful post submit (pass postNumber: session post count)
+  onPost() {
+    const c = this._counters();
+    c.post++;
+    if (c.post === 1 || c.post % 3 === 0) this._show();
+    this._save(c);
+  },
+
+  // Call on every dashboard<->profile tab switch
+  onTabSwitch() {
+    if (this._skipNext) { this._skipNext = false; return; }
+    const c = this._counters();
+    c.tabSwitch++;
+    if (c.tabSwitch % 3 === 0) this._show();
+    this._save(c);
+  }
+};
+
+// ============================================
 // VIEW SWITCHING
 // ============================================
 function switchView(view) {
+  AdManager.onTabSwitch();
   const feedView = document.getElementById('feedView');
   const profileView = document.getElementById('profileView');
   
@@ -1844,6 +1911,7 @@ async function submitPost() {
     await db.collection('posts').add(postData);
     
     showToast('Post created successfully! 🎉', 'success');
+    AdManager.onPost();
     closePostPopup();
     
   } catch (error) {
@@ -2087,6 +2155,9 @@ async function handleRssReaction(postId, reactionKey) {
     };
   }
 
+  // Ad trigger
+  AdManager.onReaction();
+
   // Update cached copy
   const idx = rssPostsCache.data.findIndex(p => p.id === postId);
   if (idx !== -1) rssPostsCache.data[idx] = { ...rssPostsCache.data[idx], ...post };
@@ -2144,6 +2215,9 @@ function handleReaction(postId, reactionKey) {
     post[userReactionKey] = reactionKey;
   }
   
+  // Ad trigger
+  AdManager.onReaction();
+
   // Update UI
   renderPosts();
   
@@ -2586,6 +2660,7 @@ auth.onAuthStateChanged(async (user) => {
       const profileFound = await loadProfileByGoogleUid(user.uid);
       if (profileFound) {
         loadCommunityStats();
+        AdManager.onAppOpen();
         await getTONPrice();
         updateProfileView();
         
@@ -2710,7 +2785,8 @@ auth.getRedirectResult().then((result) => {
   console.error('[Feed] Redirect error:', error);
 });
 
-// Default view
+// Default view (skip ad counter on init)
+AdManager._skipNext = true;
 switchView('feed');
 </script>
 </body>
