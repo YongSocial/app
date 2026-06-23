@@ -1430,6 +1430,12 @@ let userWalletAddress = null;
 let currentUser = null;
 let cryptoData = [];
 let allPosts = [];
+let rssPostsCache = { data: [], timestamp: 0 };
+const RSS_TTL       = 15 * 60 * 1000; // 15 min
+const RSS_FEED_URL  = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
+const RSS_PROXY     = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const YONG_LOGO     = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu_7mdnTHeYcrLaxRY0veIDVO6Pb0Pk4ngLKZupHTxufcBF3hwrlsgIxyXHfiDu_NywzKTnvLoGuh37Lv6k1Qkl0Q5HlHFn_sOa6ow8cL2TGXee1kSl6Uohtv_SggJ1UBhfNpUG4ClC1kPMkpC7Am3wX3cmDve4a95uvhmjNfF97aP2-hUVpX_Wk2dh56a/s1200/file_00000000814c720aa68fca8155db1cab_copy_1200x630.png';
+const YONG_TREASURY = 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB';
 let postsCache = { data: [], timestamp: 0 };
 let selectedFiles = [];
 let isSubmitting = false;
@@ -1905,8 +1911,12 @@ function loadPosts() {
       // Update cache
       postsCache.data = allPosts;
       postsCache.timestamp = Date.now();
-      
-      renderPosts();
+
+      // Merge with RSS posts and render
+      loadRssPosts().then(rssPosts => {
+        allPosts = mergeFeedPosts(postsCache.data, rssPosts);
+        renderPosts();
+      }).catch(() => renderPosts());
     }, (error) => {
       console.error('Posts listener error:', error);
     });
@@ -1925,6 +1935,186 @@ function loadNewPosts() {
 }
 
 // ============================================
+// RSS FEED SYSTEM
+// ============================================
+
+// Stable ID from RSS item URL — keeps reactions linked across fetches
+function rssPostId(url) {
+  let hash = 0;
+  for (let i = 0; i < url.length; i++) {
+    hash = ((hash << 5) - hash) + url.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'rss_' + Math.abs(hash).toString(36);
+}
+
+// Strip HTML tags from RSS description
+function stripHtml(html) {
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+             .replace(/&amp;/g, '&').replace(/&lt;/g, '<')
+             .replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+             .replace(/&#39;/g, "'").trim();
+}
+
+// Extract first image from RSS item content
+function extractRssImage(item) {
+  const src = (item.enclosure?.link) ||
+    (item.content || item.description || '').match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+    (item.thumbnail) || null;
+  return src || null;
+}
+
+async function loadRssPosts() {
+  const now = Date.now();
+  // Return cache if fresh
+  if (rssPostsCache.data.length > 0 && (now - rssPostsCache.timestamp) < RSS_TTL) {
+    return rssPostsCache.data;
+  }
+
+  try {
+    const res  = await fetch(RSS_PROXY + encodeURIComponent(RSS_FEED_URL));
+    const json = await res.json();
+    if (json.status !== 'ok' || !Array.isArray(json.items)) return rssPostsCache.data;
+
+    const posts = json.items.map(item => {
+      const id        = rssPostId(item.link || item.guid || item.title);
+      const pubDate   = item.pubDate ? new Date(item.pubDate).getTime() : now;
+      const imgUrl    = extractRssImage(item);
+      const snippet   = stripHtml(item.description || item.content || '').slice(0, 280);
+      const title     = item.title || '';
+      const content   = title + (snippet ? '\n\n' + snippet : '');
+
+      return {
+        id,
+        isRss:      true,
+        rssUrl:     item.link || item.guid,
+        userId:     'yong_team',
+        author: {
+          name:   'Yong Team',
+          handle: '@YongTeam',
+          pfp:    YONG_LOGO,
+          wallet: YONG_TREASURY,
+        },
+        content,
+        imageUrls:  imgUrl ? [imgUrl] : [],
+        createdAt:  pubDate,
+        reactions:  { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 },
+      };
+    });
+
+    // Hydrate reactions from Firestore for each RSS post
+    const hydratedPosts = await hydrateRssReactions(posts);
+    rssPostsCache = { data: hydratedPosts, timestamp: now };
+    return hydratedPosts;
+  } catch(e) {
+    console.warn('RSS fetch failed:', e);
+    return rssPostsCache.data;
+  }
+}
+
+// Batch-fetch rssReactions docs for the current page of RSS posts
+async function hydrateRssReactions(rssPosts) {
+  if (!rssPosts.length) return rssPosts;
+  try {
+    const ids  = rssPosts.map(p => p.id);
+    // Firestore 'in' queries support up to 30 items; RSS feeds rarely exceed that
+    const chunks = [];
+    for (let i = 0; i < ids.length; i += 30) chunks.push(ids.slice(i, i + 30));
+
+    const reactionMap = {};
+    for (const chunk of chunks) {
+      const snap = await db.collection('rssReactions')
+        .where(firebase.firestore.FieldPath.documentId(), 'in', chunk)
+        .get();
+      snap.forEach(d => { reactionMap[d.id] = d.data(); });
+    }
+
+    return rssPosts.map(p => {
+      const stored = reactionMap[p.id];
+      if (!stored) return p;
+      return {
+        ...p,
+        reactions: stored.reactions || p.reactions,
+        // carry forward per-user reaction keys
+        ...Object.fromEntries(
+          Object.entries(stored).filter(([k]) => k.startsWith('userReaction_'))
+        ),
+      };
+    });
+  } catch(e) {
+    console.warn('hydrateRssReactions failed:', e);
+    return rssPosts;
+  }
+}
+
+// Merge Firestore posts + RSS posts sorted by date, deduplicated
+function mergeFeedPosts(firestorePosts, rssPosts) {
+  const seen = new Set();
+  return [...firestorePosts, ...rssPosts]
+    .filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; })
+    .sort((a, b) => b.createdAt - a.createdAt);
+}
+
+// Handle reaction on an RSS post — stored in rssReactions/{postId}
+async function handleRssReaction(postId, reactionKey) {
+  if (!PROFILE) { showToast('Please sign in to react.', 'error'); return; }
+
+  const post = allPosts.find(p => p.id === postId);
+  if (!post) return;
+
+  const userReactionKey  = `userReaction_${PROFILE.telegramId}`;
+  const currentReaction  = post[userReactionKey] || null;
+
+  let firestoreUpdate;
+
+  if (currentReaction === reactionKey) {
+    // Unreact
+    post.reactions[reactionKey] = Math.max(0, post.reactions[reactionKey] - 1);
+    delete post[userReactionKey];
+    firestoreUpdate = {
+      reactions:       post.reactions,
+      [userReactionKey]: firebase.firestore.FieldValue.delete(),
+    };
+  } else if (currentReaction) {
+    showToast('You can only unreact, not change your reaction.', 'error');
+    return;
+  } else {
+    post.reactions[reactionKey] = (post.reactions[reactionKey] || 0) + 1;
+    post[userReactionKey] = reactionKey;
+    firestoreUpdate = {
+      reactions:       post.reactions,
+      [userReactionKey]: reactionKey,
+    };
+  }
+
+  // Update cached copy
+  const idx = rssPostsCache.data.findIndex(p => p.id === postId);
+  if (idx !== -1) rssPostsCache.data[idx] = { ...rssPostsCache.data[idx], ...post };
+
+  renderPosts();
+
+  try {
+    await db.collection('rssReactions').doc(postId).set(firestoreUpdate, { merge: true });
+  } catch(e) {
+    console.error('rssReaction write failed:', e);
+    loadPosts(); // revert
+  }
+}
+
+// ============================================
+// OPEN RSS POST IN TELEGRAM BROWSER
+// ============================================
+function openRssPost(url) {
+  if (!url) return;
+  const tg = window.Telegram?.WebApp;
+  if (tg?.openLink) {
+    tg.openLink(url, { try_instant_view: true });
+  } else {
+    window.open(url, '_blank');
+  }
+}
+
+// ============================================
 // REACTION HANDLERS
 // ============================================
 function handleReaction(postId, reactionKey) {
@@ -1939,36 +2129,28 @@ function handleReaction(postId, reactionKey) {
   // Check if user already reacted
   const userReactionKey = `userReaction_${PROFILE.telegramId}`;
   const currentReaction = post[userReactionKey] || null;
-
-  let firestoreUpdate;
-
+  
+  // Update local state
   if (currentReaction === reactionKey) {
-    // Same button tapped — unreact
+    // Remove reaction (toggle off)
     post.reactions[reactionKey] = Math.max(0, post.reactions[reactionKey] - 1);
     delete post[userReactionKey];
-    firestoreUpdate = {
-      reactions: post.reactions,
-      [userReactionKey]: firebase.firestore.FieldValue.delete()
-    };
-  } else if (currentReaction) {
-    // Already reacted with a different reaction — block the switch
-    showToast('You can only unreact, not change your reaction.', 'error');
-    return;
   } else {
-    // No existing reaction — add new one
+    // Remove previous reaction if any
+    if (currentReaction && post.reactions[currentReaction] > 0) {
+      post.reactions[currentReaction] = Math.max(0, post.reactions[currentReaction] - 1);
+    }
     post.reactions[reactionKey] = (post.reactions[reactionKey] || 0) + 1;
     post[userReactionKey] = reactionKey;
-    firestoreUpdate = {
-      reactions: post.reactions,
-      [userReactionKey]: reactionKey
-    };
   }
-
+  
   // Update UI
   renderPosts();
-
+  
   // Update Firestore
-  db.collection('posts').doc(postId).update(firestoreUpdate).catch(error => {
+  db.collection('posts').doc(postId).update({
+    reactions: post.reactions
+  }).catch(error => {
     console.error('Reaction update error:', error);
     // Revert on error
     loadPosts();
@@ -2094,7 +2276,7 @@ function renderPosts() {
     const thumbnail = images.length > 0 ? images[0] : null;
     
     return `
-    <article class="tweet" data-post="${post.id}">
+    <article class="tweet" data-post="${post.id}" ${post.isRss ? `onclick="openRssPost('${post.rssUrl}')" style="cursor:pointer"` : ''}>
       <div class="pfp">
         ${post.author?.pfp && post.author.pfp.startsWith('http') 
           ? `<img src="${post.author.pfp}" alt="" />` 
@@ -2103,16 +2285,21 @@ function renderPosts() {
       <div class="content">
         <div class="head">
           <span class="name">${post.author?.name || 'Unknown'}</span>
+          ${post.isRss ? `<span class="verified" title="Official Yong Team post">✦</span>` : ''}
           <span class="handle">${post.author?.handle || '@unknown'}</span>
           <span class="time">· ${timeAgo(post.createdAt)}</span>
           <span class="right">
+            ${post.isRss ? `
+            <button class="post-menu-btn" onclick="event.stopPropagation();openRssPost('${post.rssUrl}')" title="Read article">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </button>` : `
             <div class="post-menu-wrap">
               <button class="post-menu-btn" onclick="togglePostMenu(event,'${post.id}')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
               ${post.userId === String(PROFILE?.telegramId) ? `
               <div class="post-menu-dropdown" id="menu-${post.id}">
                 <button onclick="deletePost('${post.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
               </div>` : ''}
-            </div>
+            </div>`}
           </span>
         </div>
         ${post.content ? `<div class="text">${linkifyText(post.content)}</div>` : ''}
@@ -2155,24 +2342,24 @@ function renderPosts() {
         })() : ''}
         
         <div class="actions-row">
-          <div class="reactions">
-            <button class="reaction-btn ${userReaction === 'like' ? 'active' : ''}" onclick="handleReaction('${post.id}', 'like')">
+          <div class="reactions" onclick="event.stopPropagation()">
+            <button class="reaction-btn ${userReaction === 'like' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','like')` : `handleReaction('${post.id}','like')`}">
               <span class="emoji">👍</span>
               <span class="count">${reactions.like > 0 ? reactions.like : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'dislike' ? 'active' : ''}" onclick="handleReaction('${post.id}', 'dislike')">
+            <button class="reaction-btn ${userReaction === 'dislike' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','dislike')` : `handleReaction('${post.id}','dislike')`}">
               <span class="emoji">👎</span>
               <span class="count">${reactions.dislike > 0 ? reactions.dislike : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'celebrate' ? 'active' : ''}" onclick="handleReaction('${post.id}', 'celebrate')">
+            <button class="reaction-btn ${userReaction === 'celebrate' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','celebrate')` : `handleReaction('${post.id}','celebrate')`}">
               <span class="emoji">🎉</span>
               <span class="count">${reactions.celebrate > 0 ? reactions.celebrate : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'angry' ? 'active' : ''}" onclick="handleReaction('${post.id}', 'angry')">
+            <button class="reaction-btn ${userReaction === 'angry' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','angry')` : `handleReaction('${post.id}','angry')`}">
               <span class="emoji">😡</span>
               <span class="count">${reactions.angry > 0 ? reactions.angry : ''}</span>
             </button>
-            <button class="reaction-btn ${userReaction === 'diamond' ? 'active' : ''}" onclick="handleReaction('${post.id}', 'diamond')">
+            <button class="reaction-btn ${userReaction === 'diamond' ? 'active' : ''}" onclick="${post.isRss ? `handleRssReaction('${post.id}','diamond')` : `handleReaction('${post.id}','diamond')`}">
               <span class="emoji">💎</span>
               <span class="count">${reactions.diamond > 0 ? reactions.diamond : ''}</span>
             </button>
