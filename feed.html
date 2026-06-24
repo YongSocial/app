@@ -1315,15 +1315,14 @@ var YONG_TREASURY = 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB';
 var POSTS_CACHE_TTL = 10 * 60 * 1000;
 var RSS_CACHE_TTL = 15 * 60 * 1000;
 var CRYPTO_CACHE_TTL = 60 * 60 * 1000;
-var PROFILE_CACHE_TTL = 5 * 60 * 1000;
+var PROFILE_CACHE_TTL = 60 * 60 * 1000; // 1 hour (only used as fallback)
 
 // ============================================
-// CACHE HELPERS - FIXED: Per-user caching
+// CACHE HELPERS - PER-USER CACHE
 // ============================================
 var currentGoogleUid = null;
 
 var CACHE = {
-  // Helper to get user-specific cache key
   _getUserKey: function(baseKey) {
     if (currentGoogleUid) {
       return baseKey + '_' + currentGoogleUid;
@@ -1334,7 +1333,7 @@ var CACHE = {
   posts: {
     get: function() {
       try {
-        var key = CACHE._getUserKey('ys.posts.cache');
+        var key = this._getUserKey('ys.posts.cache');
         var raw = localStorage.getItem(key);
         if (!raw) return null;
         var data = JSON.parse(raw);
@@ -1345,7 +1344,7 @@ var CACHE = {
     },
     set: function(data) {
       try {
-        var key = CACHE._getUserKey('ys.posts.cache');
+        var key = this._getUserKey('ys.posts.cache');
         localStorage.setItem(key, JSON.stringify({
           data: data,
           timestamp: Date.now(),
@@ -1358,7 +1357,7 @@ var CACHE = {
   rss: {
     get: function() {
       try {
-        var key = CACHE._getUserKey('ys.rss.cache');
+        var key = this._getUserKey('ys.rss.cache');
         var raw = localStorage.getItem(key);
         if (!raw) return null;
         var data = JSON.parse(raw);
@@ -1369,7 +1368,7 @@ var CACHE = {
     },
     set: function(data) {
       try {
-        var key = CACHE._getUserKey('ys.rss.cache');
+        var key = this._getUserKey('ys.rss.cache');
         localStorage.setItem(key, JSON.stringify({
           data: data,
           timestamp: Date.now(),
@@ -1382,7 +1381,7 @@ var CACHE = {
   crypto: {
     get: function() {
       try {
-        var key = CACHE._getUserKey('ys.crypto.cache');
+        var key = this._getUserKey('ys.crypto.cache');
         var raw = localStorage.getItem(key);
         if (!raw) return null;
         var data = JSON.parse(raw);
@@ -1393,7 +1392,7 @@ var CACHE = {
     },
     set: function(data) {
       try {
-        var key = CACHE._getUserKey('ys.crypto.cache');
+        var key = this._getUserKey('ys.crypto.cache');
         localStorage.setItem(key, JSON.stringify({
           data: data,
           timestamp: Date.now(),
@@ -1406,7 +1405,7 @@ var CACHE = {
   profile: {
     get: function() {
       try {
-        var key = CACHE._getUserKey('ys.profile.cache');
+        var key = this._getUserKey('ys.profile.cache');
         var raw = localStorage.getItem(key);
         if (!raw) return null;
         var data = JSON.parse(raw);
@@ -1417,7 +1416,7 @@ var CACHE = {
     },
     set: function(data) {
       try {
-        var key = CACHE._getUserKey('ys.profile.cache');
+        var key = this._getUserKey('ys.profile.cache');
         localStorage.setItem(key, JSON.stringify({
           data: data,
           timestamp: Date.now()
@@ -1426,14 +1425,13 @@ var CACHE = {
     }
   },
   
-  // Clear all cache for current user (useful for logout)
   clearAll: function() {
     try {
       var keys = [
-        CACHE._getUserKey('ys.posts.cache'),
-        CACHE._getUserKey('ys.rss.cache'),
-        CACHE._getUserKey('ys.crypto.cache'),
-        CACHE._getUserKey('ys.profile.cache')
+        this._getUserKey('ys.posts.cache'),
+        this._getUserKey('ys.rss.cache'),
+        this._getUserKey('ys.crypto.cache'),
+        this._getUserKey('ys.profile.cache')
       ];
       for (var i = 0; i < keys.length; i++) {
         localStorage.removeItem(keys[i]);
@@ -1458,6 +1456,7 @@ var unsubscribePosts = null;
 var _ogCache = {};
 var _players = {};
 var isInitialLoad = true;
+var profileLoadInProgress = false;
 
 // ============================================
 // AD MANAGER
@@ -2489,19 +2488,36 @@ function renderLinkPreview(el, data, url) {
 }
 
 // ============================================
-// PROFILE FUNCTIONS - WITH PER-USER CACHE
+// PROFILE FUNCTIONS - ALWAYS FETCH FRESH
 // ============================================
 async function loadProfileByGoogleUid(googleUid) {
-  currentGoogleUid = googleUid; // Set the current user ID for cache keys
+  currentGoogleUid = googleUid;
   
-  // Check cache first - now per-user
+  // Show cached profile immediately for instant UI (but don't rely on it)
   var cached = CACHE.profile.get();
-  if (cached) {
+  if (cached && !profileLoadInProgress) {
     PROFILE = cached;
     userWalletAddress = PROFILE.walletAddress || null;
     updateSidebar();
     updateProfileView();
   }
+  
+  // Always fetch fresh from Firestore to ensure correct profile
+  if (profileLoadInProgress) {
+    // Wait for the in-progress fetch
+    return new Promise(function(resolve) {
+      var check = function() {
+        if (!profileLoadInProgress) {
+          resolve(true);
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
+  
+  profileLoadInProgress = true;
   
   try {
     var linkSnap = await db.collection('userLinks').doc(googleUid).get();
@@ -2511,9 +2527,11 @@ async function loadProfileByGoogleUid(googleUid) {
       if (profileSnap.exists) {
         PROFILE = profileSnap.data();
         userWalletAddress = PROFILE.walletAddress || null;
+        // Update cache with fresh data
         CACHE.profile.set(PROFILE);
         updateSidebar();
         updateProfileView();
+        profileLoadInProgress = false;
         return true;
       }
     }
@@ -2526,13 +2544,24 @@ async function loadProfileByGoogleUid(googleUid) {
       CACHE.profile.set(PROFILE);
       updateSidebar();
       updateProfileView();
+      profileLoadInProgress = false;
       return true;
     }
     
+    profileLoadInProgress = false;
+    // If we have cached profile, keep it
+    if (cached) {
+      return true;
+    }
     return false;
   } catch(error) {
     console.error('Load profile error:', error);
-    return !!cached;
+    profileLoadInProgress = false;
+    // Fallback to cached profile if available
+    if (cached) {
+      return true;
+    }
+    return false;
   }
 }
 
@@ -2640,14 +2669,16 @@ document.getElementById('saveWalletBtn').addEventListener('click', async functio
 document.getElementById('skipWalletBtn').addEventListener('click', hideWalletPopup);
 
 // ============================================
-// AUTH STATE LISTENER
+// AUTH STATE LISTENER - ALWAYS FETCH FRESH PROFILE
 // ============================================
 auth.onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
     
     try {
+      // 🔥 IMPORTANT: Always fetch fresh profile, ignore cache
       var profileFound = await loadProfileByGoogleUid(user.uid);
+      
       if (profileFound) {
         AdManager.onAppOpen();
         await getTONPrice();
@@ -2679,7 +2710,7 @@ auth.onAuthStateChanged(async function(user) {
       showToast('Error loading profile: ' + error.message, 'error');
     }
   } else {
-    // User signed out - clear the user-specific cache
+    // User signed out - clear cache
     currentGoogleUid = null;
     CACHE.clearAll();
     showToast('Please sign in to access the community.', 'error');
