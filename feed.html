@@ -1312,38 +1312,29 @@ var RSS_FEED_URL = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
 var RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
 var OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
 var YONG_TREASURY = 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB';
-var POSTS_LIMIT = 30;
+var POSTS_CACHE_TTL = 10 * 60 * 1000;
+var RSS_CACHE_TTL = 15 * 60 * 1000;
+var CRYPTO_CACHE_TTL = 60 * 60 * 1000;
+var PROFILE_CACHE_TTL = 5 * 60 * 1000;
 
 // ============================================
-// CACHE HELPERS - PER-USER CACHE
+// CACHE HELPERS
 // ============================================
-var currentGoogleUid = null;
-
 var CACHE = {
-  _getUserKey: function(baseKey) {
-    if (currentGoogleUid) {
-      return baseKey + '_' + currentGoogleUid;
-    }
-    return baseKey + '_anonymous';
-  },
-
   posts: {
     get: function() {
       try {
-        var key = this._getUserKey('ys.posts.cache');
-        var raw = localStorage.getItem(key);
+        var raw = localStorage.getItem('ys.posts.cache');
         if (!raw) return null;
         var data = JSON.parse(raw);
         var age = Date.now() - data.timestamp;
-        // Cache is valid for 10 minutes, but we always fetch fresh anyway
-        if (age > 10 * 60 * 1000) return null;
+        if (age > POSTS_CACHE_TTL) return null;
         return data.data;
       } catch(e) { return null; }
     },
     set: function(data) {
       try {
-        var key = this._getUserKey('ys.posts.cache');
-        localStorage.setItem(key, JSON.stringify({
+        localStorage.setItem('ys.posts.cache', JSON.stringify({
           data: data,
           timestamp: Date.now(),
           day: getUTCDay()
@@ -1355,19 +1346,17 @@ var CACHE = {
   rss: {
     get: function() {
       try {
-        var key = this._getUserKey('ys.rss.cache');
-        var raw = localStorage.getItem(key);
+        var raw = localStorage.getItem('ys.rss.cache');
         if (!raw) return null;
         var data = JSON.parse(raw);
         var age = Date.now() - data.timestamp;
-        if (age > 15 * 60 * 1000) return null;
+        if (age > RSS_CACHE_TTL) return null;
         return data.data;
       } catch(e) { return null; }
     },
     set: function(data) {
       try {
-        var key = this._getUserKey('ys.rss.cache');
-        localStorage.setItem(key, JSON.stringify({
+        localStorage.setItem('ys.rss.cache', JSON.stringify({
           data: data,
           timestamp: Date.now(),
           day: getUTCDay()
@@ -1379,19 +1368,17 @@ var CACHE = {
   crypto: {
     get: function() {
       try {
-        var key = this._getUserKey('ys.crypto.cache');
-        var raw = localStorage.getItem(key);
+        var raw = localStorage.getItem('ys.crypto.cache');
         if (!raw) return null;
         var data = JSON.parse(raw);
         var age = Date.now() - data.timestamp;
-        if (age > 60 * 60 * 1000) return null;
+        if (age > CRYPTO_CACHE_TTL) return null;
         return data.data;
       } catch(e) { return null; }
     },
     set: function(data) {
       try {
-        var key = this._getUserKey('ys.crypto.cache');
-        localStorage.setItem(key, JSON.stringify({
+        localStorage.setItem('ys.crypto.cache', JSON.stringify({
           data: data,
           timestamp: Date.now(),
           day: getUTCDay()
@@ -1401,40 +1388,24 @@ var CACHE = {
   },
   
   profile: {
-    get: function() {
+    get: function(uid) {
       try {
-        var key = this._getUserKey('ys.profile.cache');
-        var raw = localStorage.getItem(key);
+        var raw = localStorage.getItem('ys.profile.cache.' + uid);
         if (!raw) return null;
         var data = JSON.parse(raw);
         var age = Date.now() - data.timestamp;
-        if (age > 60 * 60 * 1000) return null;
+        if (age > PROFILE_CACHE_TTL) return null;
         return data.data;
       } catch(e) { return null; }
     },
-    set: function(data) {
+    set: function(uid, data) {
       try {
-        var key = this._getUserKey('ys.profile.cache');
-        localStorage.setItem(key, JSON.stringify({
+        localStorage.setItem('ys.profile.cache.' + uid, JSON.stringify({
           data: data,
           timestamp: Date.now()
         }));
       } catch(e) {}
     }
-  },
-  
-  clearAll: function() {
-    try {
-      var keys = [
-        this._getUserKey('ys.posts.cache'),
-        this._getUserKey('ys.rss.cache'),
-        this._getUserKey('ys.crypto.cache'),
-        this._getUserKey('ys.profile.cache')
-      ];
-      for (var i = 0; i < keys.length; i++) {
-        localStorage.removeItem(keys[i]);
-      }
-    } catch(e) {}
   }
 };
 
@@ -1454,8 +1425,6 @@ var unsubscribePosts = null;
 var _ogCache = {};
 var _players = {};
 var isInitialLoad = true;
-var profileLoadInProgress = false;
-var postsLoadInProgress = false;
 
 // ============================================
 // AD MANAGER
@@ -2052,142 +2021,105 @@ async function loadRssPosts() {
 }
 
 // ============================================
-// LOAD POSTS - CACHE + ALWAYS FETCH FRESH
+// LOAD POSTS FROM FIRESTORE - WITH CACHE
 // ============================================
 function loadPosts() {
-  // 1. Show cached posts immediately
   var cachedPosts = CACHE.posts.get();
   if (cachedPosts && cachedPosts.length > 0) {
     allPosts = cachedPosts;
-    renderPosts();
+    loadRssPosts().then(function(rssPosts) {
+      allPosts = mergeFeedPosts(cachedPosts, rssPosts);
+      renderPosts();
+    }).catch(function() {
+      renderPosts();
+    });
   } else {
-    // Show loading state
     renderPosts();
   }
   
-  // 2. ALWAYS fetch fresh from Firestore
-  if (postsLoadInProgress) return;
-  postsLoadInProgress = true;
-  
-  // Use a one-time get + listener for updates
-  var query = db.collection('posts')
-    .orderBy('createdAt', 'desc')
-    .limit(POSTS_LIMIT);
-  
-  // First, do a one-time fetch to get fresh data immediately
-  query.get().then(function(snapshot) {
-    var freshPosts = [];
-    snapshot.forEach(function(doc) {
-      var data = doc.data();
-      var post = {
-        id: doc.id,
-        userId: data.userId,
-        author: data.author || { name: 'Unknown', handle: '@unknown', pfp: 'Y', wallet: null },
-        content: data.content || '',
-        imageUrls: data.imageUrls || [],
-        createdAt: data.createdAt?.toMillis?.() || Date.now(),
-        reactions: data.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 }
-      };
-      // Copy user reaction fields
-      for (var key in data) {
-        if (key.indexOf('userReaction_') === 0) {
-          post[key] = data[key];
-        }
-      }
-      freshPosts.push(post);
-    });
-    
-    // Check if there are new posts compared to cache
-    if (cachedPosts && cachedPosts.length > 0) {
-      var cachedIds = new Set(cachedPosts.map(function(p) { return p.id; }));
-      var newOnes = freshPosts.filter(function(p) { return !cachedIds.has(p.id); });
-      
-      // Only show banner for posts that aren't the user's own
-      var othersNew = newOnes.filter(function(p) { return p.userId !== String(PROFILE?.telegramId); });
-      if (othersNew.length > 0) {
-        newPostsCount = othersNew.length;
-        document.getElementById('newPostsCount').textContent = newPostsCount;
-        document.getElementById('newPostsBanner').classList.add('show');
-      }
-    }
-    
-    // Update allPosts with fresh data
-    allPosts = freshPosts;
-    CACHE.posts.set(allPosts);
-    renderPosts();
-    postsLoadInProgress = false;
-    
-  }).catch(function(error) {
-    console.warn('Posts fetch error:', error);
-    postsLoadInProgress = false;
-  });
-  
-  // 3. Set up real-time listener for future updates
   if (unsubscribePosts) {
     unsubscribePosts();
   }
   
-  unsubscribePosts = query.onSnapshot(function(snapshot) {
-    var updatedPosts = [];
-    var hasNew = false;
-    
-    snapshot.docChanges().forEach(function(change) {
-      if (change.type === 'added' || change.type === 'modified') {
-        var data = change.doc.data();
-        var post = {
-          id: change.doc.id,
-          userId: data.userId,
-          author: data.author || { name: 'Unknown', handle: '@unknown', pfp: 'Y', wallet: null },
-          content: data.content || '',
-          imageUrls: data.imageUrls || [],
-          createdAt: data.createdAt?.toMillis?.() || Date.now(),
-          reactions: data.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 }
-        };
-        for (var key in data) {
-          if (key.indexOf('userReaction_') === 0) {
-            post[key] = data[key];
+  unsubscribePosts = db.collection('posts')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(function(snapshot) {
+      var newPosts = [];
+      snapshot.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          var data = change.doc.data();
+          var post = {
+            id: change.doc.id,
+            userId: data.userId,
+            author: data.author || { name: 'Unknown', handle: '@unknown', pfp: 'Y', wallet: null },
+            content: data.content || '',
+            imageUrls: data.imageUrls || [],
+            createdAt: data.createdAt?.toMillis?.() || Date.now(),
+            reactions: data.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 }
+          };
+          for (var key in data) {
+            if (key.indexOf('userReaction_') === 0) {
+              post[key] = data[key];
+            }
           }
+          newPosts.push(post);
         }
-        updatedPosts.push(post);
-        if (change.type === 'added') hasNew = true;
+      });
+      
+      if (newPosts.length > 0) {
+        var existingIds = new Set(allPosts.map(function(p) { return p.id; }));
+        var freshNewPosts = newPosts.filter(function(p) { return !existingIds.has(p.id); });
+        
+        if (freshNewPosts.length > 0) {
+          var othersPosts = freshNewPosts.filter(function(p) { return p.userId !== String(PROFILE?.telegramId); });
+          if (othersPosts.length > 0 && allPosts.length > 0) {
+            newPostsCount += othersPosts.length;
+            document.getElementById('newPostsCount').textContent = newPostsCount;
+            document.getElementById('newPostsBanner').classList.add('show');
+          }
+          allPosts = newPosts.concat(allPosts);
+        }
       }
-    });
-    
-    if (updatedPosts.length > 0) {
-      allPosts = updatedPosts;
+      
       CACHE.posts.set(allPosts);
       
-      // Check if there are new posts (not the user's own)
-      if (hasNew && allPosts.length > 0) {
-        // Find posts that don't belong to the current user
-        var userPosts = allPosts.filter(function(p) { return p.userId === String(PROFILE?.telegramId); });
-        var othersCount = allPosts.length - userPosts.length;
-        // Check if we already showed a banner recently
-        if (othersCount > 0 && !document.getElementById('newPostsBanner').classList.contains('show')) {
-          newPostsCount = othersCount;
-          document.getElementById('newPostsCount').textContent = newPostsCount;
-          document.getElementById('newPostsBanner').classList.add('show');
-        }
-      }
-      
-      renderPosts();
+      loadRssPosts().then(function(rssPosts) {
+        allPosts = mergeFeedPosts(allPosts, rssPosts);
+        renderPosts();
+      }).catch(function() {
+        renderPosts();
+      });
+    }, function(error) {
+      console.error('Posts listener error:', error);
+    });
+}
+
+function mergeFeedPosts(firestorePosts, rssPosts) {
+  var seen = new Set();
+  var combined = firestorePosts.concat(rssPosts);
+  var result = [];
+  for (var i = 0; i < combined.length; i++) {
+    var p = combined[i];
+    if (!seen.has(p.id)) {
+      seen.add(p.id);
+      result.push(p);
     }
-  }, function(error) {
-    console.warn('Posts listener error:', error);
+  }
+  result.sort(function(a, b) {
+    return b.createdAt - a.createdAt;
   });
+  return result;
 }
 
 function loadNewPosts() {
   newPostsCount = 0;
   document.getElementById('newPostsBanner').classList.remove('show');
-  // Force a fresh fetch
-  postsLoadInProgress = false;
   loadPosts();
   document.querySelector('.feed-col').scrollTop = 0;
 }
 
 // ============================================
-// REACTION HANDLERS
+// REACTION HANDLERS - Only for Firestore posts
 // ============================================
 function handleReaction(postId, reactionKey) {
   if (!PROFILE) {
@@ -2524,36 +2456,16 @@ function renderLinkPreview(el, data, url) {
 }
 
 // ============================================
-// PROFILE FUNCTIONS - CACHE + ALWAYS FETCH FRESH
+// PROFILE FUNCTIONS - WITH CACHE
 // ============================================
 async function loadProfileByGoogleUid(googleUid) {
-  currentGoogleUid = googleUid;
-  
-  // 1. Show cached profile immediately
-  var cached = CACHE.profile.get();
-  if (cached && !profileLoadInProgress) {
+  var cached = CACHE.profile.get(googleUid);
+  if (cached) {
     PROFILE = cached;
     userWalletAddress = PROFILE.walletAddress || null;
     updateSidebar();
     updateProfileView();
   }
-  
-  // 2. ALWAYS fetch fresh from Firestore
-  if (profileLoadInProgress) {
-    // Wait for the in-progress fetch
-    return new Promise(function(resolve) {
-      var check = function() {
-        if (!profileLoadInProgress) {
-          resolve(true);
-        } else {
-          setTimeout(check, 100);
-        }
-      };
-      check();
-    });
-  }
-  
-  profileLoadInProgress = true;
   
   try {
     var linkSnap = await db.collection('userLinks').doc(googleUid).get();
@@ -2563,10 +2475,9 @@ async function loadProfileByGoogleUid(googleUid) {
       if (profileSnap.exists) {
         PROFILE = profileSnap.data();
         userWalletAddress = PROFILE.walletAddress || null;
-        CACHE.profile.set(PROFILE);
+        CACHE.profile.set(googleUid, PROFILE);
         updateSidebar();
         updateProfileView();
-        profileLoadInProgress = false;
         return true;
       }
     }
@@ -2576,27 +2487,16 @@ async function loadProfileByGoogleUid(googleUid) {
       var doc = querySnap.docs[0];
       PROFILE = doc.data();
       userWalletAddress = PROFILE.walletAddress || null;
-      CACHE.profile.set(PROFILE);
+      CACHE.profile.set(googleUid, PROFILE);
       updateSidebar();
       updateProfileView();
-      profileLoadInProgress = false;
       return true;
     }
     
-    profileLoadInProgress = false;
-    // If we have cached profile, keep it
-    if (cached) {
-      return true;
-    }
     return false;
   } catch(error) {
     console.error('Load profile error:', error);
-    profileLoadInProgress = false;
-    // Fallback to cached profile if available
-    if (cached) {
-      return true;
-    }
-    return false;
+    return !!cached;
   }
 }
 
@@ -2681,7 +2581,7 @@ document.getElementById('saveWalletBtn').addEventListener('click', async functio
     
     PROFILE.walletAddress = wallet;
     userWalletAddress = wallet;
-    CACHE.profile.set(PROFILE);
+    CACHE.profile.set(currentUser.uid, PROFILE);
     updateProfileView();
     
     btn.textContent = '✅ Saved!';
@@ -2708,12 +2608,13 @@ document.getElementById('skipWalletBtn').addEventListener('click', hideWalletPop
 // ============================================
 auth.onAuthStateChanged(async function(user) {
   if (user) {
+    // Reset state so stale profile never bleeds into a new account's session
+    PROFILE = null;
+    userWalletAddress = null;
     currentUser = user;
     
     try {
-      // 🔥 ALWAYS fetch fresh profile
       var profileFound = await loadProfileByGoogleUid(user.uid);
-      
       if (profileFound) {
         AdManager.onAppOpen();
         await getTONPrice();
@@ -2745,9 +2646,6 @@ auth.onAuthStateChanged(async function(user) {
       showToast('Error loading profile: ' + error.message, 'error');
     }
   } else {
-    // User signed out - clear cache
-    currentGoogleUid = null;
-    CACHE.clearAll();
     showToast('Please sign in to access the community.', 'error');
     setTimeout(function() {
       window.location.href = 'https://yongsocial.github.io/sphere/';
