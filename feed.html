@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Yong Social · Community Feed</title>
+  <title>Yong Social · Topic Staking</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -58,6 +58,7 @@
     .btn-brand:hover { filter: brightness(1.05); }
     .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -376,6 +377,49 @@
       font-size: 0.85rem;
     }
     .tweet .read-more:hover { text-decoration: underline; }
+    .tweet .staked-badge {
+      display: inline-block;
+      background: rgba(212, 178, 90, 0.12);
+      border: 1px solid rgba(212, 178, 90, 0.2);
+      border-radius: 9999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.65rem;
+      color: #d4b25a;
+      font-weight: 500;
+      margin-top: 0.4rem;
+    }
+    .tweet .staked-wallet {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      color: #8a93a8;
+      background: #0f1626;
+      border: 1px solid #1f2940;
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .tweet .staked-wallet .wallet-addr {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #e7ecf5;
+      word-break: break-all;
+    }
+    .tweet .staked-wallet .tip-btn {
+      background: #d4b25a;
+      color: #0b1120;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .tweet .staked-wallet .tip-btn:hover { filter: brightness(1.05); }
 
     .youtube-embed {
       margin-top: 0.6rem;
@@ -577,26 +621,6 @@
       min-width: 12px;
     }
 
-    .creator-support {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      color: #d4b25a;
-      font-size: 0.8rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 9999px;
-      border: 1px solid rgba(212, 178, 90, 0.25);
-      background: rgba(212, 178, 90, 0.06);
-      font-weight: 500;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s;
-    }
-    .creator-support:hover {
-      background: rgba(212, 178, 90, 0.15);
-      border-color: rgba(212, 178, 90, 0.5);
-    }
-
     .post-menu-wrap {
       position: relative;
       display: inline-flex;
@@ -695,205 +719,7 @@
     }
     .link-preview.no-img .lp-img { display: none; }
 
-    .post-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.92);
-      backdrop-filter: blur(16px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .post-overlay.active { display: flex; }
-    .post-modal {
-      max-width: 540px;
-      width: 100%;
-      max-height: 92vh;
-      overflow-y: auto;
-      background: linear-gradient(180deg, #0f1626, #0b1120);
-      border: 1px solid #1f2940;
-      border-radius: 20px;
-      padding: 1.5rem;
-    }
-    .post-modal::-webkit-scrollbar { width: 4px; }
-    .post-modal::-webkit-scrollbar-track { background: #0b1120; }
-    .post-modal::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
-    
-    .post-modal .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #1f2940;
-    }
-    .post-modal .modal-header .header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .post-modal .modal-header .avatar-sm {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #d4b25a, #22c984);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.8rem;
-      color: #0b1120;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .post-modal .modal-header .avatar-sm img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .post-modal .modal-header h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #e7ecf5;
-    }
-    .post-modal .modal-header .close-btn {
-      background: none;
-      border: none;
-      color: #8a93a8;
-      font-size: 1.4rem;
-      cursor: pointer;
-      transition: color 0.2s;
-      padding: 0.2rem;
-      line-height: 1;
-    }
-    .post-modal .modal-header .close-btn:hover { color: #e7ecf5; }
-    
-    .post-modal textarea {
-      width: 100%;
-      min-height: 100px;
-      background: transparent;
-      border: none;
-      padding: 0.25rem 0;
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      color: #e7ecf5;
-      outline: none;
-      resize: vertical;
-      line-height: 1.6;
-    }
-    .post-modal textarea::placeholder { color: #5a6378; }
-    .post-modal .char-count {
-      font-size: 0.7rem;
-      color: #5a6378;
-      text-align: right;
-      margin-top: 0.25rem;
-    }
-    .post-modal .char-count.over { color: #ef4444; }
-
-    .post-modal .image-preview-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-    .post-modal .image-preview-item {
-      position: relative;
-      aspect-ratio: 1;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #121a2d;
-      border: 1px solid #1f2940;
-    }
-    .post-modal .image-preview-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .post-modal .image-preview-item .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: rgba(239, 68, 68, 0.92);
-      border: none;
-      color: #fff;
-      font-size: 0.65rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-    .post-modal .image-preview-item .remove-btn:hover { background: #ef4444; }
-
-    .post-modal .upload-progress {
-      margin-top: 0.75rem;
-      display: none;
-    }
-    .post-modal .upload-progress.show { display: block; }
-    .post-modal .upload-progress .progress-bar {
-      width: 100%;
-      height: 4px;
-      background: #1f2940;
-      border-radius: 9999px;
-      overflow: hidden;
-    }
-    .post-modal .upload-progress .progress-bar .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #d4b25a, #22c984);
-      border-radius: 9999px;
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-    .post-modal .upload-progress .progress-text {
-      font-size: 0.75rem;
-      color: #8a93a8;
-      margin-top: 0.4rem;
-      text-align: center;
-    }
-
-    .post-modal .post-actions {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid #1f2940;
-      flex-wrap: wrap;
-    }
-    .post-modal .post-actions .btn-secondary {
-      background: #121a2d;
-      border: 1px solid #1f2940;
-      color: #e7ecf5;
-      border-radius: 9999px;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: 'Inter', sans-serif;
-    }
-    .post-modal .post-actions .btn-secondary:hover {
-      border-color: #d4b25a;
-    }
-    .post-modal .post-actions .btn-secondary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .post-modal .post-actions .btn-brand {
-      padding: 0.5rem 1.25rem;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-left: auto;
-    }
-
+    /* Profile Modal with Topic Staking */
     #profileView {
       display: none;
       padding: 2rem 1.5rem;
@@ -951,6 +777,71 @@
       border-radius: 6px;
       border: 1px solid #1f2940;
     }
+
+    /* Topic Staking Section */
+    .topic-staking {
+      background: #0f1626;
+      border: 1px solid #1f2940;
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      max-width: 500px;
+    }
+    .topic-staking h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .topic-staking .sub {
+      font-size: 0.8rem;
+      color: #8a93a8;
+      margin-bottom: 1rem;
+    }
+    .topic-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    .topic-tag {
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #8a93a8;
+      font-family: 'Inter', sans-serif;
+    }
+    .topic-tag:hover {
+      border-color: #d4b25a;
+    }
+    .topic-tag.selected {
+      border-color: #d4b25a;
+      background: rgba(212, 178, 90, 0.12);
+      color: #d4b25a;
+    }
+    .topic-tag.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .topic-staking .save-btn {
+      background: #d4b25a;
+      color: #0b1120;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.4rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: filter 0.15s;
+    }
+    .topic-staking .save-btn:hover { filter: brightness(1.05); }
+    .topic-staking .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .bottomnav {
       display: none;
@@ -1014,80 +905,6 @@
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    .wallet-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.95);
-      backdrop-filter: blur(12px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .wallet-overlay.active { display: flex; }
-    .wallet-modal {
-      max-width: 440px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .wallet-status {
-      transition: all 0.3s ease;
-      border: 2px solid #1f2940;
-      border-radius: 18px;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .wallet-status .icon { font-size: 3.5rem; margin-bottom: 0.75rem; }
-    .wallet-status h2 { font-size: 1.25rem; font-weight: 700; color: #e7ecf5; }
-    .wallet-status p { font-size: 0.9rem; color: #8a93a8; margin-top: 0.5rem; line-height: 1.5; }
-    .wallet-input-group { margin-top: 1.25rem; text-align: left; }
-    .wallet-input-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #8a93a8; margin-bottom: 0.4rem; }
-    .wallet-input-group input {
-      width: 100%;
-      background: #121a2d;
-      border: 1px solid #1f2940;
-      border-radius: 14px;
-      padding: 0.85rem 1rem;
-      font-size: 0.95rem;
-      font-family: 'Inter', monospace;
-      color: #e7ecf5;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .wallet-input-group input:focus { border-color: #d4b25a; }
-    .wallet-input-group input::placeholder { color: #5a6378; }
-    .wallet-error { font-size: 0.8rem; color: #ef4444; margin-top: 0.5rem; display: none; }
-    .wallet-error.visible { display: block; }
-    .wallet-actions { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.25rem; }
-    .wallet-actions .btn-primary {
-      background: #d4b25a;
-      color: #0b1120;
-      font-weight: 700;
-      font-size: 1rem;
-      border: none;
-      border-radius: 9999px;
-      padding: 0.85rem;
-      cursor: pointer;
-      transition: filter 0.15s;
-      width: 100%;
-      font-family: 'Inter', sans-serif;
-    }
-    .wallet-actions .btn-primary:hover { filter: brightness(1.05); }
-    .wallet-actions .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .wallet-actions .btn-skip {
-      background: transparent;
-      color: #8a93a8;
-      font-size: 0.85rem;
-      border: none;
-      padding: 0.5rem;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .wallet-actions .btn-skip:hover { color: #e7ecf5; }
-    .wallet-footer { font-size: 0.7rem; color: #5a6378; text-align: center; margin-top: 0.75rem; }
-
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -1111,8 +928,7 @@
       .reactions { gap: 0.3rem; }
       .reaction-btn { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
       .reaction-btn .emoji { font-size: 0.85rem; }
-      .post-modal { padding: 1.25rem; }
-      .post-images { aspect-ratio: 4 / 5; }
+      .topic-staking { max-width: 100%; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -1150,60 +966,6 @@
   🔄 <span id="newPostsCount">0</span> new posts - Tap to load
 </div>
 
-<!-- POST POPUP -->
-<div id="postOverlay" class="post-overlay">
-  <div class="post-modal">
-    <div class="modal-header">
-      <div class="header-left">
-        <div class="avatar-sm" id="postPopupAvatar">Y</div>
-        <h2 id="postPopupName">Create Post</h2>
-      </div>
-      <button class="close-btn" onclick="closePostPopup()">✕</button>
-    </div>
-    
-    <textarea id="postContent" placeholder="What's on your mind? (max 500 characters)" maxlength="500"></textarea>
-    <div class="char-count"><span id="charCount">0</span>/500</div>
-    
-    <div id="imagePreviewGrid" class="image-preview-grid"></div>
-    
-    <div id="uploadProgress" class="upload-progress">
-      <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-      <div id="progressText" class="progress-text">Uploading 0/0</div>
-    </div>
-    
-    <div class="post-actions">
-      <button class="btn-secondary" onclick="selectImages()">
-        <i class="fa-solid fa-image"></i> Add Images (max 5)
-      </button>
-      <button id="postSubmitBtn" class="btn-brand" onclick="submitPost()">
-        <i class="fa-solid fa-paper-plane"></i> Post
-      </button>
-    </div>
-    <input type="file" id="fileInput" accept="image/*" multiple style="display:none" onchange="handleFileSelect(event)" />
-  </div>
-</div>
-
-<!-- WALLET ADDRESS POPUP -->
-<div id="walletOverlay" class="wallet-overlay">
-  <div class="wallet-modal card">
-    <div class="wallet-status">
-      <div class="icon">💎</div>
-      <h2>Enter Your TON Wallet Address</h2>
-      <p>To receive creator support, please enter your TON wallet address. This will be saved to your profile.</p>
-      <div class="wallet-input-group">
-        <label for="walletInput">Wallet Address</label>
-        <input id="walletInput" type="text" placeholder="UQ… or EQ…" />
-        <div id="walletError" class="wallet-error">Please enter a valid TON wallet address.</div>
-      </div>
-      <div class="wallet-actions">
-        <button id="saveWalletBtn" class="btn-primary">💎 Save Wallet Address</button>
-        <button id="skipWalletBtn" class="btn-skip">Skip for now</button>
-      </div>
-      <div class="wallet-footer">Your wallet address is stored securely in your profile.</div>
-    </div>
-  </div>
-</div>
-
 <!-- MAIN APP -->
 <div class="app-shell">
 
@@ -1213,9 +975,6 @@
     <button class="nav-item active" onclick="switchView('feed')"><i class="fa-solid fa-house"></i> Home</button>
     <button class="nav-item" onclick="switchView('profile')"><i class="fa-regular fa-user"></i> Profile</button>
     <button class="nav-item" onclick="window.location.href='https://yongsocial.github.io/sphere/'"><i class="fa-solid fa-arrow-left"></i> Back to App</button>
-    <button class="nav-item" onclick="openPostPopup()" style="color:#d4b25a;border:1px solid #d4b25a;margin-top:0.5rem;">
-      <i class="fa-solid fa-pen"></i> Post
-    </button>
 
     <div class="sidebar-profile" id="sidebarProfile">
       <div id="sidebarAvatar" class="avatar">Y</div>
@@ -1260,7 +1019,7 @@
           <span class="value" id="profileTgId">—</span>
         </div>
         <div class="row">
-          <span class="label">Wallet Address</span>
+          <span class="label">Solana Wallet</span>
           <span class="value" id="profileWallet">Not set</span>
         </div>
         <div class="row">
@@ -1268,12 +1027,21 @@
           <span class="value" id="profileStatus">—</span>
         </div>
       </div>
+
+      <!-- Topic Staking Section -->
+      <div class="topic-staking" id="topicStaking">
+        <h3>💎 Stake Your Topics</h3>
+        <div class="sub">Select up to 5 topics you want to stake your wallet to. When articles are published with these tags, your wallet will be eligible for tips.</div>
+        <div id="topicTags" class="topic-tag-list"></div>
+        <div style="font-size:0.7rem;color:#5a6378;margin-bottom:0.5rem;"><span id="selectedCount">0</span>/5 selected</div>
+        <button class="save-btn" id="saveTopicsBtn" onclick="saveStakedTopics()">💾 Save Topics</button>
+      </div>
     </div>
   </section>
 </div>
 
 <!-- MOBILE FAB -->
-<button class="fab" onclick="openPostPopup()"><i class="fa-solid fa-feather"></i></button>
+<button class="fab" onclick="switchView('profile')"><i class="fa-regular fa-user"></i></button>
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="bottomnav">
@@ -1308,66 +1076,35 @@ var auth = firebase.auth();
 // ============================================
 // CONSTANTS
 // ============================================
-var IMGBB_API_KEY = '1847c509e303548abdab86c734a109b2';
-var MAX_IMAGES = 5;
-var MAX_CHARS = 500;
 var RSS_FEED_URL = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
 var RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
 var OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
-var YONG_TREASURY = 'UQDf2YHL2A8EpYO7QO233qUmqOsH7NEj5ZAY7HvwtikQunwB';
+var MAX_STAKED_TOPICS = 5;
 var POSTS_CACHE_TTL = 10 * 60 * 1000;
 var RSS_CACHE_TTL = 15 * 60 * 1000;
 var CRYPTO_CACHE_TTL = 60 * 60 * 1000;
-var PROFILE_CACHE_TTL = 5 * 60 * 1000;
+
+// ============================================
+// STATE
+// ============================================
+var PROFILE = null;
+var currentUser = null;
+var cryptoData = [];
+var allPosts = [];
+var stakedTopics = [];
+var availableTags = [];
+var selectedTopics = [];
+var postsCache = { data: [], timestamp: 0 };
+var rssPostsCache = { data: [], timestamp: 0 };
+var _ogCache = {};
+var _players = {};
+var isInitialLoad = true;
+var unsubscribePosts = null;
 
 // ============================================
 // CACHE HELPERS
 // ============================================
 var CACHE = {
-  posts: {
-    get: function() {
-      try {
-        var raw = localStorage.getItem('ys.posts.cache');
-        if (!raw) return null;
-        var data = JSON.parse(raw);
-        var age = Date.now() - data.timestamp;
-        if (age > POSTS_CACHE_TTL) return null;
-        return data.data;
-      } catch(e) { return null; }
-    },
-    set: function(data) {
-      try {
-        localStorage.setItem('ys.posts.cache', JSON.stringify({
-          data: data,
-          timestamp: Date.now(),
-          day: getUTCDay()
-        }));
-      } catch(e) {}
-    }
-  },
-  
-  rss: {
-    get: function() {
-      try {
-        var raw = localStorage.getItem('ys.rss.cache');
-        if (!raw) return null;
-        var data = JSON.parse(raw);
-        var age = Date.now() - data.timestamp;
-        if (age > RSS_CACHE_TTL) return null;
-        return data.data;
-      } catch(e) { return null; }
-    },
-    set: function(data) {
-      try {
-        localStorage.setItem('ys.rss.cache', JSON.stringify({
-          data: data,
-          timestamp: Date.now(),
-          day: getUTCDay()
-        }));
-      } catch(e) {}
-    }
-  },
-  
   crypto: {
     get: function() {
       try {
@@ -1389,7 +1126,6 @@ var CACHE = {
       } catch(e) {}
     }
   },
-  
   profile: {
     get: function(uid) {
       try {
@@ -1397,7 +1133,7 @@ var CACHE = {
         if (!raw) return null;
         var data = JSON.parse(raw);
         var age = Date.now() - data.timestamp;
-        if (age > PROFILE_CACHE_TTL) return null;
+        if (age > 5 * 60 * 1000) return null;
         return data.data;
       } catch(e) { return null; }
     },
@@ -1413,86 +1149,20 @@ var CACHE = {
 };
 
 // ============================================
-// STATE
+// GET TELEGRAM USER ID
 // ============================================
-var PROFILE = null;
-var TON_PRICE = 2.50;
-var userWalletAddress = null;
-var currentUser = null;
-var cryptoData = [];
-var allPosts = [];
-var selectedFiles = [];
-var isSubmitting = false;
-var newPostsCount = 0;
-var unsubscribePosts = null;
-var _ogCache = {};
-var _players = {};
-var isInitialLoad = true;
-
-// ============================================
-// AD MANAGER
-// ============================================
-var AdManager = {
-  COOLDOWN: 60000,
-  lastAdTime: 0,
-
-  _counters: function() {
-    var raw = sessionStorage.getItem('_adCtrs');
-    return raw ? JSON.parse(raw) : { reaction: 0, appOpen: 0, post: 0, tabSwitch: 0 };
-  },
-
-  _save: function(ctrs) {
-    sessionStorage.setItem('_adCtrs', JSON.stringify(ctrs));
-  },
-
-  _canShow: function() {
-    return Date.now() - this.lastAdTime >= this.COOLDOWN;
-  },
-
-  _show: function() {
-    if (!this._canShow()) return false;
-    try {
-      if (typeof show_11190801 === 'function') show_11190801();
-    } catch(e) {}
-    this.lastAdTime = Date.now();
-    return true;
-  },
-
-  onReaction: function() {
-    var c = this._counters();
-    c.reaction++;
-    if (c.reaction % 3 === 0) this._show();
-    this._save(c);
-  },
-
-  onAppOpen: function() {
-    var c = this._counters();
-    c.appOpen++;
-    if (c.appOpen % 3 === 0) this._show();
-    this._save(c);
-  },
-
-  onPost: function() {
-    var c = this._counters();
-    c.post++;
-    if (c.post === 1 || c.post % 3 === 0) this._show();
-    this._save(c);
-  },
-
-  onTabSwitch: function() {
-    if (this._skipNext) { this._skipNext = false; return; }
-    var c = this._counters();
-    c.tabSwitch++;
-    if (c.tabSwitch % 3 === 0) this._show();
-    this._save(c);
-  }
-};
+function getTelegramUserId() {
+  try {
+    var tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+    if (tgUser && tgUser.id) return String(tgUser.id);
+  } catch(e) {}
+  return null;
+}
 
 // ============================================
 // VIEW SWITCHING
 // ============================================
 function switchView(view) {
-  AdManager.onTabSwitch();
   var feedView = document.getElementById('feedView');
   var profileView = document.getElementById('profileView');
   
@@ -1503,34 +1173,32 @@ function switchView(view) {
     document.querySelectorAll('.nav-link').forEach(function(el) { el.classList.remove('active'); });
     var feedNav = document.querySelector('.nav-link[data-view="feed"]');
     if (feedNav) feedNav.classList.add('active');
-    
-    var sidebarItems = document.querySelectorAll('.sidebar .nav-item');
-    sidebarItems.forEach(function(el) { el.classList.remove('active'); });
-    if (sidebarItems[0]) sidebarItems[0].classList.add('active');
-    
-    var bottomItems = document.querySelectorAll('.bottomnav .nav-item');
-    bottomItems.forEach(function(el) { el.classList.remove('active'); });
-    if (bottomItems[0]) bottomItems[0].classList.add('active');
-    
+    document.querySelectorAll('.sidebar .nav-item').forEach(function(el) { el.classList.remove('active'); });
+    if (document.querySelector('.sidebar .nav-item:first-child')) {
+      document.querySelector('.sidebar .nav-item:first-child').classList.add('active');
+    }
+    document.querySelectorAll('.bottomnav .nav-item').forEach(function(el) { el.classList.remove('active'); });
+    if (document.querySelector('.bottomnav .nav-item:first-child')) {
+      document.querySelector('.bottomnav .nav-item:first-child').classList.add('active');
+    }
     if (PROFILE) updateProfileView();
   } else if (view === 'profile') {
     feedView.style.display = 'none';
     profileView.style.display = 'block';
     profileView.classList.add('active');
-    
     document.querySelectorAll('.nav-link').forEach(function(el) { el.classList.remove('active'); });
     var profileNav = document.querySelector('.nav-link[data-view="profile"]');
     if (profileNav) profileNav.classList.add('active');
-    
-    var sidebarItems2 = document.querySelectorAll('.sidebar .nav-item');
-    sidebarItems2.forEach(function(el) { el.classList.remove('active'); });
-    if (sidebarItems2[1]) sidebarItems2[1].classList.add('active');
-    
-    var bottomItems2 = document.querySelectorAll('.bottomnav .nav-item');
-    bottomItems2.forEach(function(el) { el.classList.remove('active'); });
-    if (bottomItems2[1]) bottomItems2[1].classList.add('active');
-    
+    document.querySelectorAll('.sidebar .nav-item').forEach(function(el) { el.classList.remove('active'); });
+    if (document.querySelector('.sidebar .nav-item:nth-child(2)')) {
+      document.querySelector('.sidebar .nav-item:nth-child(2)').classList.add('active');
+    }
+    document.querySelectorAll('.bottomnav .nav-item').forEach(function(el) { el.classList.remove('active'); });
+    if (document.querySelector('.bottomnav .nav-item:nth-child(2)')) {
+      document.querySelector('.bottomnav .nav-item:nth-child(2)').classList.add('active');
+    }
     if (PROFILE) updateProfileView();
+    renderTopicTags();
   }
 }
 
@@ -1550,8 +1218,8 @@ function updateProfileView() {
   document.getElementById('profileTgId').textContent = PROFILE.telegramId;
   
   var walletEl = document.getElementById('profileWallet');
-  if (PROFILE.walletAddress) {
-    walletEl.innerHTML = '<span class="wallet-address">' + PROFILE.walletAddress + '</span>';
+  if (PROFILE.solanaWallet) {
+    walletEl.innerHTML = '<span class="wallet-address">' + PROFILE.solanaWallet + '</span>';
   } else {
     walletEl.textContent = 'Not set';
     walletEl.style.color = '#8a93a8';
@@ -1565,6 +1233,14 @@ function updateProfileView() {
     statusEl.innerHTML = '⏳ Pending Verification';
     statusEl.style.color = '#d4b25a';
   }
+  
+  // Load staked topics
+  if (PROFILE.stakedTopics) {
+    stakedTopics = PROFILE.stakedTopics;
+    selectedTopics = stakedTopics.slice();
+  }
+  
+  renderTopicTags();
 }
 
 // ============================================
@@ -1585,48 +1261,11 @@ function showToast(message, type) {
 }
 
 // ============================================
-// TON PRICE SERVICE
+// TON PRICE SERVICE (Kept for backward compatibility)
 // ============================================
 function getUTCDay() {
   var now = new Date();
   return now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0') + '-' + String(now.getUTCDate()).padStart(2,'0');
-}
-
-async function getTONPrice() {
-  try {
-    var doc = await db.collection('config').doc('tonPriceCache').get();
-    if (doc.exists) {
-      var data = doc.data();
-      if (data.day === getUTCDay() && data.price) {
-        var age = Date.now() - (data.timestamp || 0);
-        if (age < 86400000) {
-          TON_PRICE = data.price;
-          return data.price;
-        }
-      }
-    }
-    var response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
-    if (!response.ok) throw new Error('Price fetch failed');
-    var data = await response.json();
-    var price = data['the-open-network']?.usd;
-    if (!price || typeof price !== 'number') throw new Error('Invalid price data');
-    TON_PRICE = price;
-    try {
-      await db.collection('config').doc('tonPriceCache').set({
-        price: price,
-        day: getUTCDay(),
-        timestamp: Date.now()
-      }, { merge: true });
-    } catch(e) {}
-    return price;
-  } catch(error) {
-    console.warn('[TON Price] Error:', error);
-    return TON_PRICE || 2.50;
-  }
-}
-
-function getSupportAmount() {
-  return (1 / TON_PRICE).toFixed(6);
 }
 
 // ============================================
@@ -1642,22 +1281,6 @@ async function fetchTickerData() {
   }
   
   try {
-    var cacheDoc = await db.collection('config').doc('cryptoCache').get();
-    var today = getUTCDay();
-    
-    if (cacheDoc.exists) {
-      var data = cacheDoc.data();
-      if (data.day === today && data.prices && data.prices.length > 0) {
-        var age = Date.now() - (data.timestamp || 0);
-        if (age < 86400000) {
-          cryptoData = data.prices;
-          CACHE.crypto.set(cryptoData);
-          renderTicker();
-          return;
-        }
-      }
-    }
-    
     if (!cached || cached.length === 0) {
       track.innerHTML = '<div class="ticker-loading"><div class="spinner"></div> Loading crypto prices...</div>';
     }
@@ -1682,15 +1305,6 @@ async function fetchTickerData() {
     });
     
     CACHE.crypto.set(cryptoData);
-    
-    try {
-      await db.collection('config').doc('cryptoCache').set({
-        prices: cryptoData,
-        day: today,
-        timestamp: Date.now()
-      }, { merge: true });
-    } catch(e) {}
-    
     renderTicker();
     
   } catch(error) {
@@ -1741,218 +1355,6 @@ function isYouTubeUrl(url) {
 }
 
 // ============================================
-// POST FUNCTIONS
-// ============================================
-function openPostPopup() {
-  var overlay = document.getElementById('postOverlay');
-  overlay.classList.add('active');
-  
-  var avatarEl = document.getElementById('postPopupAvatar');
-  var nameEl = document.getElementById('postPopupName');
-  
-  if (PROFILE) {
-    if (PROFILE.photoUrl) {
-      avatarEl.innerHTML = '<img src="' + PROFILE.photoUrl + '" alt="" />';
-    } else {
-      avatarEl.textContent = (PROFILE.displayName || 'Y').slice(0, 1).toUpperCase();
-    }
-    nameEl.textContent = PROFILE.displayName || 'Create Post';
-  }
-  
-  document.getElementById('postContent').value = '';
-  document.getElementById('charCount').textContent = '0';
-  selectedFiles = [];
-  document.getElementById('imagePreviewGrid').innerHTML = '';
-  document.getElementById('uploadProgress').classList.remove('show');
-  document.getElementById('postSubmitBtn').disabled = false;
-  document.getElementById('postSubmitBtn').innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
-  isSubmitting = false;
-}
-
-function closePostPopup() {
-  document.getElementById('postOverlay').classList.remove('active');
-}
-
-function selectImages() {
-  document.getElementById('fileInput').click();
-}
-
-function handleFileSelect(event) {
-  var files = event.target.files;
-  var remaining = MAX_IMAGES - selectedFiles.length;
-  
-  if (files.length > remaining) {
-    showToast('You can only select ' + remaining + ' more image' + (remaining > 1 ? 's' : '') + '.', 'error');
-    return;
-  }
-  
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    if (file.size > 32 * 1024 * 1024) {
-      showToast('Image too large (max 32MB).', 'error');
-      continue;
-    }
-    selectedFiles.push(file);
-  }
-  
-  renderImagePreviews();
-  event.target.value = '';
-}
-
-function renderImagePreviews() {
-  var grid = document.getElementById('imagePreviewGrid');
-  grid.innerHTML = selectedFiles.map(function(file, index) {
-    return '<div class="image-preview-item">' +
-      '<img src="' + URL.createObjectURL(file) + '" alt="Preview ' + (index + 1) + '" />' +
-      '<button class="remove-btn" onclick="removeImage(' + index + ')">✕</button>' +
-      '</div>';
-  }).join('');
-}
-
-function removeImage(index) {
-  selectedFiles.splice(index, 1);
-  renderImagePreviews();
-}
-
-document.getElementById('postContent').addEventListener('input', function() {
-  var count = this.value.length;
-  document.getElementById('charCount').textContent = count;
-  var charEl = document.getElementById('charCount');
-  if (count > MAX_CHARS) {
-    charEl.classList.add('over');
-  } else {
-    charEl.classList.remove('over');
-  }
-});
-
-// ============================================
-// IMAGE UPLOAD TO IMGBB
-// ============================================
-async function uploadImageToImgBB(file) {
-  return new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = async function(e) {
-      try {
-        var base64 = e.target.result.split(',')[1];
-        var formData = new FormData();
-        formData.append('key', IMGBB_API_KEY);
-        formData.append('image', base64);
-        
-        var response = await fetch('https://api.imgbb.com/1/upload', {
-          method: 'POST',
-          body: formData
-        });
-        
-        var data = await response.json();
-        if (data.success) {
-          resolve(data.data.url);
-        } else {
-          reject(new Error(data.error?.message || 'Upload failed'));
-        }
-      } catch(error) {
-        reject(error);
-      }
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ============================================
-// SUBMIT POST
-// ============================================
-async function submitPost() {
-  if (isSubmitting) return;
-  
-  var content = document.getElementById('postContent').value.trim();
-  if (!content && selectedFiles.length === 0) {
-    showToast('Please write something or add an image.', 'error');
-    return;
-  }
-  
-  if (!PROFILE) {
-    showToast('Profile not loaded. Please try again.', 'error');
-    return;
-  }
-  
-  isSubmitting = true;
-  var submitBtn = document.getElementById('postSubmitBtn');
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '⏳ Posting...';
-  
-  var progressContainer = document.getElementById('uploadProgress');
-  var progressFill = document.getElementById('progressFill');
-  var progressText = document.getElementById('progressText');
-  
-  var imageUrls = [];
-  
-  if (selectedFiles.length > 0) {
-    progressContainer.classList.add('show');
-    var uploaded = 0;
-    
-    for (var i = 0; i < selectedFiles.length; i++) {
-      var file = selectedFiles[i];
-      progressText.textContent = 'Uploading ' + (uploaded + 1) + '/' + selectedFiles.length;
-      progressFill.style.width = ((uploaded / selectedFiles.length) * 100) + '%';
-      
-      try {
-        var url = await uploadImageToImgBB(file);
-        imageUrls.push(url);
-        uploaded++;
-        progressFill.style.width = ((uploaded / selectedFiles.length) * 100) + '%';
-      } catch(error) {
-        console.error('Upload error:', error);
-        showToast('Failed to upload image: ' + error.message, 'error');
-        isSubmitting = false;
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
-        progressContainer.classList.remove('show');
-        return;
-      }
-    }
-    progressText.textContent = 'Uploaded ' + selectedFiles.length + '/' + selectedFiles.length + ' ✅';
-    progressFill.style.width = '100%';
-  }
-  
-  try {
-    var postData = {
-      userId: String(PROFILE.telegramId),
-      author: {
-        name: PROFILE.displayName || 'Yong User',
-        handle: PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId,
-        pfp: PROFILE.photoUrl || (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase(),
-        wallet: PROFILE.walletAddress || null
-      },
-      content: content.substring(0, MAX_CHARS),
-      imageUrls: imageUrls,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      reactions: {
-        like: 0,
-        dislike: 0,
-        celebrate: 0,
-        angry: 0,
-        diamond: 0
-      }
-    };
-    
-    await db.collection('posts').add(postData);
-    
-    showToast('Post created successfully! 🎉', 'success');
-    AdManager.onPost();
-    closePostPopup();
-    
-  } catch(error) {
-    console.error('Post error:', error);
-    showToast('Failed to create post: ' + error.message, 'error');
-  } finally {
-    isSubmitting = false;
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Post';
-    progressContainer.classList.remove('show');
-  }
-}
-
-// ============================================
 // RSS FEED SYSTEM - WITH CACHE
 // ============================================
 function rssPostId(url) {
@@ -1972,16 +1374,33 @@ function stripHtml(html) {
 }
 
 function extractRssImage(item) {
-  var src = (item.enclosure?.link) ||
+  var src = (item.enclosure && item.enclosure.link) ||
     (item.content || item.description || '').match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
     (item.thumbnail) || null;
   return src || null;
 }
 
+function extractTags(item) {
+  var tags = [];
+  if (item.categories && Array.isArray(item.categories)) {
+    tags = item.categories;
+  }
+  // Also try to extract hashtags from content
+  var content = (item.content || item.description || '');
+  var hashtagMatches = content.match(/#[a-zA-Z0-9_]+/g) || [];
+  for (var i = 0; i < hashtagMatches.length; i++) {
+    var tag = hashtagMatches[i].substring(1);
+    if (tags.indexOf(tag) === -1) {
+      tags.push(tag);
+    }
+  }
+  return tags;
+}
+
 async function loadRssPosts() {
-  var cached = CACHE.rss.get();
-  if (cached && cached.length > 0) {
-    return cached;
+  var cached = rssPostsCache;
+  if (cached.data && cached.data.length > 0 && (Date.now() - cached.timestamp) < RSS_CACHE_TTL) {
+    return cached.data;
   }
 
   try {
@@ -1995,7 +1414,14 @@ async function loadRssPosts() {
       var imgUrl = extractRssImage(item);
       var snippet = stripHtml(item.description || item.content || '').slice(0, 280);
       var title = item.title || '';
-      var content = title + (snippet ? '\n\n' + snippet : '');
+      var tags = extractTags(item);
+      
+      // Add tags to availableTags list
+      for (var i = 0; i < tags.length; i++) {
+        if (availableTags.indexOf(tags[i]) === -1) {
+          availableTags.push(tags[i]);
+        }
+      }
 
       return {
         id: id,
@@ -2006,123 +1432,104 @@ async function loadRssPosts() {
           name: 'Yong Team',
           handle: '@YongTeam',
           pfp: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu_7mdnTHeYcrLaxRY0veIDVO6Pb0Pk4ngLKZupHTxufcBF3hwrlsgIxyXHfiDu_NywzKTnvLoGuh37Lv6k1Qkl0Q5HlHFn_sOa6ow8cL2TGXee1kSl6Uohtv_SggJ1UBhfNpUG4ClC1kPMkpC7Am3wX3cmDve4a95uvhmjNfF97aP2-hUVpX_Wk2dh56a/s1200/file_00000000814c720aa68fca8155db1cab_copy_1200x630.png',
-          wallet: YONG_TREASURY,
+          wallet: null
         },
-        content: content,
+        content: title + (snippet ? '\n\n' + snippet : ''),
         imageUrls: imgUrl ? [imgUrl] : [],
         createdAt: pubDate,
+        tags: tags,
         reactions: { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 },
+        // Store staked wallets for this post
+        stakedWallets: []
       };
     });
 
-    CACHE.rss.set(posts);
+    rssPostsCache = { data: posts, timestamp: Date.now() };
     return posts;
   } catch(e) {
     console.warn('RSS fetch failed:', e);
-    return CACHE.rss.get() || [];
+    return rssPostsCache.data || [];
   }
 }
 
 // ============================================
-// LOAD POSTS FROM FIRESTORE - WITH CACHE
+// GET STAKED WALLETS FOR A POST
+// ============================================
+function getStakedWalletsForPost(postTags) {
+  if (!postTags || postTags.length === 0) return [];
+  
+  var wallets = [];
+  var userIds = [];
+  
+  // Get all users who staked any of the post's tags
+  // In a real implementation, this would query Firestore
+  // For now, we'll use a simple in-memory approach
+  // This will be populated from Firestore in the main flow
+  
+  // Try to get from Firestore
+  // We'll query all profiles that have staked topics matching the post tags
+  
+  return wallets;
+}
+
+// ============================================
+// SHUFFLE ARRAY (Fisher-Yates)
+// ============================================
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+  }
+  return a;
+}
+
+// ============================================
+// LOAD POSTS - RSS ONLY
 // ============================================
 function loadPosts() {
-  var cachedPosts = CACHE.posts.get();
-  if (cachedPosts && cachedPosts.length > 0) {
-    allPosts = cachedPosts;
-    loadRssPosts().then(function(rssPosts) {
-      allPosts = mergeFeedPosts(cachedPosts, rssPosts);
-      renderPosts();
-    }).catch(function() {
-      renderPosts();
-    });
-  } else {
-    renderPosts();
-  }
-  
-  if (unsubscribePosts) {
-    unsubscribePosts();
-  }
-  
-  unsubscribePosts = db.collection('posts')
-    .orderBy('createdAt', 'desc')
-    .onSnapshot(function(snapshot) {
-      var newPosts = [];
-      snapshot.docChanges().forEach(function(change) {
-        if (change.type === 'added') {
-          var data = change.doc.data();
-          var post = {
-            id: change.doc.id,
-            userId: data.userId,
-            author: data.author || { name: 'Unknown', handle: '@unknown', pfp: 'Y', wallet: null },
-            content: data.content || '',
-            imageUrls: data.imageUrls || [],
-            createdAt: data.createdAt?.toMillis?.() || Date.now(),
-            reactions: data.reactions || { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 }
-          };
-          for (var key in data) {
-            if (key.indexOf('userReaction_') === 0) {
-              post[key] = data[key];
-            }
+  // Always fetch fresh RSS posts
+  loadRssPosts().then(function(rssPosts) {
+    allPosts = rssPosts;
+    
+    // For each post, find staked wallets
+    for (var i = 0; i < allPosts.length; i++) {
+      var post = allPosts[i];
+      if (post.tags && post.tags.length > 0 && PROFILE && PROFILE.solanaWallet) {
+        // Check if current user's staked topics match
+        var matched = false;
+        for (var j = 0; j < post.tags.length; j++) {
+          if (stakedTopics.indexOf(post.tags[j]) !== -1) {
+            matched = true;
+            break;
           }
-          newPosts.push(post);
         }
-      });
-      
-      if (newPosts.length > 0) {
-        var existingIds = new Set(allPosts.map(function(p) { return p.id; }));
-        var freshNewPosts = newPosts.filter(function(p) { return !existingIds.has(p.id); });
-        
-        if (freshNewPosts.length > 0) {
-          var othersPosts = freshNewPosts.filter(function(p) { return p.userId !== String(PROFILE?.telegramId); });
-          if (othersPosts.length > 0 && allPosts.length > 0) {
-            newPostsCount += othersPosts.length;
-            document.getElementById('newPostsCount').textContent = newPostsCount;
-            document.getElementById('newPostsBanner').classList.add('show');
+        if (matched) {
+          // Add this user's wallet to the post's staked wallets
+          if (!post.stakedWallets) post.stakedWallets = [];
+          if (post.stakedWallets.indexOf(PROFILE.solanaWallet) === -1) {
+            post.stakedWallets.push(PROFILE.solanaWallet);
           }
-          allPosts = newPosts.concat(allPosts);
         }
       }
-      
-      CACHE.posts.set(allPosts);
-      
-      loadRssPosts().then(function(rssPosts) {
-        allPosts = mergeFeedPosts(allPosts, rssPosts);
-        renderPosts();
-      }).catch(function() {
-        renderPosts();
-      });
-    }, function(error) {
-      console.error('Posts listener error:', error);
-    });
-}
-
-function mergeFeedPosts(firestorePosts, rssPosts) {
-  var seen = new Set();
-  var combined = firestorePosts.concat(rssPosts);
-  var result = [];
-  for (var i = 0; i < combined.length; i++) {
-    var p = combined[i];
-    if (!seen.has(p.id)) {
-      seen.add(p.id);
-      result.push(p);
     }
-  }
-  result.sort(function(a, b) {
-    return b.createdAt - a.createdAt;
+    
+    renderPosts();
+  }).catch(function() {
+    renderPosts();
   });
-  return result;
 }
 
 function loadNewPosts() {
-  newPostsCount = 0;
   document.getElementById('newPostsBanner').classList.remove('show');
   loadPosts();
   document.querySelector('.feed-col').scrollTop = 0;
 }
 
 // ============================================
-// REACTION HANDLERS - Only for Firestore posts
+// REACTION HANDLERS
 // ============================================
 function handleReaction(postId, reactionKey) {
   if (!PROFILE) {
@@ -2133,46 +1540,51 @@ function handleReaction(postId, reactionKey) {
   var post = allPosts.find(function(p) { return p.id === postId; });
   if (!post) return;
   
-  if (post.isRss) {
-    showToast('Reactions are not available on RSS posts.', 'error');
-    return;
-  }
-  
   var userReactionKey = 'userReaction_' + PROFILE.telegramId;
   var currentReaction = post[userReactionKey] || null;
   
   if (currentReaction === reactionKey) {
     post.reactions[reactionKey] = Math.max(0, post.reactions[reactionKey] - 1);
     delete post[userReactionKey];
-  } 
-  else if (currentReaction && currentReaction !== reactionKey) {
-    if (post.reactions[currentReaction] > 0) {
+  } else {
+    if (currentReaction && post.reactions[currentReaction] > 0) {
       post.reactions[currentReaction] = Math.max(0, post.reactions[currentReaction] - 1);
     }
     post.reactions[reactionKey] = (post.reactions[reactionKey] || 0) + 1;
     post[userReactionKey] = reactionKey;
   }
-  else {
-    post.reactions[reactionKey] = (post.reactions[reactionKey] || 0) + 1;
-    post[userReactionKey] = reactionKey;
-  }
   
-  AdManager.onReaction();
   renderPosts();
   
-  var updateData = {
-    reactions: post.reactions
-  };
-  if (post[userReactionKey]) {
-    updateData[userReactionKey] = post[userReactionKey];
-  } else {
-    updateData[userReactionKey] = firebase.firestore.FieldValue.delete();
+  // Store in Firestore for persistence (optional)
+  // For now, we'll just store in memory
+  // In production, you'd want to persist to Firestore
+}
+
+// ============================================
+// SOLANA TIP
+// ============================================
+function openSolanaTip(walletAddress, amount) {
+  if (!walletAddress) {
+    showToast('No wallet address available for this topic.', 'error');
+    return;
   }
   
-  db.collection('posts').doc(postId).update(updateData).catch(function(error) {
-    console.error('Reaction update error:', error);
-    loadPosts();
-  });
+  amount = amount || 0.001; // Default tip amount in SOL
+  
+  // Build Solana wallet links
+  var links = {
+    phantom: 'https://phantom.app/ul/browse/' + encodeURIComponent('solana:') + '?q=' + walletAddress + '&amount=' + amount,
+    solflare: 'https://solflare.com/ul/v1/send?address=' + walletAddress + '&amount=' + amount,
+    backpack: 'https://backpack.app/ul/v1/send?address=' + walletAddress + '&amount=' + amount,
+    trust: 'https://link.trustwallet.com/send?coin=501&address=' + walletAddress + '&amount=' + amount,
+    native: 'solana:' + walletAddress + '?amount=' + amount
+  };
+  
+  // Try Phantom first (most popular)
+  window.open(links.phantom, '_blank');
+  
+  showToast('💎 Opening wallet to send ' + amount + ' SOL...', 'success');
 }
 
 // ============================================
@@ -2194,8 +1606,7 @@ function renderPosts() {
     container.innerHTML = '<div class="empty-state">' +
       '<div class="icon">📝</div>' +
       '<h3>No posts yet</h3>' +
-      '<p>Be the first to share something with the Yong Social community!</p>' +
-      '<button class="btn-brand" style="margin-top:1rem;" onclick="openPostPopup()">Create Post</button>' +
+      '<p>Check back soon for new content from Yong Social.</p>' +
       '</div>';
     return;
   }
@@ -2211,7 +1622,6 @@ function renderPosts() {
     var images = post.imageUrls || [];
     var hasMultipleImages = images.length > 1;
     var thumbnail = images.length > 0 ? images[0] : null;
-    var isRss = post.isRss || false;
     var rssUrl = post.rssUrl || '';
     
     var youtubeMatch = post.content ? extractYouTubeId(post.content) : null;
@@ -2223,12 +1633,28 @@ function renderPosts() {
     var displayContent = post.content || '';
     var showReadMore = false;
     
-    if (isRss && displayContent.length > 280) {
+    if (displayContent.length > 280) {
       displayContent = displayContent.substring(0, 280);
       showReadMore = true;
     }
     
-    var postClick = isRss ? ' onclick="openRssPost(\'' + rssUrl + '\')" style="cursor:pointer"' : '';
+    var postClick = ' onclick="openRssPost(\'' + rssUrl + '\')" style="cursor:pointer"';
+    
+    // Get staked wallets for this post
+    var stakedWallets = post.stakedWallets || [];
+    var shuffledWallets = shuffleArray(stakedWallets);
+    var displayWallet = shuffledWallets.length > 0 ? shuffledWallets[0] : null;
+    var walletCount = shuffledWallets.length;
+    
+    // Get matching tags
+    var matchingTags = [];
+    if (post.tags && post.tags.length > 0 && stakedTopics.length > 0) {
+      for (var t = 0; t < post.tags.length; t++) {
+        if (stakedTopics.indexOf(post.tags[t]) !== -1) {
+          matchingTags.push(post.tags[t]);
+        }
+      }
+    }
     
     html += '<article class="tweet" data-post="' + post.id + '"' + postClick + '>';
     html += '<div class="pfp">';
@@ -2242,27 +1668,13 @@ function renderPosts() {
     
     html += '<div class="head">';
     html += '<span class="name">' + (post.author?.name || 'Unknown') + '</span>';
-    if (isRss) {
-      html += '<span class="verified" title="Official Yong Team post">✦</span>';
-    }
+    html += '<span class="verified" title="Official Yong Team post">✦</span>';
     html += '<span class="handle">' + (post.author?.handle || '@unknown') + '</span>';
     html += '<span class="time">· ' + timeAgo(post.createdAt) + '</span>';
     html += '<span class="right">';
-    
-    if (isRss) {
-      html += '<button class="post-menu-btn" onclick="event.stopPropagation();openRssPost(\'' + rssUrl + '\')" title="Read article">';
-      html += '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
-      html += '</button>';
-    } else {
-      html += '<div class="post-menu-wrap">';
-      html += '<button class="post-menu-btn" onclick="togglePostMenu(event,\'' + post.id + '\')"><i class="fa-solid fa-ellipsis-vertical"></i></button>';
-      if (post.userId === String(PROFILE?.telegramId)) {
-        html += '<div class="post-menu-dropdown" id="menu-' + post.id + '">';
-        html += '<button onclick="deletePost(\'' + post.id + '\')"><i class="fa-solid fa-trash"></i> Delete</button>';
-        html += '</div>';
-      }
-      html += '</div>';
-    }
+    html += '<button class="post-menu-btn" onclick="event.stopPropagation();openRssPost(\'' + rssUrl + '\')" title="Read article">';
+    html += '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
+    html += '</button>';
     html += '</span>';
     html += '</div>';
     
@@ -2272,6 +1684,27 @@ function renderPosts() {
     
     if (showReadMore) {
       html += '<span class="read-more" onclick="event.stopPropagation();openRssPost(\'' + rssUrl + '\')">Read more →</span>';
+    }
+    
+    // Show staked topics badge
+    if (matchingTags.length > 0) {
+      html += '<div class="staked-badge">💎 You staked: ' + matchingTags.join(', ') + '</div>';
+    }
+    
+    // Show staked wallet section
+    if (displayWallet) {
+      html += '<div class="staked-wallet">';
+      html += '<span>💎 <span class="wallet-addr">' + displayWallet.substring(0, 6) + '...' + displayWallet.substring(displayWallet.length - 4) + '</span>';
+      if (walletCount > 1) {
+        html += ' <span style="color:#5a6378;font-size:0.65rem;">(shuffled from ' + walletCount + ' staked wallets)</span>';
+      }
+      html += '</span>';
+      html += '<button class="tip-btn" onclick="event.stopPropagation();openSolanaTip(\'' + displayWallet + '\', 0.001)">Tip 0.001 SOL</button>';
+      html += '</div>';
+    } else if (stakedTopics.length > 0) {
+      html += '<div class="staked-wallet" style="color:#5a6378;font-size:0.75rem;">';
+      html += '💎 No one has staked this topic yet. Be the first!';
+      html += '</div>';
     }
     
     if (hasYoutube) {
@@ -2317,32 +1750,19 @@ function renderPosts() {
     }
     
     html += '<div class="actions-row">';
-    
-    if (!isRss) {
-      html += '<div class="reactions" onclick="event.stopPropagation()">';
-      var reactionKeys = ['like', 'dislike', 'celebrate', 'angry', 'diamond'];
-      var emojis = { like: '👍', dislike: '👎', celebrate: '🎉', angry: '😡', diamond: '💎' };
-      for (var r = 0; r < reactionKeys.length; r++) {
-        var key = reactionKeys[r];
-        var active = userReaction === key ? ' active' : '';
-        var count = reactions[key] > 0 ? reactions[key] : '';
-        html += '<button class="reaction-btn' + active + '" onclick="handleReaction(\'' + post.id + '\',\'' + key + '\')">';
-        html += '<span class="emoji">' + emojis[key] + '</span>';
-        html += '<span class="count">' + count + '</span>';
-        html += '</button>';
-      }
-      html += '</div>';
-    } else {
-      html += '<div style="flex:1;"></div>';
+    html += '<div class="reactions" onclick="event.stopPropagation()">';
+    var reactionKeys = ['like', 'dislike', 'celebrate', 'angry', 'diamond'];
+    var emojis = { like: '👍', dislike: '👎', celebrate: '🎉', angry: '😡', diamond: '💎' };
+    for (var r = 0; r < reactionKeys.length; r++) {
+      var key = reactionKeys[r];
+      var active = userReaction === key ? ' active' : '';
+      var count = reactions[key] > 0 ? reactions[key] : '';
+      html += '<button class="reaction-btn' + active + '" onclick="handleReaction(\'' + post.id + '\',\'' + key + '\')">';
+      html += '<span class="emoji">' + emojis[key] + '</span>';
+      html += '<span class="count">' + count + '</span>';
+      html += '</button>';
     }
-    
-    if (post.author?.wallet) {
-      html += '<div class="creator-support" onclick="openCreatorSupport(\'' + post.author.wallet + '\')">';
-      html += '<span class="diamond">💎</span>';
-      html += '<span class="value">' + getSupportAmount() + '</span>';
-      html += '</div>';
-    }
-    
+    html += '</div>';
     html += '</div>';
     html += '</div>';
     html += '</article>';
@@ -2362,34 +1782,104 @@ function renderPosts() {
 }
 
 // ============================================
-// POST MENU / DELETE
+// TOPIC STAKING
 // ============================================
-function togglePostMenu(e, postId) {
-  e.stopPropagation();
-  var menu = document.getElementById('menu-' + postId);
-  if (!menu) return;
-  var isOpen = menu.classList.contains('open');
-  document.querySelectorAll('.post-menu-dropdown.open').forEach(function(m) { m.classList.remove('open'); });
-  if (!isOpen) menu.classList.add('open');
+function renderTopicTags() {
+  var container = document.getElementById('topicTags');
+  if (!container) return;
+  
+  // Get all available tags from RSS posts
+  var allTags = [];
+  for (var i = 0; i < allPosts.length; i++) {
+    if (allPosts[i].tags) {
+      for (var j = 0; j < allPosts[i].tags.length; j++) {
+        if (allTags.indexOf(allPosts[i].tags[j]) === -1) {
+          allTags.push(allPosts[i].tags[j]);
+        }
+      }
+    }
+  }
+  
+  // Sort tags alphabetically
+  allTags.sort();
+  
+  if (allTags.length === 0) {
+    container.innerHTML = '<div style="color:#5a6378;font-size:0.85rem;">No tags available yet. Check back when articles are published.</div>';
+    return;
+  }
+  
+  var html = '';
+  for (var i = 0; i < allTags.length; i++) {
+    var tag = allTags[i];
+    var isSelected = selectedTopics.indexOf(tag) !== -1;
+    var isDisabled = !isSelected && selectedTopics.length >= MAX_STAKED_TOPICS;
+    html += '<button class="topic-tag' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '') + '" ' +
+      'onclick="toggleTopic(\'' + tag + '\')" ' +
+      'data-tag="' + tag + '">' +
+      '#' + tag +
+      '</button>';
+  }
+  
+  container.innerHTML = html;
+  document.getElementById('selectedCount').textContent = selectedTopics.length;
 }
 
-document.addEventListener('click', function() {
-  document.querySelectorAll('.post-menu-dropdown.open').forEach(function(m) { m.classList.remove('open'); });
-});
+function toggleTopic(tag) {
+  var index = selectedTopics.indexOf(tag);
+  if (index !== -1) {
+    selectedTopics.splice(index, 1);
+  } else {
+    if (selectedTopics.length >= MAX_STAKED_TOPICS) {
+      showToast('You can only stake up to ' + MAX_STAKED_TOPICS + ' topics.', 'error');
+      return;
+    }
+    selectedTopics.push(tag);
+  }
+  renderTopicTags();
+}
 
-async function deletePost(postId) {
-  if (!confirm('Delete this post?')) return;
+async function saveStakedTopics() {
+  if (!PROFILE) {
+    showToast('Please sign in first.', 'error');
+    return;
+  }
+  
+  var btn = document.getElementById('saveTopicsBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving...';
+  
   try {
-    await db.collection('posts').doc(postId).delete();
-    allPosts = allPosts.filter(function(p) { return p.id !== postId; });
-    CACHE.posts.set(allPosts);
-    renderPosts();
-    showToast('Post deleted.', 'success');
-  } catch(e) {
-    showToast('Delete failed: ' + e.message, 'error');
+    await db.collection('profiles').doc(String(PROFILE.telegramId)).update({
+      stakedTopics: selectedTopics,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    PROFILE.stakedTopics = selectedTopics;
+    stakedTopics = selectedTopics.slice();
+    CACHE.profile.set(currentUser.uid, PROFILE);
+    
+    showToast('✅ Topics saved successfully!', 'success');
+    btn.textContent = '💾 Saved!';
+    
+    // Reload posts to update staked wallets
+    loadPosts();
+    
+    setTimeout(function() {
+      btn.textContent = '💾 Save Topics';
+      btn.disabled = false;
+    }, 2000);
+    
+  } catch(error) {
+    console.error('Save topics error:', error);
+    showToast('Error saving topics: ' + error.message, 'error');
+    btn.textContent = '💾 Save Topics';
+    btn.disabled = false;
   }
 }
 
+// ============================================
+// POST MENU
+// ============================================
 function openRssPost(url) {
   if (!url) return;
   window.open(url, '_blank');
@@ -2459,42 +1949,31 @@ function renderLinkPreview(el, data, url) {
 }
 
 // ============================================
-// PROFILE FUNCTIONS - WITH CACHE
+// PROFILE FUNCTIONS
 // ============================================
-
-// Get current Telegram user ID from WebApp SDK (most reliable source)
-function getTelegramUserId() {
-  try {
-    var tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
-    if (tgUser && tgUser.id) return String(tgUser.id);
-  } catch(e) {}
-  return null;
-}
-
 async function loadProfileByGoogleUid(googleUid) {
-  // Always check Telegram WebApp for the active user's ID first.
-  // This is the fix: two Telegram accounts sharing the same Google account
-  // would both resolve to the same userLinks doc — wrong. Reading the live
-  // Telegram user ID directly gives us the correct profile regardless.
   var tgId = getTelegramUserId();
-
-  // Cache key: prefer tgId so each Telegram account has its own cache entry
   var cacheKey = tgId || googleUid;
   var cached = CACHE.profile.get(cacheKey);
   if (cached) {
     PROFILE = cached;
-    userWalletAddress = PROFILE.walletAddress || null;
+    if (PROFILE.stakedTopics) {
+      stakedTopics = PROFILE.stakedTopics;
+      selectedTopics = stakedTopics.slice();
+    }
     updateSidebar();
     updateProfileView();
   }
 
   try {
-    // Path 1: we have a live Telegram user ID — load profile directly by doc ID
     if (tgId) {
       var profileSnap = await db.collection('profiles').doc(tgId).get();
       if (profileSnap.exists) {
         PROFILE = profileSnap.data();
-        userWalletAddress = PROFILE.walletAddress || null;
+        if (PROFILE.stakedTopics) {
+          stakedTopics = PROFILE.stakedTopics;
+          selectedTopics = stakedTopics.slice();
+        }
         CACHE.profile.set(cacheKey, PROFILE);
         updateSidebar();
         updateProfileView();
@@ -2502,14 +1981,16 @@ async function loadProfileByGoogleUid(googleUid) {
       }
     }
 
-    // Path 2: fall back to userLinks lookup by Google UID
     var linkSnap = await db.collection('userLinks').doc(googleUid).get();
     if (linkSnap.exists) {
       var telegramId = linkSnap.data().telegramId;
       var profileSnap2 = await db.collection('profiles').doc(telegramId).get();
       if (profileSnap2.exists) {
         PROFILE = profileSnap2.data();
-        userWalletAddress = PROFILE.walletAddress || null;
+        if (PROFILE.stakedTopics) {
+          stakedTopics = PROFILE.stakedTopics;
+          selectedTopics = stakedTopics.slice();
+        }
         CACHE.profile.set(cacheKey, PROFILE);
         updateSidebar();
         updateProfileView();
@@ -2517,12 +1998,14 @@ async function loadProfileByGoogleUid(googleUid) {
       }
     }
 
-    // Path 3: query by googleUid field on profile doc
     var querySnap = await db.collection('profiles').where('googleUid', '==', googleUid).get();
     if (!querySnap.empty) {
       var doc = querySnap.docs[0];
       PROFILE = doc.data();
-      userWalletAddress = PROFILE.walletAddress || null;
+      if (PROFILE.stakedTopics) {
+        stakedTopics = PROFILE.stakedTopics;
+        selectedTopics = stakedTopics.slice();
+      }
       CACHE.profile.set(cacheKey, PROFILE);
       updateSidebar();
       updateProfileView();
@@ -2553,123 +2036,29 @@ function updateSidebar() {
   handle.textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
 }
 
-function showWalletPopup() {
-  document.getElementById('walletOverlay').classList.add('active');
-  document.getElementById('walletInput').value = userWalletAddress || '';
-  document.getElementById('walletError').classList.remove('visible');
-}
-
-function hideWalletPopup() {
-  document.getElementById('walletOverlay').classList.remove('active');
-}
-
-// ============================================
-// CREATOR SUPPORT
-// ============================================
-function openCreatorSupport(postCreatorAddress) {
-  if (!postCreatorAddress) {
-    showToast('This creator hasn\'t set a wallet address yet.', 'error');
-    return;
-  }
-  var amount = getSupportAmount();
-  var amountNano = Math.floor(parseFloat(amount) * 1e9);
-  var comment = encodeURIComponent('Creator support from Yong Social');
-  var links = {
-    tonkeeper: 'https://app.tonkeeper.com/transfer/' + postCreatorAddress + '?amount=' + amountNano + '&text=' + comment,
-    tonhub: 'https://tonhub.com/transfer/' + postCreatorAddress + '?amount=' + amountNano + '&text=' + comment,
-    mytonwallet: 'https://connect.mytonwallet.org/transfer/' + postCreatorAddress + '?amount=' + amountNano + '&text=' + comment,
-  };
-  window.open(links.tonkeeper, '_blank');
-  showToast('💎 Opening wallet for ' + amount + ' TON support...', 'success');
-}
-
-// ============================================
-// WALLET HANDLERS
-// ============================================
-document.getElementById('saveWalletBtn').addEventListener('click', async function() {
-  var input = document.getElementById('walletInput');
-  var error = document.getElementById('walletError');
-  var wallet = input.value.trim();
-  
-  if (!wallet) {
-    error.textContent = 'Please enter a TON wallet address';
-    error.classList.add('visible');
-    return;
-  }
-  
-  if (!wallet.match(/^[UQ][A-Za-z0-9_-]{40,48}$/)) {
-    error.textContent = 'Please enter a valid TON wallet address (starts with UQ or EQ)';
-    error.classList.add('visible');
-    return;
-  }
-  
-  error.classList.remove('visible');
-  
-  try {
-    var btn = document.getElementById('saveWalletBtn');
-    btn.textContent = '⏳ Saving...';
-    btn.disabled = true;
-    
-    await db.collection('profiles').doc(String(PROFILE.telegramId)).update({
-      walletAddress: wallet,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    PROFILE.walletAddress = wallet;
-    userWalletAddress = wallet;
-    CACHE.profile.set(currentUser.uid, PROFILE);
-    updateProfileView();
-    
-    btn.textContent = '✅ Saved!';
-    showToast('Wallet address saved successfully!', 'success');
-    
-    setTimeout(function() {
-      hideWalletPopup();
-      btn.textContent = '💎 Save Wallet Address';
-      btn.disabled = false;
-    }, 800);
-    
-  } catch(err) {
-    error.textContent = 'Error saving: ' + err.message;
-    error.classList.add('visible');
-    document.getElementById('saveWalletBtn').textContent = '💎 Save Wallet Address';
-    document.getElementById('saveWalletBtn').disabled = false;
-  }
-});
-
-document.getElementById('skipWalletBtn').addEventListener('click', hideWalletPopup);
-
 // ============================================
 // AUTH STATE LISTENER
 // ============================================
 auth.onAuthStateChanged(async function(user) {
   if (user) {
-    // Reset state so stale profile never bleeds into a new account's session
     PROFILE = null;
-    userWalletAddress = null;
     currentUser = user;
-    console.log('[Feed] Auth changed. Google UID:', user.uid, '| Telegram ID:', getTelegramUserId());
     
     try {
       var profileFound = await loadProfileByGoogleUid(user.uid);
       if (profileFound) {
-        AdManager.onAppOpen();
-        await getTONPrice();
-        updateProfileView();
-        
         await fetchTickerData();
         loadPosts();
         
         setInterval(function() {
-          var value = getSupportAmount();
-          document.querySelectorAll('.creator-support .value').forEach(function(el) {
-            el.textContent = value;
-          });
+          // Refresh ticker every 5 minutes
+          fetchTickerData();
         }, 300000);
         
-        if (!userWalletAddress) {
-          setTimeout(showWalletPopup, 600);
-        }
+        // Refresh RSS posts every 15 minutes
+        setInterval(function() {
+          loadPosts();
+        }, 15 * 60 * 1000);
         
         console.log('[Feed] Profile loaded:', PROFILE);
       } else {
@@ -2790,7 +2179,6 @@ auth.getRedirectResult().then(function(result) {
   console.error('[Feed] Redirect error:', error);
 });
 
-AdManager._skipNext = true;
 switchView('feed');
 </script>
 </body>
