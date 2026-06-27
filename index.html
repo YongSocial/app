@@ -417,7 +417,7 @@
 .dca-result .big{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
 
 </style>
-<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+
 </head>
 <body>
 
@@ -1523,29 +1523,6 @@ window.openSourcesModal = openSourcesModal;
             <i class="fa-solid fa-arrow-right" style="opacity:.6"></i>
           </button>
         </div>
-
-        <div class="yp-sec-title">Solana Wallet</div>
-        <div style="background:linear-gradient(135deg,#3a0ca3,#9945FF 60%,#14F195);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;overflow:hidden">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <div style="width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#9945FF;font-size:18px;font-weight:800;box-shadow:0 6px 18px -6px rgba(153,69,255,.6)">◎</div>
-            <div style="flex:1">
-              <div style="font-size:11px;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.6px">Balance</div>
-              <div style="font-size:22px;font-weight:800;color:#fff"><span id="solBalance">—</span> <span style="font-size:13px;font-weight:600;opacity:.9">SOL</span></div>
-            </div>
-          </div>
-          <div id="solAddrRow" style="display:none;align-items:center;gap:8px;background:rgba(0,0,0,.30);padding:8px 10px;border-radius:10px;margin-bottom:10px">
-            <i class="fa-solid fa-wallet" style="color:#fff;opacity:.85"></i>
-            <span id="solAddress" style="font-family:monospace;font-size:12px;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis"></span>
-            <button id="solCopyBtn" title="Copy" style="background:transparent;border:0;color:#fff;cursor:pointer"><i class="fa-solid fa-copy"></i></button>
-          </div>
-          <button id="solConnectBtn" style="width:100%;padding:12px;border-radius:12px;border:0;background:#fff;color:#9945FF;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-            <i class="fa-solid fa-link"></i> <span id="solConnectBtnLabel">Connect Trust Wallet</span>
-          </button>
-          <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.85);text-align:center">⚡ Solana · Trust Wallet</div>
-        </div>
-
-        <div class="yp-sec-title">Popular Tags To Follow</div>
-        <div class="yp-tags" id="ypTags"><span class="yp-handle">Loading tags…</span></div>
       </div>
     </div>`;
   document.body.appendChild(profileOverlay);
@@ -1555,46 +1532,86 @@ window.openSourcesModal = openSourcesModal;
     if(e.target===profileOverlay || e.target.closest('[data-close-profile]')) closeProfile();
   });
 
-  function tagCountsFromCache(){
-    const counts = {};
-    const data = (window.cache && (window.cache.all || window.cache.discover)) || null;
-    const entries = (data && data.feed && data.feed.entry) || [];
-    entries.forEach(e=>{
-      (e.category||[]).forEach(c=>{
-        const t=(c.term||'').trim(); if(!t) return;
-        counts[t]=(counts[t]||0)+1;
-      });
-    });
-    return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  }
-  function renderTags(){
-    const wrap = document.getElementById('ypTags'); if(!wrap) return;
-    const top = tagCountsFromCache();
-    const followed = (typeof getFollowed==='function') ? getFollowed() : new Set();
-    if(!top.length){ wrap.innerHTML='<span class="yp-handle">No tags yet — load some posts first.</span>'; return; }
-    wrap.innerHTML = top.map(([t,n])=>{
-      const isF = followed.has(t);
-      return `<span class="yp-tag">#${t.replace(/[<>&"]/g,'')}<button data-yp-tag="${t.replace(/"/g,'')}" class="${isF?'following':''}">${isF?'Following':'Follow'}</button></span>`;
-    }).join('');
-  }
-  document.getElementById('ypTags').addEventListener('click', e=>{
-    const b = e.target.closest('[data-yp-tag]'); if(!b) return;
-    const tag = b.dataset.ypTag;
-    const set = getFollowed();
-    if(set.has(tag)){ set.delete(tag); b.textContent='Follow'; b.classList.remove('following'); }
-    else { set.add(tag); b.textContent='Following'; b.classList.add('following'); }
-    setFollowed(set);
-    if(typeof showToast==='function') showToast(set.has(tag)?'Following #'+tag:'Unfollowed #'+tag);
-    if(typeof currentTab!=='undefined' && currentTab==='following' && typeof loadFeed==='function') loadFeed('following');
-  });
-
   function openProfile(){
     var u = loadUser();
-    var name = (u && (u.displayName || u.email || '').split('@')[0] || '').trim().replace(/\s+/g,'').toLowerCase();
-    var slug = name || 'profile';
+    var raw = (u && (u.displayName || u.email || '')) || '';
+    var slug = raw.split('@')[0].trim().replace(/\s+/g,'').toLowerCase() || 'profile';
     window.location.href = 'https://app.yongsocial.com/#' + slug;
   }
   window.openProfileModal = openProfile;
+
+  /* ---- Hash-based profile page ---- */
+  (function(){
+    var hash = window.location.hash.replace('#','').trim();
+    if(!hash) return; // no hash = normal feed, do nothing
+
+    // Hide the main app, show a profile page
+    var app = document.querySelector('.app') || document.getElementById('app');
+    if(app) app.style.display = 'none';
+
+    var page = document.createElement('div');
+    page.id = 'ys-profile-page';
+    page.innerHTML = `
+      <style>
+        #ys-profile-page{min-height:100vh;background:var(--bg,#0b0d12);color:var(--text,#fff);font-family:inherit}
+        .ypp-header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--border,#1e2330);position:sticky;top:0;background:rgba(11,13,18,.92);backdrop-filter:blur(14px);z-index:10}
+        .ypp-header button{background:none;border:none;color:var(--text,#fff);font-size:20px;cursor:pointer;padding:4px 8px}
+        .ypp-banner{height:140px;background:linear-gradient(135deg,#1a2744,#0f1a2e);position:relative}
+        .ypp-avatar{width:80px;height:80px;border-radius:50%;border:3px solid var(--bg,#0b0d12);overflow:hidden;position:absolute;bottom:-40px;left:20px;background:var(--surface,#141822)}
+        .ypp-avatar img{width:100%;height:100%;object-fit:cover}
+        .ypp-body{padding:52px 20px 20px}
+        .ypp-name{font-size:20px;font-weight:800;margin-bottom:2px}
+        .ypp-handle{font-size:14px;color:var(--muted,#8b94a3);margin-bottom:16px}
+        .ypp-meta{display:flex;gap:24px;margin-bottom:20px}
+        .ypp-meta div{text-align:center}
+        .ypp-meta b{display:block;font-size:18px;font-weight:800}
+        .ypp-meta span{font-size:12px;color:var(--muted,#8b94a3)}
+        .ypp-signin{background:var(--surface,#141822);border:1px solid var(--border,#1e2330);border-radius:16px;padding:20px;text-align:center}
+        .ypp-signin p{color:var(--muted,#8b94a3);font-size:14px;margin-bottom:14px}
+        .ypp-signin button{background:#fff;color:#000;border:none;padding:12px 24px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+      </style>
+      <div class="ypp-header">
+        <button onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></button>
+        <span style="font-weight:700;font-size:16px">Profile</span>
+      </div>
+      <div class="ypp-banner">
+        <div class="ypp-avatar"><img id="yppAvatar" src="" alt=""/></div>
+      </div>
+      <div class="ypp-body">
+        <div class="ypp-name" id="yppName">@${hash}</div>
+        <div class="ypp-handle" id="yppHandle">@${hash}</div>
+        <div class="ypp-meta">
+          <div><b>—</b><span>Posts</span></div>
+          <div><b>—</b><span>Following</span></div>
+          <div><b>—</b><span>Followers</span></div>
+        </div>
+        <div id="yppContent" class="ypp-signin">
+          <p>Sign in to view your full profile</p>
+          <button id="yppGoogleBtn"><i class="fa-brands fa-google" style="color:#ea4335"></i> Continue with Google</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(page);
+
+    // Populate with signed-in user data if available
+    var u = loadUser();
+    var avatar = document.getElementById('yppAvatar');
+    var nameEl = document.getElementById('yppName');
+    var handleEl = document.getElementById('yppHandle');
+    if(u){
+      if(avatar && u.photoURL) avatar.src = u.photoURL;
+      if(nameEl) nameEl.textContent = u.displayName || ('@'+hash);
+      if(handleEl) handleEl.textContent = '@' + hash;
+      document.getElementById('yppContent').innerHTML = '<p style="color:var(--muted);font-size:14px">More profile features coming soon.</p>';
+    } else {
+      if(avatar) avatar.src = '';
+      document.getElementById('yppGoogleBtn') && document.getElementById('yppGoogleBtn').addEventListener('click', function(){
+        // trigger google login
+        var btn = document.getElementById('googleLoginBtn');
+        if(btn) btn.click();
+      });
+    }
+  })();
 
   /* Firebase Google auth + Solana (Trust Wallet) */
   (function(){
@@ -1606,7 +1623,6 @@ window.openSourcesModal = openSourcesModal;
       messagingSenderId: "969832363153",
       appId: "1:969832363153:web:a6e0d6601c8403b8273b30"
     };
-    var SOLANA_RPC = "https://api.mainnet-beta.solana.com";
     var USER_KEY = "ys_user_v1";
 
     function loadUser(){ try{ return JSON.parse(localStorage.getItem(USER_KEY)||"null"); }catch(e){ return null; } }
@@ -1726,110 +1742,6 @@ window.openSourcesModal = openSourcesModal;
         });
       });
     });
-
-    /* ---- Solana wallet (Trust Wallet via injected provider, with deep-link fallback) ---- */
-    var WALLET_KEY = "ys_sol_wallet_v1";
-    function fmtAddr(a){ if(!a) return ""; return a.slice(0,4)+"…"+a.slice(-4); }
-    function getSolProvider(){
-      // Trust Wallet injects window.trustwallet.solana; Phantom/others inject window.solana
-      if(window.trustwallet && window.trustwallet.solana) return window.trustwallet.solana;
-      if(window.solana) return window.solana;
-      return null;
-    }
-    function setDisconnected(){
-      var label=document.getElementById("solConnectBtnLabel");
-      var row=document.getElementById("solAddrRow");
-      var bal=document.getElementById("solBalance");
-      if(label) label.textContent = "Connect Trust Wallet";
-      if(row) row.style.display = "none";
-      if(bal) bal.textContent = "—";
-      try{ localStorage.removeItem(WALLET_KEY); }catch(e){}
-    }
-    function setConnected(addr){
-      var label=document.getElementById("solConnectBtnLabel");
-      var row=document.getElementById("solAddrRow");
-      var el=document.getElementById("solAddress");
-      if(label) label.textContent = "Disconnect Wallet";
-      if(row) row.style.display = "flex";
-      if(el){ el.textContent = fmtAddr(addr); el.dataset.full = addr; }
-      try{ localStorage.setItem(WALLET_KEY, addr); }catch(e){}
-      fetchBalance(addr);
-    }
-    function fetchBalance(addr){
-      var bal=document.getElementById("solBalance");
-      if(!bal || !addr) return;
-      bal.textContent = "…";
-      fetch(SOLANA_RPC, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ jsonrpc:"2.0", id:1, method:"getBalance", params:[addr] })
-      }).then(function(r){ return r.json(); })
-        .then(function(j){
-          if(j && j.result && typeof j.result.value === "number"){
-            bal.textContent = (j.result.value/1e9).toFixed(4);
-          } else { bal.textContent = "0.0000"; }
-        })
-        .catch(function(){ bal.textContent = "0.0000"; });
-    }
-
-    async function connectWallet(){
-      var prov = getSolProvider();
-      if(!prov){
-        // Not in an injected wallet browser — deep-link into Trust Wallet's dApp browser
-        var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if(isMobile){
-          var url = "https://link.trustwallet.com/open_url?coin_id=501&url=" + encodeURIComponent(location.href);
-          window.location.href = url;
-        } else {
-          if(typeof showToast==="function") showToast("Open this page inside Trust Wallet's dApp browser to connect.");
-        }
-        return;
-      }
-      try{
-        var res = await prov.connect();
-        var pk = (res && res.publicKey) ? res.publicKey.toString() : (prov.publicKey && prov.publicKey.toString());
-        if(pk) setConnected(pk);
-      }catch(e){
-        console.error(e);
-        if(typeof showToast==="function") showToast("Wallet connection cancelled.");
-      }
-    }
-    async function disconnectWallet(){
-      var prov = getSolProvider();
-      try{ if(prov && prov.disconnect) await prov.disconnect(); }catch(e){}
-      setDisconnected();
-    }
-
-    document.addEventListener("click", function(e){
-      var b = e.target.closest && e.target.closest("#solConnectBtn");
-      if(b){
-        var label = document.getElementById("solConnectBtnLabel");
-        if(label && label.textContent.indexOf("Disconnect") === 0) disconnectWallet();
-        else connectWallet();
-        return;
-      }
-      var cp = e.target.closest && e.target.closest("#solCopyBtn");
-      if(cp){
-        var el = document.getElementById("solAddress");
-        var full = el && el.dataset.full;
-        if(full){ try{ navigator.clipboard.writeText(full); if(typeof showToast==="function") showToast("Address copied"); }catch(_){ } }
-      }
-    });
-
-    // restore wallet on load if provider already trusts this site
-    (function restore(){
-      var saved = (function(){ try{ return localStorage.getItem(WALLET_KEY); }catch(e){ return null; } })();
-      var prov = getSolProvider();
-      if(prov && prov.connect){
-        prov.connect({ onlyIfTrusted:true }).then(function(res){
-          var pk = res && res.publicKey && res.publicKey.toString();
-          if(pk) setConnected(pk);
-          else if(saved) setConnected(saved);
-        }).catch(function(){ if(saved) setConnected(saved); });
-      } else if(saved){
-        setConnected(saved);
-      }
-    })();
   })();
 
   /* hook sidebar profile + bottom-nav profile + topbar brand */
