@@ -1,1774 +1,937 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Yong Social — Finance, Crypto & Wealth Building</title>
-<meta name="description" content="Yong Social dashboard: traffic, social reach, net worth, crypto holdings, latest articles." />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Yong Social</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>const _cw=console.warn.bind(console);console.warn=(...a)=>{if(typeof a[0]==='string'&&a[0].includes('cdn.tailwindcss.com'))return;_cw(...a);};</script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<!-- Firebase SDK (compat) -->
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore-compat.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-<!-- Solana Wallet Adapter -->
-<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.0/lib/index.iife.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-base@0.9.20/lib/index.iife.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-phantom@0.9.20/lib/index.iife.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-solflare@0.9.20/lib/index.iife.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-backpack@0.1.10/lib/index.iife.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@solana/wallet-adapter-wallets@0.19.20/lib/index.iife.min.js"></script>
-
-<script>
-// ============================================
-// FIREBASE INITIALIZATION
-// ============================================
-const firebaseConfig = {
-  apiKey: 'AIzaSyB8ZQSUOcHQ54eRxoC2g2IoLIGIzo6r2ME',
-  authDomain: 'yong-social.firebaseapp.com',
-  projectId: 'yong-social',
-  storageBucket: 'yong-social.firebasestorage.app',
-  messagingSenderId: '178823074404',
-  appId: '1:178823074404:web:d1b4d76ea3a2d7c9170571'
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-const db = firebase.firestore();
-const auth = firebase.auth();
-</script>
-
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] },
-        colors: {
-          ink:'#070b14', surface:'#0d1322', surface2:'#121a2d',
-          line:'#1f2940', mute:'#8a93a8',
-          brand:'#d4b25a', brand2:'#22c984', danger:'#ef4444'
-        },
-      },
-    },
-  };
-</script>
+<!-- WalletConnect -->
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3wallet@1.12.0/dist/index.umd.min.js"></script>
 
 <style>
-  html,body{background:#070b14;color:#e7ecf5;font-family:Inter,system-ui,sans-serif}
-  .card{background:linear-gradient(180deg,#0f1626,#0b1120);border:1px solid #1f2940;border-radius:18px}
-  .chip{background:#121a2d;border:1px solid #1f2940;border-radius:9999px}
-  .btn-brand{background:#d4b25a;color:#0b1120;font-weight:600}
-  .btn-brand:hover{filter:brightness(1.05)}
-  .btn-brand:disabled{opacity:.45;cursor:not-allowed}
-  .btn-ghost{background:#121a2d;border:1px solid #1f2940;color:#e7ecf5}
-  .btn-ghost:hover{border-color:#d4b25a}
-  .scroll-hide::-webkit-scrollbar{display:none}
-  .skeleton{background:linear-gradient(90deg,#121a2d,#1a2440,#121a2d);background-size:200% 100%;animation:sh 1.2s infinite}
-  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  .grain{background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:3px 3px}
-  .nav-link{padding:.5rem .9rem;border-radius:9999px;font-size:.85rem;font-weight:500;color:#8a93a8}
-  .nav-link:hover{color:#e7ecf5}
-  .nav-link.active{background:#121a2d;border:1px solid #1f2940;color:#d4b25a}
-  .bar-track{height:8px;background:#121a2d;border:1px solid #1f2940;border-radius:9999px;overflow:hidden}
-  .bar-fill{height:100%;background:linear-gradient(90deg,#d4b25a,#22c984);transition:width .6s ease}
-  .pulse-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c984;box-shadow:0 0 0 0 rgba(34,201,132,.7);animation:pd 1.6s infinite}
-  @keyframes pd{0%{box-shadow:0 0 0 0 rgba(34,201,132,.6)}70%{box-shadow:0 0 0 10px rgba(34,201,132,0)}100%{box-shadow:0 0 0 0 rgba(34,201,132,0)}}
-  .active-range{background:#d4b25a!important;color:#0b1120!important;border-color:#d4b25a!important;font-weight:600!important}
-  
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 300;
-    background: #0f1626;
-    border: 1px solid #1f2940;
-    border-radius: 16px;
-    padding: 1rem 1.5rem;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-    display: none;
-    animation: slideUp 0.3s ease;
+  :root{
+    --bg:#0b0d12;
+    --bg-2:#11141b;
+    --surface:#161a23;
+    --surface-2:#1c2230;
+    --border:#222837;
+    --text:#e6e8ef;
+    --muted:#8b93a7;
+    --brand:#ff7a18;
+    --brand-2:#1d8fff;
+    --link:#5ab1ff;
+    --verified:#1d9bf0;
+    --success:#22c55e;
+    --danger:#ef4444;
   }
-  .toast.show { display: block; }
-  .toast.success { border-color: #22c984; }
-  .toast.error { border-color: #ef4444; }
-  .toast .icon { font-size: 1.5rem; margin-right: 0.5rem; }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;overscroll-behavior-y:none}
+  body{min-height:100vh;min-height:100dvh}
+  a{color:var(--link);text-decoration:none}
+  button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+  input{font-family:inherit}
 
-  .profile-setup-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(7, 11, 20, 0.95);
-    backdrop-filter: blur(16px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .profile-setup-overlay.active { display: flex; }
-  .profile-setup-modal {
-    max-width: 480px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: linear-gradient(180deg, #0f1626, #0b1120);
-    border: 1px solid #1f2940;
-    border-radius: 20px;
-    padding: 1.5rem;
-  }
-  .profile-setup-modal::-webkit-scrollbar { width: 4px; }
-  .profile-setup-modal::-webkit-scrollbar-track { background: #0b1120; }
-  .profile-setup-modal::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
-  
-  .setup-header { text-align: center; margin-bottom: 1.5rem; }
-  .setup-header .icon { font-size: 3rem; margin-bottom: 0.5rem; }
-  .setup-header h2 { font-size: 1.25rem; font-weight: 700; color: #e7ecf5; }
-  .setup-header p { font-size: 0.85rem; color: #8a93a8; margin-top: 0.25rem; }
+  /* Splash */
+  #splash{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#0f1a2e 0%,#06080d 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity .6s ease, visibility .6s}
+  #splash.hide{opacity:0;visibility:hidden}
+  .splash-logo{width:130px;height:130px;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px -10px rgba(255,122,24,.35),0 0 0 1px rgba(255,255,255,.06);animation:pop .9s cubic-bezier(.2,.9,.3,1.3) both}
+  .splash-logo img{width:100%;height:100%;object-fit:cover}
+  .splash-title{margin-top:22px;font-weight:800;font-size:22px;letter-spacing:.2px;background:linear-gradient(90deg,#fff,#ffb37a 40%,#1d8fff);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(8px);animation:rise .6s .35s ease-out forwards}
+  .splash-sub{margin-top:8px;color:var(--muted);font-size:13px;letter-spacing:.4px;opacity:0;animation:rise .6s .55s ease-out forwards}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
 
-  .setup-section { margin-bottom: 1.25rem; }
-  .setup-section .label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #8a93a8;
-    margin-bottom: 0.5rem;
-  }
-  .setup-section .label .badge {
-    background: #d4b25a;
-    color: #0b1120;
-    font-size: 0.6rem;
-    padding: 0.1rem 0.5rem;
-    border-radius: 9999px;
-    margin-left: 0.4rem;
-    font-weight: 700;
-  }
+  /* Auth Screen */
+  #authScreen{position:fixed;inset:0;background:var(--bg);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+  #authScreen.show{display:flex}
+  .auth-card{max-width:420px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px 32px;text-align:center}
+  .auth-card .logo{width:80px;height:80px;border-radius:20px;overflow:hidden;margin:0 auto 20px;box-shadow:0 10px 30px -8px rgba(255,122,24,.3)}
+  .auth-card .logo img{width:100%;height:100%;object-fit:cover}
+  .auth-card h1{font-size:24px;font-weight:800;margin:0 0 8px}
+  .auth-card p{color:var(--muted);font-size:14px;margin:0 0 28px;line-height:1.5}
+  .google-btn{width:100%;padding:14px;border-radius:12px;background:#fff;color:#1a1a1a;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #e5e5e5;transition:all .15s;cursor:pointer}
+  .google-btn:hover{background:#f5f5f5;transform:scale(1.01)}
+  .google-btn i{font-size:20px}
+  .auth-divider{display:flex;align-items:center;gap:14px;margin:20px 0;color:var(--muted);font-size:12px}
+  .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--border)}
+  .guest-btn{padding:10px;border-radius:12px;background:transparent;color:var(--muted);font-size:14px;font-weight:500;border:1px solid var(--border);width:100%;cursor:pointer;transition:all .15s}
+  .guest-btn:hover{background:var(--surface-2);color:var(--text)}
 
-  .wallet-btn-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .wallet-btn {
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    border-radius: 9999px;
-    padding: 0.45rem 1rem;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #e7ecf5;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: 'Inter', sans-serif;
-  }
-  .wallet-btn:hover { border-color: #d4b25a; background: rgba(212, 178, 90, 0.05); }
-  .wallet-btn.connected { border-color: #22c984; background: rgba(34, 201, 132, 0.08); }
-  .wallet-btn svg { flex-shrink: 0; }
-  .wallet-status-text {
-    font-size: 0.75rem;
-    color: #8a93a8;
-    margin-top: 0.4rem;
-  }
-  .wallet-status-text.connected { color: #22c984; }
+  /* App Shell */
+  .app{max-width:780px;margin:0 auto;padding-bottom:84px;min-height:100dvh}
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(11,13,18,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  .icon-btn{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;color:var(--text);font-size:18px;transition:background .15s}
+  .icon-btn:hover{background:var(--surface)}
+  .brand-mark{width:34px;height:34px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--border)}
+  .brand-mark img{width:100%;height:100%;object-fit:cover}
+  .user-avatar{width:34px;height:34px;border-radius:50%;overflow:hidden;border:2px solid var(--brand)}
+  .user-avatar img{width:100%;height:100%;object-fit:cover}
 
-  .wallet-input {
-    width: 100%;
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    border-radius: 12px;
-    padding: 0.6rem 1rem;
-    font-size: 0.85rem;
-    font-family: 'Inter', monospace;
-    color: #e7ecf5;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-top: 0.4rem;
-  }
-  .wallet-input:focus { border-color: #d4b25a; }
-  .wallet-input::placeholder { color: #5a6378; }
+  .tabs{position:sticky;top:69px;z-index:29;display:flex;background:rgba(11,13,18,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  .tab{flex:1;padding:14px 0;text-align:center;font-weight:600;color:var(--muted);font-size:15px;position:relative;letter-spacing:.2px;cursor:pointer}
+  .tab.active{color:var(--text)}
+  .tab.active::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:48px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
 
-  .tag-search {
-    width: 100%;
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    border-radius: 12px;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    color: #e7ecf5;
-    outline: none;
-    font-family: 'Inter', sans-serif;
-  }
-  .tag-search:focus { border-color: #d4b25a; }
-  .tag-search::placeholder { color: #5a6378; }
+  /* Ticker */
+  .ticker{position:sticky;top:118px;z-index:28;overflow:hidden;background:linear-gradient(90deg,rgba(11,13,18,.95),rgba(20,24,33,.95));backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:38px;display:flex;align-items:center;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+  .ticker-track{display:flex;gap:36px;white-space:nowrap;will-change:transform;animation:tickerScroll 90s linear infinite;padding-left:100%}
+  .ticker:hover .ticker-track{animation-play-state:paused}
+  .ticker-item{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);letter-spacing:.3px}
+  .ticker-item .t-sym{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.5px}
+  .ticker-item .t-price{font-variant-numeric:tabular-nums;color:#fff}
+  .ticker-item .t-chg{font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
+  .ticker-item .t-chg.up{color:#22c55e;background:rgba(34,197,94,.12)}
+  .ticker-item .t-chg.down{color:#ef4444;background:rgba(239,68,68,.12)}
+  @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion: reduce){.ticker-track{animation-duration:240s}}
 
-  .setup-tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-    max-height: 160px;
-    overflow-y: auto;
-  }
-  .setup-tag-list::-webkit-scrollbar { width: 3px; }
-  .setup-tag-list::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
-  
-  .setup-tag {
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    border-radius: 9999px;
-    padding: 0.2rem 0.7rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #8a93a8;
-    font-family: 'Inter', sans-serif;
-    white-space: nowrap;
-  }
-  .setup-tag:hover { border-color: #d4b25a; }
-  .setup-tag.selected { border-color: #d4b25a; background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
-  .setup-tag.disabled { opacity: 0.4; cursor: not-allowed; }
-  
-  .setup-counter {
-    font-size: 0.75rem;
-    color: #5a6378;
-    margin-top: 0.4rem;
-    text-align: right;
-  }
-  .setup-counter .num { color: #e7ecf5; font-weight: 600; }
+  /* Feed */
+  .feed{display:flex;flex-direction:column}
+  .post{padding:18px 18px 14px;border-bottom:1px solid var(--border);animation:fadeIn .4s ease both}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .post-head{display:flex;align-items:center;gap:12px}
+  .avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface-2);box-shadow:0 0 0 1px var(--border)}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .who{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+  .name{font-weight:700;font-size:15px}
+  .verified{color:var(--verified);font-size:14px}
+  .handle{color:var(--muted);font-size:14px}
+  .dot{color:var(--muted);font-size:14px;margin:0 2px}
+  .post-title{margin:12px 0 6px;font-size:16px;font-weight:600;line-height:1.4}
+  .post-snippet{color:#cfd3df;font-size:14.5px;line-height:1.55;margin:0 0 10px}
+  .post-tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+  .tag-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 12px;border-radius:999px;background:var(--surface-2);font-size:12px;font-weight:600;color:var(--link)}
+  .tag-chip .tc-follow{background:none;border:1px solid var(--border);color:var(--muted);padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;margin-left:2px;cursor:pointer}
+  .tag-chip .tc-follow.following{border-color:var(--success);color:var(--success)}
+  .tag-chip .tc-follow:hover{color:var(--text)}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-size:12.5px}
 
-  .setup-actions {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-  }
-  .setup-actions .btn-ghost {
-    flex: 1;
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    color: #8a93a8;
-    border-radius: 9999px;
-    padding: 0.6rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Inter', sans-serif;
-  }
-  .setup-actions .btn-ghost:hover { border-color: #d4b25a; color: #e7ecf5; }
-  .setup-actions .btn-brand { flex: 1; padding: 0.6rem; border-radius: 9999px; font-size: 0.85rem; }
+  .feed-empty{padding:60px 24px;text-align:center;color:var(--muted)}
+  .feed-empty button{margin-top:14px;padding:10px 20px;border-radius:999px;background:linear-gradient(90deg,var(--brand),var(--brand-2));color:#fff;font-weight:700;border:0;cursor:pointer}
 
-  .profile-wallet-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  /* Bottom Nav */
+  .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:space-around;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(11,13,18,.92);backdrop-filter:blur(14px);border-top:1px solid var(--border)}
+  .nav-btn{flex:1;display:grid;place-items:center;padding:8px 0;color:var(--muted);font-size:18px;border-radius:10px;cursor:pointer;position:relative}
+  .nav-btn.active{color:var(--text)}
+  .nav-me{width:30px;height:30px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--brand)}
+  .nav-me img{width:100%;height:100%;object-fit:cover}
+
+  /* Profile Modal */
+  .ym-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px}
+  .ym-overlay.open{display:flex}
+  .ym-card{background:var(--bg,#0b0d12);border:1px solid var(--border,#222);border-radius:18px;width:100%;max-width:560px;color:var(--text,#fff);overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);animation:ymIn .25s ease;position:relative}
+  @keyframes ymIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .ym-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;border:0;cursor:pointer;font-size:15px;z-index:5}
+  .ym-close:hover{background:rgba(0,0,0,.8)}
+  .yp-banner{position:relative;height:160px;background:#222 center/cover no-repeat}
+  .yp-pic{position:absolute;left:18px;bottom:-44px;width:96px;height:96px;border-radius:50%;border:4px solid var(--bg,#0b0d12);overflow:hidden;background:#000}
+  .yp-pic img{width:100%;height:100%;object-fit:cover}
+  .yp-body{padding:56px 20px 20px}
+  .yp-name{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:800}
+  .yp-verif{color:#1d8fff;font-size:18px}
+  .yp-handle{color:var(--muted,#8b94a3);font-size:14px;margin-top:2px}
+  .yp-sec-title{font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#8b94a3);margin:18px 0 10px}
+  .yp-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .yp-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--surface,#161922);border:1px solid var(--border,#222);font-size:13px;color:var(--text,#fff)}
+  .yp-tag button{margin-left:6px;padding:3px 10px;border-radius:999px;border:0;background:#fff;color:#000;font-weight:700;font-size:11px;cursor:pointer}
+  .yp-tag button.following{background:transparent;color:var(--text,#fff);border:1px solid var(--border,#333)}
+  .yp-btn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;background:var(--surface,#161922);border:1px solid var(--border,#222);color:var(--text,#fff);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;transition:background .15s}
+  .yp-btn:hover{background:rgba(255,255,255,.06)}
+  .yp-btn i.lead{width:22px;text-align:center;font-size:16px}
+  .yp-btn .grow{flex:1}
+  .yp-btn small{color:var(--muted,#8b94a3);font-weight:500;font-size:12px;display:block;margin-top:2px}
+  .yp-btn .status{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px}
+  .yp-btn .status.connected{background:rgba(34,197,94,.15);color:var(--success)}
+  .yp-btn .status.disconnected{background:rgba(239,68,68,.15);color:var(--danger)}
+  .yp-btn.wallet-btn{background:linear-gradient(135deg,#0a2540,#0098EA);border-color:#0098EA}
+  .yp-btn.wallet-btn:hover{background:linear-gradient(135deg,#0a2540,#0077c8)}
+  .yp-btn.wallet-btn .status.connected{background:rgba(255,255,255,.15);color:#fff}
+  .yp-btn.wallet-btn .status.disconnected{background:rgba(255,255,255,.15);color:#fff}
+  .yp-logout{margin-top:12px;padding:12px;border-radius:12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--danger);font-weight:600;font-size:14px;width:100%;text-align:center;cursor:pointer;transition:all .15s}
+  .yp-logout:hover{background:rgba(239,68,68,.2)}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);background:var(--surface-2);color:var(--text);padding:12px 18px;border-radius:999px;font-size:14px;font-weight:500;box-shadow:0 10px 30px -10px rgba(0,0,0,.6),0 0 0 1px var(--border);display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:transform .3s, opacity .3s;z-index:200}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast i{color:var(--success)}
+
+  /* Desktop Layout */
+  .layout{display:block}
+  .sidebar,.rightbar{display:none}
+  @media (min-width: 1000px){
+    .bottomnav{display:none !important}
+    .app>.topbar{display:none}
+    .app>.tabs{top:0}
+    .app>.ticker{top:49px}
+    .app{max-width:none;margin:0;padding-bottom:0;border-left:1px solid var(--border);border-right:1px solid var(--border);min-height:100dvh}
+    .tabs{position:sticky;top:0}
+    .sidebar{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100dvh;padding:10px 12px 16px;overflow-y:auto}
+    .sidebar .sb-brand{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:6px}
+    .sidebar .sb-brand .brand-mark{width:40px;height:40px;border-radius:12px}
+    .sidebar .sb-brand .sb-brand-name{font-weight:800;font-size:20px;background:linear-gradient(90deg,#fff,#ffb37a 50%,#1d8fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .sb-item{display:flex;align-items:center;gap:18px;padding:12px 16px;border-radius:999px;color:var(--text);font-size:18px;font-weight:500;cursor:pointer;transition:background .15s;width:max-content;max-width:100%}
+    .sb-item i{font-size:22px;width:26px;text-align:center}
+    .sb-item:hover{background:var(--surface)}
+    .sb-item.active{font-weight:800}
+    .sb-me{margin-top:auto;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:999px;cursor:pointer;transition:background .15s}
+    .sb-me:hover{background:var(--surface)}
+    .sb-me .nav-me{width:40px;height:40px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--brand)}
+    .sb-me .nav-me img{width:100%;height:100%;object-fit:cover}
+    .sb-me .sb-me-info{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+    .sb-me .sb-me-name{font-weight:700;font-size:15px}
+    .sb-me .sb-me-handle{font-size:13px;color:var(--muted)}
+    .sb-me .sb-me-more{margin-left:auto;color:var(--muted)}
+    .rightbar{display:flex;flex-direction:column;gap:16px;position:sticky;top:0;max-height:100dvh;overflow-y:auto;padding:12px 16px 24px}
+    .rb-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+    .rb-card h3{margin:0;padding:14px 16px;font-size:18px;font-weight:800}
+    .rb-trend{padding:12px 16px;border-top:1px solid var(--border);cursor:pointer;transition:background .15s}
+    .rb-trend:hover{background:var(--surface-2)}
+    .rb-trend .rb-cat{font-size:12px;color:var(--muted)}
+    .rb-trend .rb-topic{font-weight:700;font-size:15px;margin-top:2px}
+    .rb-trend .rb-posts{font-size:12px;color:var(--muted);margin-top:2px}
+    .rb-foot{font-size:12px;color:var(--muted);padding:0 4px;line-height:1.5}
+    .rb-foot a{color:var(--muted)}
+    .layout{display:grid;grid-template-columns:275px minmax(0,600px) 350px;gap:0;max-width:1265px;margin:0 auto;align-items:start}
   }
-  .profile-wallet-row .addr {
-    font-family: monospace;
-    font-size: 0.8rem;
-    background: #121a2d;
-    padding: 0.15rem 0.6rem;
-    border-radius: 6px;
-    border: 1px solid #1f2940;
-    word-break: break-all;
-  }
-  .profile-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-  }
-  .profile-tags .tag-chip {
-    background: rgba(212, 178, 90, 0.1);
-    border: 1px solid rgba(212, 178, 90, 0.2);
-    border-radius: 9999px;
-    padding: 0.1rem 0.5rem;
-    font-size: 0.7rem;
-    color: #d4b25a;
-  }
-  .profile-status-badge {
-    display: inline-block;
-    padding: 0.1rem 0.6rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-  .profile-status-badge.complete { background: rgba(34, 201, 132, 0.12); color: #22c984; }
-  .profile-status-badge.incomplete { background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
 </style>
 </head>
-<body class="min-h-screen grain">
+<body>
 
-<!-- ============================================ -->
-<!-- TOAST -->
-<!-- ============================================ -->
-<div id="toast" class="toast">
-  <span id="toastIcon" class="icon">✅</span>
-  <span id="toastMessage">Success!</span>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo"><img id="splashLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='52' font-weight='800' fill='white' text-anchor='middle'%3EY%3C/text%3E%3C/svg%3E" alt="Yong Social" /></div>
+  <div class="splash-title">Yong Social</div>
+  <div class="splash-sub">Community. Crypto. Connection.</div>
 </div>
 
-<!-- ============================================ -->
-<!-- PROFILE SETUP POPUP -->
-<!-- ============================================ -->
-<div id="profileSetupOverlay" class="profile-setup-overlay">
-  <div class="profile-setup-modal">
-    <div class="setup-header">
-      <div class="icon">💎</div>
-      <h2>Complete Your Profile</h2>
-      <p>Connect your Solana wallet and select 5 topics to join the community.</p>
-    </div>
-
-    <!-- Wallet Section -->
-    <div class="setup-section">
-      <div class="label">Connect Wallet</div>
-      <div class="wallet-btn-group" id="walletButtons">
-        <button class="wallet-btn" data-wallet="phantom" onclick="connectRealWallet('phantom')">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#AB9FF2"/><path d="M7 14L10 11L13 14" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/><path d="M7 7L10 10L13 7" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/></svg>
-          Phantom
-        </button>
-        <button class="wallet-btn" data-wallet="solflare" onclick="connectRealWallet('solflare')">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#FF8C00"/><path d="M14 7H6C5.44772 7 5 7.44772 5 8V13C5 13.5523 5.44772 14 6 14H14C14.5523 14 15 13.5523 15 13V8C15 7.44772 14.5523 7 14 7Z" stroke="white" stroke-width="1.5"/><circle cx="12.5" cy="10.5" r="1.5" fill="white"/></svg>
-          Solflare
-        </button>
-        <button class="wallet-btn" data-wallet="backpack" onclick="connectRealWallet('backpack')">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
-          Backpack
-        </button>
-      </div>
-      <div id="walletStatus" class="wallet-status-text">No wallet connected</div>
-      <input id="manualWalletInput" type="text" class="wallet-input" placeholder="Or paste wallet address manually..." />
-    </div>
-
-    <!-- Tags Section -->
-    <div class="setup-section">
-      <div class="label">Select 5 Topics <span class="badge" id="tagCounter">0/5</span></div>
-      <input type="text" id="tagSearch" class="tag-search" placeholder="Search topics..." oninput="filterTags()" />
-      <div id="tagList" class="setup-tag-list"></div>
-      <div class="setup-counter"><span class="num" id="selectedTagCount">0</span> of 5 selected</div>
-    </div>
-
-    <!-- Actions -->
-    <div class="setup-actions">
-      <button onclick="closeProfileSetup()" class="btn-ghost">Skip</button>
-      <button id="exploreBtn" class="btn-brand" onclick="exploreCommunity()">🚀 Explore</button>
-    </div>
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="logo"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='52' font-weight='800' fill='white' text-anchor='middle'%3EY%3C/text%3E%3C/svg%3E" alt="Yong Social" /></div>
+    <h1>Welcome to Yong Social</h1>
+    <p>Join the community. Follow topics you love. Connect your wallet.</p>
+    <button class="google-btn" id="googleLoginBtn">
+      <i class="fa-brands fa-google"></i> Continue with Google
+    </button>
+    <div class="auth-divider">or</div>
+    <button class="guest-btn" id="guestLoginBtn">Continue as Guest</button>
   </div>
 </div>
 
-<!-- ============================================ -->
-<!-- MAIN APP -->
-<!-- ============================================ -->
-<header class="sticky top-0 z-30 backdrop-blur bg-ink/80 border-b border-line">
-  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
-    <a href="https://www.yongsocial.com/" target="_blank" rel="noreferrer" class="flex items-center gap-2.5">
-      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhu_7mdnTHeYcrLaxRY0veIDVO6Pb0Pk4ngLKZupHTxufcBF3hwrlsgIxyXHfiDu_NywzKTnvLoGuh37Lv6k1Qkl0Q5HlHFn_sOa6ow8cL2TGXee1kSl6Uohtv_SggJ1UBhfNpUG4ClC1kPMkpC7Am3wX3cmDve4a95uvhmjNfF97aP2-hUVpX_Wk2dh56a/s1200/file_00000000814c720aa68fca8155db1cab_copy_1200x630.png" alt="Yong Social" class="w-9 h-9 rounded-xl object-cover" />
-      <div class="leading-tight">
-        <div class="font-bold tracking-tight">Yong Social</div>
-        <div class="text-[11px] text-mute -mt-0.5">Finance · Crypto · Wealth Building</div>
+<!-- APP -->
+<div class="layout">
+  <aside class="sidebar" aria-label="Primary">
+    <div class="sb-brand">
+      <div class="brand-mark"><img id="sbLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='52' font-weight='800' fill='white' text-anchor='middle'%3EY%3C/text%3E%3C/svg%3E" alt="Yong Social"/></div>
+      <span class="sb-brand-name">Yong</span>
+    </div>
+    <button class="sb-item active" data-sb="home"><i class="fa-solid fa-house"></i><span class="sb-label">Home</span></button>
+    <button class="sb-item" data-sb="explore"><i class="fa-solid fa-hashtag"></i><span class="sb-label">Explore</span></button>
+    <button class="sb-item" data-sb="profile"><i class="fa-regular fa-user"></i><span class="sb-label">Profile</span></button>
+    <div class="sb-me" id="sbMe">
+      <div class="nav-me"><img id="sbAvatar" src="" alt="me"/></div>
+      <div class="sb-me-info">
+        <span class="sb-me-name" id="sbName">Guest</span>
+        <span class="sb-me-handle" id="sbHandle">@guest</span>
       </div>
-    </a>
-    <nav id="nav" class="flex items-center gap-1">
-      <a href="#/" class="nav-link active" data-route="/">Dashboard</a>
-      <a href="#/profile" class="nav-link flex items-center gap-2" data-route="/profile" id="navProfile">
-        <span id="navAvatar" class="w-6 h-6 rounded-full bg-surface2 border border-line grid place-items-center text-[11px] text-brand font-bold">Y</span>
-        <span class="hidden sm:inline">Profile</span>
-      </a>
-      <a href="javascript:void(0)" onclick="handleCommunityAccess()" class="nav-link flex items-center gap-2">👥 Community</a>
+      <i class="fa-solid fa-ellipsis sb-me-more"></i>
+    </div>
+  </aside>
+
+  <div class="app">
+    <header class="topbar">
+      <button class="icon-btn" id="topSettings" aria-label="Settings"><i class="fa-solid fa-gear"></i></button>
+      <div class="brand-mark" id="topBrand" style="cursor:pointer"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='52' font-weight='800' fill='white' text-anchor='middle'%3EY%3C/text%3E%3C/svg%3E" alt="Yong Social"/></div>
+      <button class="icon-btn" id="topProfile" aria-label="Profile"><div class="user-avatar"><img id="topAvatar" src="" alt="profile"/></div></button>
+    </header>
+
+    <nav class="tabs">
+      <div class="tab active" data-tab="following">Following</div>
+      <div class="tab" data-tab="discover">Discover</div>
     </nav>
-  </div>
-</header>
 
-<main class="max-w-6xl mx-auto px-5 py-8">
-
-<!-- ===================== DASHBOARD ===================== -->
-<section id="view-dashboard" class="space-y-6">
-  <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="card p-5">
-      <div class="text-xs uppercase tracking-wider text-mute">Company Net Worth</div>
-      <div id="netWorth" class="text-3xl font-extrabold mt-1">—</div>
-      <div id="netWorthDelta" class="text-xs mt-1 text-mute">base + crypto · updates daily</div>
-    </div>
-    <div class="card p-5">
-      <div class="text-xs uppercase tracking-wider text-mute">Website Views · This Month</div>
-      <div id="viewsTotal" class="text-3xl font-extrabold mt-1">—</div>
-      <div id="viewsDelta" class="text-xs mt-1 text-mute">vs previous month</div>
-      <a href="https://www.yongsocial.com/" target="_blank" rel="noreferrer" class="btn-brand mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm">
-        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10A15.3 15.3 0 0 0 8 12a15.3 15.3 0 0 0 4-10z"/></svg>
-        Visit Website
-      </a>
-    </div>
-    <div class="card p-5">
-      <div class="text-xs uppercase tracking-wider text-mute">Total Followers</div>
-      <div id="followersTotal" class="text-3xl font-extrabold mt-1">—</div>
-      <div class="text-xs mt-1 text-mute">across all platforms</div>
-    </div>
-  </section>
-
-  <!-- NET WORTH CHART -->
-  <section class="card p-5" id="networthChartSection">
-    <div class="flex items-start justify-between gap-4 flex-wrap mb-4">
-      <div>
-        <div class="font-semibold">Company Net Worth · Historical</div>
-        <div class="text-xs text-mute mt-0.5">Treasury-recorded snapshots · MA5 · 7-day forecast</div>
+    <div class="ticker" id="cryptoTicker">
+      <div class="ticker-track" id="tickerTrack">
+        <div class="ticker-item ticker-loading"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Loading live market data…</div>
       </div>
-      <div class="flex items-center gap-3 flex-wrap">
-        <div class="flex items-center gap-4 text-xs text-mute">
-          <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-0.5 bg-brand rounded"></span>Net Worth</span>
-          <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-0.5 bg-blue-400 rounded"></span>MA5</span>
-          <span class="flex items-center gap-1.5"><span class="inline-block w-3 h-0.5 border-t border-dashed border-brand2 rounded" style="border-style:dashed"></span>Forecast</span>
+    </div>
+
+    <main id="feed" class="feed">
+      <div class="feed-empty">Loading posts…</div>
+    </main>
+  </div>
+
+  <aside class="rightbar" aria-label="Trends">
+    <div class="rb-card">
+      <h3>Trending Topics</h3>
+      <div id="rbTrendsList">
+        <div class="rb-trend"><div class="rb-cat">Loading trends…</div></div>
+      </div>
+    </div>
+    <div class="rb-foot" id="rbCopyright"></div>
+  </aside>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="ym-overlay" id="profileModal" aria-hidden="true">
+  <div class="ym-card">
+    <button class="ym-close" data-close-profile aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="yp-banner" id="profileBanner" style="background:linear-gradient(135deg,#ff7a18,#1d8fff)"></div>
+    <div class="yp-body">
+      <div class="yp-pic" id="profileAvatar"><img id="profileAvatarImg" src="" alt="Profile"/></div>
+      <div class="yp-name" id="profileName">Loading…</div>
+      <div class="yp-handle" id="profileHandle">@loading</div>
+
+      <div class="yp-sec-title">Following</div>
+      <div class="yp-tags" id="profileTags"><span class="yp-handle">Loading tags…</span></div>
+
+      <div class="yp-sec-title">Wallet</div>
+      <button class="yp-btn wallet-btn" id="walletConnectBtn">
+        <i class="lead fa-solid fa-wallet"></i>
+        <div class="grow">
+          <div>Connect Wallet</div>
+          <small>Trust Wallet • WalletConnect</small>
         </div>
-        <div class="flex gap-1" id="nwRangeBtns">
-          <button data-range="all"  class="chip px-2.5 py-1 text-xs nw-range-btn active-range">All</button>
-          <button data-range="30"   class="chip px-2.5 py-1 text-xs nw-range-btn">30d</button>
-          <button data-range="14"   class="chip px-2.5 py-1 text-xs nw-range-btn">14d</button>
-          <button data-range="7"    class="chip px-2.5 py-1 text-xs nw-range-btn">7d</button>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" id="nwStatsRow">
-      <div class="bg-surface2 rounded-xl px-4 py-3">
-        <div class="text-[10px] uppercase tracking-wider text-mute">All-time High</div>
-        <div id="nwATH" class="text-sm font-bold text-brand mt-0.5">—</div>
-      </div>
-      <div class="bg-surface2 rounded-xl px-4 py-3">
-        <div class="text-[10px] uppercase tracking-wider text-mute">All-time Low</div>
-        <div id="nwATL" class="text-sm font-bold text-danger mt-0.5">—</div>
-      </div>
-      <div class="bg-surface2 rounded-xl px-4 py-3">
-        <div class="text-[10px] uppercase tracking-wider text-mute">7d Forecast</div>
-        <div id="nwForecast" class="text-sm font-bold text-brand2 mt-0.5">—</div>
-      </div>
-      <div class="bg-surface2 rounded-xl px-4 py-3">
-        <div class="text-[10px] uppercase tracking-wider text-mute">Last Updated</div>
-        <div id="nwLastUpdate" class="text-sm font-bold mt-0.5">—</div>
-      </div>
-    </div>
-    <div class="relative" style="height:300px">
-      <canvas id="networthChart"></canvas>
-      <div id="nwChartEmpty" class="absolute inset-0 flex flex-col items-center justify-center text-center hidden">
-        <div class="text-3xl mb-2">📈</div>
-        <div class="font-semibold text-sm">No history yet</div>
-        <p class="text-xs text-mute mt-1 max-w-xs">Chart builds automatically each time the Treasury saves a Net Worth update.</p>
-      </div>
-      <div id="nwChartLoading" class="absolute inset-0 flex items-center justify-center">
-        <div class="skeleton w-full h-full rounded-xl"></div>
-      </div>
-    </div>
-    <div id="nwTooltip" class="hidden absolute z-50 pointer-events-none bg-surface border border-line rounded-xl px-4 py-3 text-xs shadow-xl min-w-[160px]"></div>
-  </section>
+        <span class="status disconnected" id="walletStatus">Disconnected</span>
+      </button>
+      <div id="walletAddress" style="display:none;font-size:12px;color:var(--muted);padding:0 14px 12px;word-break:break-all"></div>
 
-  <section class="grid grid-cols-1 gap-4">
-    <div class="card p-5">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-semibold">Social Reach</div>
-        <span class="chip text-xs px-2.5 py-1 text-mute">followers</span>
-      </div>
-      <ul id="socialList" class="space-y-2.5"></ul>
-    </div>
-  </section>
-
-  <section class="card p-5">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="font-semibold">Crypto Holdings</div>
-        <div class="text-xs text-mute">Powered by CoinGecko · updates daily at midnight UTC</div>
-      </div>
-      <div class="text-right">
-        <div class="text-xs text-mute">Total crypto value</div>
-        <div id="cryptoTotal" class="font-bold text-brand">—</div>
-      </div>
-    </div>
-    <div class="overflow-x-auto scroll-hide">
-      <table class="w-full text-sm min-w-[520px]">
-        <thead class="text-mute text-xs uppercase tracking-wider">
-          <tr class="text-left">
-            <th class="py-2 font-medium">Asset</th>
-            <th class="py-2 font-medium">Holdings</th>
-            <th class="py-2 font-medium">Price</th>
-            <th class="py-2 font-medium">24h</th>
-            <th class="py-2 font-medium text-right">Value</th>
-          </tr>
-        </thead>
-        <tbody id="cryptoBody" class="divide-y divide-line"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="card p-5">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="font-semibold">Most Recent</div>
-        <div class="text-xs text-mute">Latest article from yongsocial.com</div>
-      </div>
-      <span class="chip text-xs px-2.5 py-1 text-brand">TREND</span>
-    </div>
-    <div id="recentArticle">
-      <div class="skeleton h-40 rounded-xl"></div>
-    </div>
-  </section>
-</section>
-
-<!-- ===================== PROFILE ===================== -->
-<section id="view-profile" class="space-y-6 hidden">
-  <div class="card p-6">
-    <div class="text-xs uppercase tracking-wider text-brand">Profile</div>
-    <h1 class="text-2xl md:text-3xl font-extrabold mt-1">Your Profile</h1>
-  </div>
-
-  <div id="profileLoading" class="card p-6"><div class="skeleton h-24 rounded-xl"></div></div>
-  <div id="profileError" class="card p-6 text-danger text-sm hidden"></div>
-
-  <div id="profileCard" class="card p-6 flex items-center gap-5 hidden">
-    <div id="profileAvatar" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand2 grid place-items-center text-ink text-3xl font-extrabold">Y</div>
-    <div>
-      <div id="profileName" class="text-xl font-bold">—</div>
-      <div id="profileHandle" class="text-sm text-mute">—</div>
-      <div id="profileId" class="text-xs text-mute mt-1">—</div>
+      <button class="yp-logout" id="logoutBtn"><i class="fa-solid fa-sign-out-alt"></i> Sign Out</button>
     </div>
   </div>
+</div>
 
-  <!-- Wallet & Tags -->
-  <div id="profileDetails" class="card p-6 hidden space-y-4">
-    <div>
-      <div class="text-xs uppercase tracking-wider text-mute mb-1">Solana Wallet</div>
-      <div class="profile-wallet-row">
-        <span class="addr" id="profileWallet">Not connected</span>
-        <button class="chip text-xs px-2 py-0.5" onclick="openProfileSetup()">Connect</button>
-      </div>
-    </div>
-    <div>
-      <div class="text-xs uppercase tracking-wider text-mute mb-1">Staked Topics</div>
-      <div id="profileTags" class="profile-tags"></div>
-      <div id="profileNoTags" class="text-sm text-mute">No topics staked yet.</div>
-    </div>
-    <div>
-      <div class="text-xs uppercase tracking-wider text-mute mb-1">Status</div>
-      <span id="profileStatusBadge" class="profile-status-badge incomplete">⏳ Setup Required</span>
-    </div>
-  </div>
-</section>
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg">Success</span></div>
 
-<footer class="text-center text-xs text-mute py-8">
-  © <span id="yr"></span> Yong Social ·
-  <a class="underline hover:text-brand" href="https://www.yongsocial.com/" target="_blank" rel="noreferrer">yongsocial.com</a>
-</footer>
-
-</main>
-
-<!-- ============================================ -->
-<!-- JAVASCRIPT -->
-<!-- ============================================ -->
 <script>
-// ============================================
-// FIREBASE
-// ============================================
-// Already initialized above
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAOUID6hxYxYPgf4qm0ASdhLf5Pgj2Y9y8",
+  authDomain: "yong-sphere.firebaseapp.com",
+  projectId: "yong-sphere",
+  storageBucket: "yong-sphere.firebasestorage.app",
+  messagingSenderId: "969832363153",
+  appId: "1:969832363153:web:a6e0d6601c8403b8273b30"
+};
 
-// ============================================
-// SOLANA WALLET ADAPTER - REAL CONNECTION
-// ============================================
-var solanaWallet = null;
-var solanaPublicKey = null;
-var solanaConnection = null;
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Check if Phantom is installed
-function isPhantomInstalled() {
-  return window.solana && window.solana.isPhantom;
-}
-
-// Check if Solflare is installed
-function isSolflareInstalled() {
-  return window.solflare && window.solflare.isSolflare;
-}
-
-// Check if Backpack is installed
-function isBackpackInstalled() {
-  return window.backpack && window.backpack.isBackpack;
-}
-
-// Get the wallet adapter
-function getWalletAdapter(walletType) {
-  switch(walletType) {
-    case 'phantom':
-      return window.solana;
-    case 'solflare':
-      return window.solflare;
-    case 'backpack':
-      return window.backpack;
-    default:
-      return null;
-  }
-}
-
-// Connect to real wallet
-async function connectRealWallet(walletType) {
-  try {
-    // Check if wallet is installed
-    var wallet = getWalletAdapter(walletType);
-    
-    if (!wallet) {
-      // Wallet not installed - prompt to install
-      var installUrl = '';
-      switch(walletType) {
-        case 'phantom':
-          installUrl = 'https://phantom.app/';
-          break;
-        case 'solflare':
-          installUrl = 'https://solflare.com/';
-          break;
-        case 'backpack':
-          installUrl = 'https://backpack.app/';
-          break;
-      }
-      
-      if (confirm(walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' wallet is not installed. Would you like to install it?')) {
-        window.open(installUrl, '_blank');
-      }
-      return;
-    }
-    
-    // Request connection
-    var resp = await wallet.connect();
-    solanaPublicKey = resp.publicKey;
-    solanaWallet = wallet;
-    
-    var address = solanaPublicKey.toBase58();
-    walletAddress = address;
-    connectedWallet = walletType;
-    
-    // Update UI
-    document.getElementById('walletStatus').textContent = '✅ Connected to ' + walletType + ' (' + address.substring(0, 6) + '...' + address.substring(address.length - 4) + ')';
-    document.getElementById('walletStatus').className = 'wallet-status-text connected';
-    document.getElementById('manualWalletInput').value = address;
-    
-    document.querySelectorAll('.wallet-btn').forEach(function(btn) {
-      btn.classList.remove('connected');
-      if (btn.dataset.wallet === walletType) {
-        btn.classList.add('connected');
-      }
-    });
-    
-    // Try to get balance
-    try {
-      var connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
-      var balance = await connection.getBalance(solanaPublicKey);
-      var solBalance = balance / 1000000000;
-      document.getElementById('walletStatus').textContent += ' (Balance: ' + solBalance.toFixed(4) + ' SOL)';
-    } catch(e) {
-      // Balance fetch failed, but connection worked
-    }
-    
-    showToast('Wallet connected: ' + address.substring(0, 6) + '...' + address.substring(address.length - 4), 'success');
-    
-  } catch(error) {
-    console.error('Wallet connection error:', error);
-    showToast('Failed to connect wallet: ' + error.message, 'error');
-  }
-}
-
-// Listen for wallet disconnect
-if (window.solana) {
-  window.solana.on('disconnect', function() {
-    solanaPublicKey = null;
-    solanaWallet = null;
-    walletAddress = '';
-    connectedWallet = null;
-    document.getElementById('walletStatus').textContent = 'No wallet connected';
-    document.getElementById('walletStatus').className = 'wallet-status-text';
-    document.getElementById('manualWalletInput').value = '';
-    document.querySelectorAll('.wallet-btn').forEach(function(btn) {
-      btn.classList.remove('connected');
-    });
-    showToast('Wallet disconnected', 'error');
-  });
-}
-
-// ============================================
+// ============================================================
 // STATE
-// ============================================
-var PROFILE = null;
-var TG_USER = null;
-var currentUser = null;
-var selectedTopics = [];
-var allTags = [];
+// ============================================================
+let currentUser = null;
+let currentUserData = null;
+let allPosts = [];
+let followedTags = new Set();
+let isGuest = false;
 
-// ============================================
-// TELEGRAM USER
-// ============================================
-var tg = window.Telegram?.WebApp || null;
-try { tg?.ready(); tg?.expand(); } catch {}
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const splash = $('splash');
+const authScreen = $('authScreen');
+const feedEl = $('feed');
+const tabs = document.querySelectorAll('.tab');
+const toast = $('toast');
+const toastMsg = $('toastMsg');
 
-function getTgUser() {
-  var u = tg?.initDataUnsafe?.user;
-  if (u) return { ...u, _source: 'telegram' };
-  var cached = null;
-  try { cached = JSON.parse(localStorage.getItem('ys.devTgUser') || 'null'); } catch {}
-  if (cached) return { ...cached, _source: 'guest' };
-  var id = Math.floor(100000 + Math.random() * 900000);
-  var g = { id: id, first_name: 'Guest', username: 'guest_' + id };
-  localStorage.setItem('ys.devTgUser', JSON.stringify(g));
-  return { ...g, _source: 'guest' };
-}
-
-TG_USER = getTgUser();
-
-// ============================================
-// HELPERS
-// ============================================
-var $ = function(s, p) { p = p || document; return p.querySelector(s); };
-var $$ = function(s, p) { p = p || document; return Array.from(p.querySelectorAll(s)); };
-
-function getUTCDay() {
-  var now = new Date();
-  return now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0') + '-' + String(now.getUTCDate()).padStart(2,'0');
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, function(c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-  });
-}
-
-function fmtNum(n) {
-  if (n == null) return '—';
-  var a = Math.abs(n);
-  if (a >= 1e9) return (n/1e9).toFixed(1) + 'B';
-  if (a >= 1e6) return (n/1e6).toFixed(1) + 'M';
-  if (a >= 1e3) return (n/1e3).toFixed(1) + 'K';
-  return '' + n;
-}
-
-function fmtUsd(n) {
-  return '$' + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
-}
-
-function fmtPct(n) {
-  return (n >= 0 ? '+' : '') + (n || 0).toFixed(2) + '%';
-}
-
-// ============================================
+// ============================================================
 // TOAST
-// ============================================
-function showToast(message, type) {
-  type = type || 'success';
-  var toast = document.getElementById('toast');
-  var icon = document.getElementById('toastIcon');
-  var msg = document.getElementById('toastMessage');
-  toast.className = 'toast show ' + type;
-  icon.textContent = type === 'success' ? '✅' : '❌';
-  msg.textContent = message;
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(function() {
-    toast.classList.remove('show');
-  }, 4000);
+// ============================================================
+let toastTimer;
+function showToast(msg) {
+  toastMsg.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// ============================================
-// ROUTER
-// ============================================
-function route() {
-  var hash = location.hash.replace(/^#/, '') || '/';
-  var isProfile = hash.startsWith('/profile');
-  
-  document.getElementById('view-dashboard').classList.toggle('hidden', isProfile);
-  document.getElementById('view-profile').classList.toggle('hidden', !isProfile);
-  
-  document.querySelectorAll('#nav .nav-link').forEach(function(a) {
-    a.classList.toggle('active', a.dataset.route === (isProfile ? '/profile' : '/'));
-  });
-  
-  if (isProfile && PROFILE) renderProfile();
-  window.scrollTo({ top: 0, behavior: 'instant' });
-}
-window.addEventListener('hashchange', route);
+// ============================================================
+// AUTH
+// ============================================================
+function updateUI(user) {
+  const isLoggedIn = user && !isGuest;
+  const name = isLoggedIn ? user.displayName || 'User' : 'Guest';
+  const email = isLoggedIn ? user.email : '';
+  const photo = isLoggedIn ? user.photoURL : '';
+  const initial = name.charAt(0).toUpperCase();
 
-// ============================================
-// PROFILE
-// ============================================
-async function loadProfile() {
-  var ref = db.collection('profiles').doc(String(TG_USER.id));
-  var snap = await ref.get();
-  var base = {
-    telegramId: TG_USER.id,
-    username: TG_USER.username || null,
-    firstName: TG_USER.first_name || null,
-    lastName: TG_USER.last_name || null,
-    photoUrl: TG_USER.photo_url || null,
-    isPremium: !!TG_USER.is_premium,
-  };
-  
-  if (!snap.exists) {
-    PROFILE = {
-      ...base,
-      displayName: [TG_USER.first_name, TG_USER.last_name].filter(Boolean).join(' ') || 
-                   TG_USER.username || ('tg_' + TG_USER.id),
-      walletAddress: null,
-      stakedTopics: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastSeenAt: firebase.firestore.FieldValue.serverTimestamp(),
-    };
-    await ref.set(PROFILE);
-  } else {
-    PROFILE = { ...snap.data(), ...base };
-    await ref.update({ ...base, lastSeenAt: firebase.firestore.FieldValue.serverTimestamp() });
-  }
-  
-  paintNavAvatar();
-  renderProfile();
-  return PROFILE;
-}
-
-function paintNavAvatar() {
-  var el = document.getElementById('navAvatar');
-  if (!el || !PROFILE) return;
-  if (PROFILE.photoUrl) {
-    el.outerHTML = '<img id="navAvatar" src="' + PROFILE.photoUrl + '" alt="" class="w-6 h-6 rounded-full object-cover border border-line"/>';
-  } else {
-    el.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
-  }
-}
-
-function renderProfile() {
-  if (!PROFILE) return;
-  
-  document.getElementById('profileLoading').classList.add('hidden');
-  document.getElementById('profileError').classList.add('hidden');
-  document.getElementById('profileCard').classList.remove('hidden');
-  document.getElementById('profileDetails').classList.remove('hidden');
-  
-  var avatar = document.getElementById('profileAvatar');
-  if (PROFILE.photoUrl) {
-    avatar.innerHTML = '<img src="' + PROFILE.photoUrl + '" alt="" class="w-full h-full object-cover rounded-2xl"/>';
-  } else {
-    avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
-  }
-  
-  document.getElementById('profileName').textContent = PROFILE.displayName || 'Yong User';
-  document.getElementById('profileHandle').textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
-  document.getElementById('profileId').textContent = 'Telegram ID: ' + PROFILE.telegramId;
-  
-  var walletEl = document.getElementById('profileWallet');
-  if (PROFILE.walletAddress) {
-    walletEl.textContent = PROFILE.walletAddress;
-  } else {
-    walletEl.textContent = 'Not connected';
-    walletEl.style.color = '#8a93a8';
-  }
-  
-  var tags = PROFILE.stakedTopics || [];
-  var tagsContainer = document.getElementById('profileTags');
-  var noTags = document.getElementById('profileNoTags');
-  
-  if (tags.length > 0) {
-    tagsContainer.innerHTML = tags.map(function(t) {
-      return '<span class="tag-chip">#' + t + '</span>';
-    }).join('');
-    noTags.style.display = 'none';
-  } else {
-    tagsContainer.innerHTML = '';
-    noTags.style.display = 'block';
-  }
-  
-  var statusEl = document.getElementById('profileStatusBadge');
-  var hasWallet = PROFILE.walletAddress && PROFILE.walletAddress.length > 0;
-  var hasTopics = tags.length === 5;
-  
-  if (hasWallet && hasTopics) {
-    statusEl.className = 'profile-status-badge complete';
-    statusEl.textContent = '✅ Complete';
-  } else {
-    statusEl.className = 'profile-status-badge incomplete';
-    statusEl.textContent = '⏳ Setup Required';
-  }
-}
-
-function openProfileSetup() {
-  showProfileSetup();
-}
-
-// ============================================
-// PROFILE SETUP POPUP
-// ============================================
-function showProfileSetup() {
-  var overlay = document.getElementById('profileSetupOverlay');
-  overlay.classList.add('active');
-  
-  if (PROFILE) {
-    if (PROFILE.walletAddress) {
-      document.getElementById('manualWalletInput').value = PROFILE.walletAddress;
-      walletAddress = PROFILE.walletAddress;
-      document.getElementById('walletStatus').textContent = '✅ Wallet connected';
-      document.getElementById('walletStatus').className = 'wallet-status-text connected';
+  // Update all avatars
+  const avatarEls = ['sbAvatar', 'topAvatar', 'profileAvatarImg'];
+  avatarEls.forEach(id => {
+    const el = $(id);
+    if (el) {
+      if (photo) el.src = photo;
+      else el.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='48' font-weight='800' fill='white' text-anchor='middle'%3E${initial}%3C/text%3E%3C/svg%3E`;
     }
-    selectedTopics = (PROFILE.stakedTopics || []).slice();
+  });
+
+  // Update names
+  const nameEls = ['sbName', 'profileName'];
+  nameEls.forEach(id => {
+    const el = $(id);
+    if (el) el.textContent = name;
+  });
+
+  // Update handles
+  const handleEls = ['sbHandle', 'profileHandle'];
+  handleEls.forEach(id => {
+    const el = $(id);
+    if (el) el.textContent = isLoggedIn ? `@${email.split('@')[0]}` : '@guest';
+  });
+
+  // Show/hide auth screen
+  if (isLoggedIn || isGuest) {
+    authScreen.classList.remove('show');
+    splash.classList.add('hide');
+  } else {
+    authScreen.classList.add('show');
   }
-  
-  loadTagsForSetup();
-  renderTagList();
 }
 
-function closeProfileSetup() {
-  document.getElementById('profileSetupOverlay').classList.remove('active');
-}
-
-async function loadTagsForSetup() {
+// Google Login
+async function loginWithGoogle() {
   try {
-    var res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://www.yongsocial.com/feeds/posts/default?alt=rss'));
-    var json = await res.json();
-    if (json.status === 'ok' && Array.isArray(json.items)) {
-      var tags = [];
-      json.items.forEach(function(item) {
-        if (item.categories && Array.isArray(item.categories)) {
-          item.categories.forEach(function(tag) {
-            if (tags.indexOf(tag) === -1) tags.push(tag);
-          });
-        }
-        var content = (item.content || item.description || '');
-        var matches = content.match(/#[a-zA-Z0-9_]+/g) || [];
-        matches.forEach(function(m) {
-          var tag = m.substring(1);
-          if (tags.indexOf(tag) === -1) tags.push(tag);
-        });
-      });
-      allTags = tags.sort();
-      renderTagList();
-    }
-  } catch(e) {
-    console.warn('Error loading tags:', e);
-    allTags = ['crypto', 'bitcoin', 'ethereum', 'solana', 'defi', 'web3', 'nft', 'finance', 'investing', 'wealth', 'blockchain', 'ai', 'gaming', 'metaverse', 'dao'];
-    renderTagList();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    isGuest = false;
+    await createUserIfNeeded(user);
+    currentUser = user;
+    updateUI(user);
+    loadFeed();
+    loadTrendingTags();
+    showToast(`Welcome${user.displayName ? ', ' + user.displayName : ''}!`);
+  } catch (error) {
+    console.error('Google login error:', error);
+    showToast('Login failed. Please try again.');
   }
 }
 
-function renderTagList() {
-  var container = document.getElementById('tagList');
-  var search = document.getElementById('tagSearch').value.toLowerCase();
-  var filtered = allTags.filter(function(tag) { return tag.toLowerCase().includes(search); });
-  
-  container.innerHTML = filtered.map(function(tag) {
-    var isSelected = selectedTopics.indexOf(tag) !== -1;
-    var isDisabled = !isSelected && selectedTopics.length >= 5;
-    return '<button class="setup-tag' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '') + '" ' +
-      'onclick="toggleSetupTag(\'' + tag + '\')">' +
-      '#' + tag +
-      '</button>';
-  }).join('');
-  
-  document.getElementById('selectedTagCount').textContent = selectedTopics.length;
-  document.getElementById('tagCounter').textContent = selectedTopics.length + '/5';
+// Guest Login
+function loginAsGuest() {
+  isGuest = true;
+  currentUser = null;
+  currentUserData = null;
+  followedTags = new Set();
+  updateUI(null);
+  loadFeed();
+  loadTrendingTags();
+  showToast('Welcome, Guest!');
 }
 
-function toggleSetupTag(tag) {
-  var index = selectedTopics.indexOf(tag);
-  if (index !== -1) {
-    selectedTopics.splice(index, 1);
-  } else {
-    if (selectedTopics.length >= 5) {
-      showToast('You can only select up to 5 topics.', 'error');
-      return;
-    }
-    selectedTopics.push(tag);
+// Create user document if new
+async function createUserIfNeeded(user) {
+  if (!user) return;
+  const docRef = db.collection('users').doc(user.uid);
+  const doc = await docRef.get();
+  if (!doc.exists) {
+    await docRef.set({
+      displayName: user.displayName || 'User',
+      email: user.email,
+      photoURL: user.photoURL || '',
+      followedTags: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
-  renderTagList();
+  // Load user data
+  const userData = (await docRef.get()).data();
+  currentUserData = userData;
+  followedTags = new Set(userData?.followedTags || []);
 }
 
-function filterTags() {
-  renderTagList();
-}
-
-// ============================================
-// COMMUNITY ACCESS
-// ============================================
-function handleCommunityAccess() {
-  if (!PROFILE) {
-    showToast('Loading profile...', 'success');
-    return;
-  }
-  
-  var hasWallet = PROFILE.walletAddress && PROFILE.walletAddress.length > 0;
-  var hasTopics = PROFILE.stakedTopics && PROFILE.stakedTopics.length === 5;
-  
-  if (hasWallet && hasTopics) {
-    window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
-  } else {
-    showProfileSetup();
+// Load user data
+async function loadUserData(user) {
+  if (!user || isGuest) return;
+  const doc = await db.collection('users').doc(user.uid).get();
+  if (doc.exists) {
+    currentUserData = doc.data();
+    followedTags = new Set(currentUserData.followedTags || []);
   }
 }
 
-function exploreCommunity() {
-  var manualInput = document.getElementById('manualWalletInput').value.trim();
-  var wallet = walletAddress || manualInput;
-  
-  if (!wallet || wallet.length < 10) {
-    showToast('Please connect a Solana wallet first.', 'error');
-    return;
-  }
-  
-  if (selectedTopics.length !== 5) {
-    showToast('Please select exactly 5 topics.', 'error');
-    return;
-  }
-  
-  var btn = document.getElementById('exploreBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Saving...';
-  
-  db.collection('profiles').doc(String(TG_USER.id)).update({
-    walletAddress: wallet,
-    stakedTopics: selectedTopics,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(function() {
-    PROFILE.walletAddress = wallet;
-    PROFILE.stakedTopics = selectedTopics;
-    renderProfile();
-    showToast('✅ Profile saved!', 'success');
-    closeProfileSetup();
-    window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
-  }).catch(function(error) {
-    console.error('Save error:', error);
-    showToast('Error saving profile: ' + error.message, 'error');
-    btn.disabled = false;
-    btn.textContent = '🚀 Explore';
-  });
-}
-
-// ============================================
-// DASHBOARD DATA
-// ============================================
-var CONFIG = {
-  company: { name: 'Yong Social', site: 'https://www.yongsocial.com/' },
-  rssFeed: 'https://www.yongsocial.com/feeds/posts/default?alt=rss',
-  baseNetWorthUSD: 0,
-  cryptoHoldings: [
-    { id: 'bitcoin', symbol: 'BTC', amount: 0 },
-    { id: 'ethereum', symbol: 'ETH', amount: 0 },
-    { id: 'solana', symbol: 'SOL', amount: 0 },
-    { id: 'usd-coin', symbol: 'USDC', amount: 0 },
-    { id: 'ripple', symbol: 'XRP', amount: 0 },
-  ],
-  socials: [
-    { name: 'X (Twitter)', handle: '@yongsocial', url: 'https://x.com/yongsocial', count: 0, icon: 'x' },
-    { name: 'Facebook', handle: 'yongsocial', url: 'https://facebook.com/yongsocial', count: 0, icon: 'fb' },
-    { name: 'LinkedIn', handle: 'yongsocial', url: 'https://linkedin.com/company/yongsocial', count: 0, icon: 'li' },
-    { name: 'YouTube', handle: '@yongsocial', url: 'https://youtube.com/@yongsocial', count: 0, icon: 'yt' },
-    { name: 'GitHub', handle: 'yongsocial', url: 'https://github.com/yongsocial', count: null, icon: 'gh', live: true },
-  ],
-};
-
-var store = {
-  get: function(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
-  set: function(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
-};
-
-function cachedToday(key) {
-  var c = store.get(key);
-  if (c && c._day === getUTCDay()) return c;
-  return null;
-}
-
-function cacheToday(key, data) {
-  store.set(key, { ...data, _day: getUTCDay() });
-}
-
-// ============================================
-// VIEWS
-// ============================================
-async function loadViewsCard() {
-  var now = new Date();
-  var year = now.getUTCFullYear();
-  var month = now.getUTCMonth();
-  var label = now.toLocaleString('default', { month: 'long' });
-  var prevLabel = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long' });
-
-  var yearData = null;
-  var cached = store.get('ys.websiteViews.' + year);
-  if (cached) {
-    yearData = cached;
-  } else {
-    try {
-      var snap = await db.collection('config').doc('websiteViews').get();
-      if (snap.exists) {
-        yearData = snap.data()[year] || null;
-        if (yearData) store.set('ys.websiteViews.' + year, yearData);
-      }
-    } catch(e) { console.warn('websiteViews fetch failed', e); }
-  }
-
-  var total = yearData ? (parseInt(yearData[month]) || 0) : null;
-  var prev = yearData ? (parseInt(yearData[month - 1]) || 0) : null;
-
-  if (total === null) {
-    document.getElementById('viewsTotal').textContent = '—';
-    document.getElementById('viewsDelta').textContent = 'not yet recorded';
-    return;
-  }
-
-  document.getElementById('viewsTotal').textContent = fmtNum(total);
-
-  if (prev && prev > 0) {
-    var delta = ((total - prev) / prev) * 100;
-    var sign = delta >= 0 ? '+' : '';
-    document.getElementById('viewsDelta').innerHTML =
-      '<span class="' + (delta >= 0 ? 'text-brand2' : 'text-danger') + '">' + sign + delta.toFixed(1) + '%</span>'
-      + ' vs ' + prevLabel;
-  } else {
-    document.getElementById('viewsDelta').textContent = label + ' total';
-  }
-}
-
-// ============================================
-// SOCIALS
-// ============================================
-var ICONS = {
-  x: '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M17.5 3h3.2l-7 8 8.2 10h-6.4l-5-6.4L4.8 21H1.6l7.5-8.6L1.2 3h6.6l4.5 5.9L17.5 3Zm-1.1 16h1.8L7.7 5H5.8l10.6 14Z"/></svg>',
-  fb: '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.7c0-.9.3-1.6 1.6-1.6h1.6V4.2C16.4 4.1 15.4 4 14.3 4c-2.3 0-3.8 1.4-3.8 3.9v2.9H8v3.2h2.5V22h3Z"/></svg>',
-  li: '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M6.94 8.5H3.56V21h3.38V8.5ZM5.25 3a1.94 1.94 0 1 0 0 3.88 1.94 1.94 0 0 0 0-3.88ZM21 21h-3.36v-6.1c0-1.46-.03-3.34-2.03-3.34-2.03 0-2.34 1.59-2.34 3.23V21H9.92V8.5h3.22v1.7h.05c.45-.85 1.55-1.74 3.19-1.74 3.41 0 4.04 2.25 4.04 5.17V21Z"/></svg>',
-  yt: '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M23 7.2s-.2-1.6-.9-2.3c-.8-.9-1.7-.9-2.2-1C16.6 3.5 12 3.5 12 3.5s-4.6 0-7.9.4c-.5.1-1.4.1-2.2 1C1.2 5.6 1 7.2 1 7.2S.8 9.1.8 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.8.9 1.9.9 2.4 1 1.7.2 7.7.4 7.7.4s4.6 0 7.9-.4c.5-.1 1.4-.1 2.2-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8ZM9.9 14.7V8.3l6 3.2-6 3.2Z"/></svg>',
-  gh: '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor"><path d="M12 .5C5.7.5.7 5.6.7 11.9c0 5.1 3.3 9.3 7.8 10.8.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.5-1.5 7.8-5.7 7.8-10.8C23.3 5.6 18.3.5 12 .5Z"/></svg>',
-};
-
-async function loadSocials() {
-  var list = document.getElementById('socialList');
-  list.innerHTML = CONFIG.socials.map(function(s, i) {
-    return '<li id="soc-' + i + '" class="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-surface2 transition">' +
-      '<a href="' + s.url + '" target="_blank" rel="noreferrer" class="flex items-center gap-3 min-w-0">' +
-      '<span class="w-8 h-8 grid place-items-center rounded-lg bg-surface2 border border-line text-brand">' + (ICONS[s.icon] || '') + '</span>' +
-      '<span><div class="text-sm font-medium truncate">' + s.name + '</div><div class="text-xs text-mute truncate">' + s.handle + '</div></span>' +
-      '</a>' +
-      '<span class="text-sm font-semibold" data-count>' + (s.count == null ? '<span class="skeleton inline-block w-10 h-3 rounded"></span>' : fmtNum(s.count)) + '</span>' +
-      '</li>';
-  }).join('');
-  
-  var ghIdx = CONFIG.socials.findIndex(function(s) { return s.icon === 'gh' && s.live; });
-  if (ghIdx >= 0) {
-    var gh = CONFIG.socials[ghIdx];
-    var ghCached = cachedToday('ys.ghFollowers');
-    if (ghCached) {
-      gh.count = ghCached.count || 0;
-    } else {
-      try {
-        var r = await fetch('https://api.github.com/users/' + gh.handle);
-        if (!r.ok) r = await fetch('https://api.github.com/orgs/' + gh.handle);
-        var j = await r.json();
-        gh.count = j.followers || 0;
-        cacheToday('ys.ghFollowers', { count: gh.count });
-      } catch { gh.count = gh.count || 0; }
-    }
-    var el = document.querySelector('#soc-' + ghIdx + ' [data-count]');
-    if (el) el.textContent = fmtNum(gh.count);
-  }
-  
-  var total = CONFIG.socials.reduce(function(a, s) { return a + (s.count || 0); }, 0);
-  document.getElementById('followersTotal').textContent = fmtNum(total);
-}
-
-// ============================================
-// CRYPTO
-// ============================================
-async function loadCrypto() {
-  var ids = CONFIG.cryptoHoldings.map(function(c) { return c.id; }).join(',');
-  var body = document.getElementById('cryptoBody');
-  body.innerHTML = CONFIG.cryptoHoldings.map(function(c) {
-    return '<tr data-sym="' + c.symbol + '">' +
-      '<td class="py-3"><span class="font-semibold">' + c.symbol + '</span> <span class="text-mute text-xs">' + c.id + '</span></td>' +
-      '<td class="py-3">' + fmtNum(c.amount) + '</td>' +
-      '<td class="py-3"><span class="skeleton inline-block w-16 h-3 rounded"></span></td>' +
-      '<td class="py-3 text-mute">—</td>' +
-      '<td class="py-3 text-right text-mute">—</td>' +
-      '</tr>';
-  }).join('');
-
-  var prices = {};
-  var priceCached = cachedToday('ys.prices');
-  if (priceCached) {
-    prices = priceCached;
-  } else {
-    try {
-      var r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=' + ids + '&vs_currencies=usd&include_24hr_change=true');
-      prices = await r.json();
-      cacheToday('ys.prices', prices);
-    } catch { prices = store.get('ys.prices') || {}; }
-  }
-
-  var cryptoTotal = 0;
-  CONFIG.cryptoHoldings.forEach(function(c) {
-    var p = prices[c.id]?.usd || 0;
-    var ch = prices[c.id]?.usd_24h_change || 0;
-    var val = p * c.amount;
-    cryptoTotal += val;
-    var row = body.querySelector('tr[data-sym="' + c.symbol + '"]');
-    if (row) {
-      row.innerHTML =
-        '<td class="py-3"><span class="font-semibold">' + c.symbol + '</span> <span class="text-mute text-xs">' + c.id + '</span></td>' +
-        '<td class="py-3">' + fmtNum(c.amount) + '</td>' +
-        '<td class="py-3">' + (p ? '$' + p.toFixed(2) : '—') + '</td>' +
-        '<td class="py-3 ' + (ch >= 0 ? 'text-brand2' : 'text-danger') + '">' + fmtPct(ch) + '</td>' +
-        '<td class="py-3 text-right font-medium">' + fmtUsd(val) + '</td>';
-    }
-  });
-  document.getElementById('cryptoTotal').textContent = fmtUsd(cryptoTotal);
-  var net = CONFIG.baseNetWorthUSD + cryptoTotal;
-  document.getElementById('netWorth').textContent = fmtUsd(net);
-  document.getElementById('netWorthDelta').innerHTML = 'Base ' + fmtUsd(CONFIG.baseNetWorthUSD) + ' + crypto <span class="text-brand">' + fmtUsd(cryptoTotal) + '</span>';
-  initNetworthChart(net);
-}
-
-// ============================================
-// RSS
-// ============================================
-async function loadRecent() {
-  var wrap = document.getElementById('recentArticle');
+// Logout
+async function logout() {
   try {
-    var proxy = 'https://corsproxy.io/?url=' + encodeURIComponent(CONFIG.rssFeed);
-    var r = await fetch(proxy);
-    if (!r.ok) throw new Error('feed fetch failed');
-    var text = await r.text();
-    var xml = new DOMParser().parseFromString(text, 'text/xml');
-    var entry = xml.querySelector('item');
-    if (!entry) throw new Error('no items');
-    var get = function(tag) { return entry.querySelector(tag)?.textContent?.trim() || ''; };
-    var item = {
-      title: get('title'),
-      link: get('link'),
-      pubDate: get('pubDate'),
-      author: get('author') || get('dc\\:creator') || '',
-      description: get('description') || get('content\\:encoded') || '',
-      content: get('content\\:encoded') || get('description') || '',
-    };
-    if (!item.title) throw new Error('no items');
-    var img = '';
-    var enc = entry.querySelector('enclosure');
-    if (enc?.getAttribute('type')?.startsWith('image')) img = enc.getAttribute('url') || '';
-    if (!img) {
-      var m = (item.content || item.description).match(/<img[^>]+src=["']([^"']+)["']/i);
-      if (m) img = m[1];
-    }
-    var excerpt = (item.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
-    wrap.innerHTML =
-      '<article class="grid grid-cols-1 md:grid-cols-[260px,1fr] gap-5 items-stretch">' +
-      (img ? '<a href="' + item.link + '" target="_blank" rel="noreferrer" class="block rounded-xl overflow-hidden border border-line bg-surface2">' +
-        '<img src="' + img + '" alt="" class="w-full h-44 md:h-full object-cover" loading="lazy"/>' +
-        '</a>' : '<div class="rounded-xl bg-surface2 border border-line h-44 md:h-full"></div>') +
-      '<div class="flex flex-col">' +
-      '<div class="text-xs text-mute">' + new Date(item.pubDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + escapeHtml((item.author || '').replace(/noreply@blogger\.com/gi, 'yongsocial@outlook.com') || 'yongsocial@outlook.com') + '</div>' +
-      '<h3 class="text-xl font-bold mt-1 leading-snug"><a href="' + item.link + '" target="_blank" rel="noreferrer" class="hover:text-brand">' + escapeHtml(item.title) + '</a></h3>' +
-      '<p class="text-sm text-mute mt-2 flex-1">' + escapeHtml(excerpt) + '…</p>' +
-      '<div class="mt-4">' +
-      '<a href="' + item.link + '" target="_blank" rel="noreferrer" class="btn-brand inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm">' +
-      'Read more' +
-      '<svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>' +
-      '</a>' +
-      '</div>' +
-      '</div>' +
-      '</article>';
-  } catch (e) {
-    wrap.innerHTML = '<div class="text-sm text-mute p-4 text-center">' +
-      'Unable to load the latest article right now.' +
-      '<a class="underline text-brand" href="' + CONFIG.company.site + '" target="_blank" rel="noreferrer">Visit yongsocial.com</a>.' +
-      '</div>';
+    await auth.signOut();
+    isGuest = false;
+    currentUser = null;
+    currentUserData = null;
+    followedTags = new Set();
+    updateUI(null);
+    showToast('Signed out');
+    closeProfileModal();
+  } catch (error) {
+    console.error('Logout error:', error);
   }
 }
 
-// ============================================
-// CHART (simplified)
-// ============================================
-var _nwChart = null;
-var _nwAllPoints = [];
-var _nwRange = 'all';
-var _nwCurrentNet = 0;
-var _nwInitialised = false;
-
-async function loadNetworthHistory() {
-  var cacheKey = 'ys.nwHistory.v2';
-  var cached = sessionStorage.getItem(cacheKey);
-  if (cached) {
-    try { var arr = JSON.parse(cached); if (Array.isArray(arr)) return arr; } catch {}
-  }
-  try {
-    var q = db.collection('networth_history').orderBy('recordedAtMs', 'asc').limit(500);
-    var snap = await q.get();
-    var pts = snap.docs.map(function(d) {
-      var dd = d.data();
-      var ts = dd.recordedAtMs || dd.recordedAt?.toMillis?.() || 0;
-      var v = Number(dd.totalNetWorthUSD || dd.baseNetWorthUSD || 0);
-      return { ts: ts, value: v };
-    }).filter(function(p) { return p.ts > 0 && p.value > 0; });
-    sessionStorage.setItem(cacheKey, JSON.stringify(pts));
-    return pts;
-  } catch (e) {
-    console.warn('[NW] history fetch failed', e);
-    return [];
-  }
-}
-
-function buildFeatures(values) {
-  return values.map(function(v, i) {
-    var r1 = i >= 1 ? (values[i] - values[i-1]) / (values[i-1] || 1) : 0;
-    var r3 = i >= 3 ? (values[i] - values[i-3]) / (values[i-3] || 1) : r1;
-    var ma5 = i >= 4 ? values.slice(i-4, i+1).reduce(function(a,b){return a+b;},0)/5 : v;
-    var vol = i >= 4 ? Math.sqrt(values.slice(i-4, i+1).map(function(x){ return (x-ma5)*(x-ma5); }).reduce(function(a,b){return a+b;},0)/5) / (ma5||1) : 0;
-    return [r1, r3, ma5 / (v||1), vol];
-  });
-}
-
-function trainForest(X, y, nTrees) {
-  nTrees = nTrees || 60;
-  if (X.length < 3) return null;
-  var trees = [];
-  for (var t = 0; t < nTrees; t++) {
-    var idx = Array.from({length: X.length}, function() { return Math.floor(Math.random() * X.length); });
-    var Xs = idx.map(function(i){ return X[i]; });
-    var ys = idx.map(function(i){ return y[i]; });
-    var fi = Math.floor(Math.random() * X[0].length);
-    var vals = Xs.map(function(x){ return x[fi]; });
-    var thr = vals[Math.floor(Math.random() * vals.length)];
-    var L = ys.filter(function(_, i){ return Xs[i][fi] <= thr; });
-    var R = ys.filter(function(_, i){ return Xs[i][fi] > thr; });
-    var avg = function(a){ return a.length ? a.reduce(function(x,y){return x+y;},0)/a.length : 0; };
-    trees.push({ fi: fi, thr: thr, L: avg(L), R: avg(R) });
-  }
-  return trees;
-}
-
-function predictForest(trees, x) {
-  if (!trees) return 0;
-  var p = trees.map(function(t){ return x[t.fi] <= t.thr ? t.L : t.R; });
-  return p.reduce(function(a,b){return a+b;},0) / p.length;
-}
-
-function forecastNetWorth(values, steps) {
-  steps = steps || 7;
-  if (!values.length) return Array(steps).fill(0);
-  if (values.length < 5) {
-    var last = values[values.length-1];
-    var prev = values[values.length-2] || last;
-    var delta = (last - prev) * 0.5;
-    return Array.from({length: steps}, function(_, i){ return Math.max(0, last + delta * (i+1)); });
-  }
-  var X = buildFeatures(values);
-  var y = values.slice(1).map(function(v, i){ return (v - values[i]) / (values[i] || 1); });
-  var trees = trainForest(X.slice(0, -1), y);
-  var out = [];
-  var run = values.slice();
-  for (var s = 0; s < steps; s++) {
-    var xF = buildFeatures(run);
-    var pr = predictForest(trees, xF[xF.length-1]);
-    var damp = Math.max(-0.08, Math.min(0.08, pr));
-    var next = run[run.length-1] * (1 + damp);
-    out.push(Math.max(0, next));
-    run.push(next);
-  }
-  return out;
-}
-
-function calcMA(values, period) {
-  return values.map(function(_, i) {
-    var start = Math.max(0, i - period + 1);
-    var win = values.slice(start, i + 1);
-    var avg = win.reduce(function(a,b){return a+b;},0) / win.length;
-    var sparseLift = values.length < period ? Math.max(0.75, Math.abs(avg) * 0.018) : 0;
-    return avg + sparseLift;
-  });
-}
-
-function ensurePoints(pts, currentNet) {
-  var out = pts.slice();
-  if (currentNet > 0) {
-    var last = out[out.length-1];
-    if (!last || Math.abs(last.ts - Date.now()) > 60000) {
-      out.push({ ts: Date.now(), value: currentNet });
-    } else {
-      last.value = currentNet;
-    }
-  }
-  if (out.length < 2 && currentNet > 0) {
-    var seed = [];
-    for (var i = 13; i >= 1; i--) {
-      var wobble = 1 + Math.sin(i * 0.9) * 0.012 - (i * 0.0015);
-      seed.push({ ts: Date.now() - i*86400000, value: currentNet * wobble, _seed: true });
-    }
-    return seed.concat(out);
-  }
-  return out;
-}
-
-function buildDailyOHLC(points) {
-  var days = {};
-  points.forEach(function(p) {
-    var d = new Date(p.ts);
-    var key = d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDate();
-    if (!days[key]) {
-      days[key] = { ts: p.ts, open: p.value, high: p.value, low: p.value, close: p.value };
-    } else {
-      days[key].high = Math.max(days[key].high, p.value);
-      days[key].low = Math.min(days[key].low, p.value);
-      days[key].close = p.value;
-      if (p.ts < days[key].ts) { days[key].ts = p.ts; days[key].open = p.value; }
-    }
-  });
-  return Object.values(days).sort(function(a,b){ return a.ts - b.ts; });
-}
-
-function getFilteredPoints(range) {
-  if (range === 'all' || !range) return _nwAllPoints;
-  var days = parseInt(range, 10);
-  if (!isFinite(days)) return _nwAllPoints;
-  var cutoff = Date.now() - days * 86400000;
-  var f = _nwAllPoints.filter(function(p){ return p.ts >= cutoff; });
-  if (f.length < 2 && _nwAllPoints.length >= 2) return _nwAllPoints.slice(-Math.max(2, f.length));
-  return f;
-}
-
-function renderNetworthChart(points, currentNet) {
-  _nwCurrentNet = currentNet || 0;
-  _nwAllPoints = ensurePoints(points || [], _nwCurrentNet);
-  document.getElementById('nwChartLoading')?.classList.add('hidden');
-  var emptyEl = document.getElementById('nwChartEmpty');
-  if (_nwAllPoints.length === 0) {
-    emptyEl?.classList.remove('hidden');
-    return;
-  }
-  emptyEl?.classList.add('hidden');
-  renderNetworthChartForRange(_nwRange, _nwCurrentNet);
-  updateNetworthStats(_nwAllPoints, _nwCurrentNet);
-  _nwInitialised = true;
-}
-
-function renderNetworthChartForRange(range, currentNet) {
-  _nwRange = range || 'all';
-  if (currentNet) _nwCurrentNet = currentNet;
-  var pts = getFilteredPoints(_nwRange);
-  if (pts.length === 0) {
-    document.getElementById('nwChartEmpty')?.classList.remove('hidden');
-    if (_nwChart) { _nwChart.destroy(); _nwChart = null; }
-    return;
-  }
-  document.getElementById('nwChartEmpty')?.classList.add('hidden');
-  var ohlc = buildDailyOHLC(pts);
-  var useRaw = ohlc.length < 2;
-  var series = useRaw ? pts : ohlc;
-  var labels = series.map(function(s) {
-    var d = new Date(s.ts);
-    return useRaw ? (d.getUTCMonth()+1 + '/' + d.getUTCDate() + ' ' + String(d.getUTCHours()).padStart(2,'0') + ':' + String(d.getUTCMinutes()).padStart(2,'0')) : (d.getUTCMonth()+1 + '/' + d.getUTCDate());
-  });
-  var closes = useRaw ? series.map(function(p){ return p.value; }) : series.map(function(o){ return o.close; });
-  var opens = useRaw ? series.map(function(p){ return p.value; }) : series.map(function(o){ return o.open; });
-  var highs = useRaw ? series.map(function(p){ return p.value; }) : series.map(function(o){ return o.high; });
-  var lows = useRaw ? series.map(function(p){ return p.value; }) : series.map(function(o){ return o.low; });
-  var ma5 = calcMA(closes, 5);
-  var forecast = forecastNetWorth(closes, 7);
-  var forecastLabels = Array.from({length: 7}, function(_, i) {
-    var d = new Date(Date.now() + (i+1) * 86400000);
-    return d.getUTCMonth()+1 + '/' + d.getUTCDate();
-  });
-  var allLabels = labels.concat(forecastLabels);
-  var histLen = closes.length;
-  var pad = function(arr) { return arr.concat(Array(7).fill(null)); };
-  var forecastLine = Array(Math.max(0, histLen - 1)).fill(null).concat([closes[histLen-1]]).concat(forecast);
-  var canvas = document.getElementById('networthChart');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  if (_nwChart) { _nwChart.destroy(); _nwChart = null; }
-  var isUp = closes.map(function(c, i){ return c >= opens[i]; });
-  var upColor = 'rgba(34,201,132,0.9)';
-  var downColor = 'rgba(239,68,68,0.9)';
-  var bodyData = closes.map(function(c, i){ return [Math.min(c, opens[i]), Math.max(c, opens[i])]; });
-  var grad = ctx.createLinearGradient(0, 0, 0, 300);
-  grad.addColorStop(0, 'rgba(212,178,90,0.22)');
-  grad.addColorStop(1, 'rgba(212,178,90,0.00)');
-  _nwChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: allLabels,
-      datasets: [
-        {
-          label: 'OHLC',
-          data: bodyData.concat(Array(7).fill(null)),
-          backgroundColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill('transparent')),
-          borderColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill('transparent')),
-          borderWidth: 1,
-          barPercentage: 0.5,
-          categoryPercentage: 0.75,
-          order: 3, yAxisID: 'y',
-        },
-        {
-          label: 'Net Worth', type: 'line',
-          data: pad(closes),
-          borderColor: '#d4b25a', backgroundColor: grad,
-          borderWidth: 2, fill: true, tension: 0.3,
-          pointRadius: function(c) { return c.dataIndex === histLen - 1 ? 5 : 0; },
-          pointHoverRadius: 6, pointBackgroundColor: '#d4b25a',
-          order: 2, yAxisID: 'y',
-        },
-        {
-          label: 'MA5', type: 'line',
-          data: pad(ma5),
-          borderColor: '#38bdf8',
-          backgroundColor: 'rgba(56,189,248,0.0)',
-          borderWidth: 4,
-          pointRadius: 0,
-          fill: false, tension: 0.35,
-          spanGaps: true,
-          order: 0, z: 30, yAxisID: 'y',
-        },
-        {
-          label: 'Forecast', type: 'line',
-          data: forecastLine,
-          borderColor: 'rgba(34,201,132,0.95)',
-          borderWidth: 2, borderDash: [5,4],
-          pointRadius: 0, fill: false, tension: 0.3,
-          order: 0, yAxisID: 'y',
-        },
-      ],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      animation: { duration: 350 },
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false, external: nwExternalTooltip },
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: '#8a93a8', maxRotation: 0, autoSkipPadding: 20, maxTicksLimit: 10, font: { size: 10 } },
-          border: { color: '#1f2940' },
-        },
-        y: {
-          position: 'right',
-          grid: { color: 'rgba(31,41,64,0.55)' },
-          ticks: { color: '#8a93a8', font: { size: 10 }, callback: function(v) { return '$' + fmtNum(v); } },
-          border: { color: '#1f2940' },
-        },
-      },
-    },
-    plugins: [{
-      id: 'nwWicks',
-      afterDatasetsDraw: function(chart) {
-        var ds0 = chart.getDatasetMeta(0);
-        var ctx2 = chart.ctx;
-        ctx2.save();
-        ctx2.lineWidth = 1.5;
-        var yScale = chart.scales.y;
-        closes.forEach(function(c, i) {
-          var bar = ds0.data[i];
-          if (!bar) return;
-          var cx = bar.x;
-          var hiY = yScale.getPixelForValue(highs[i]);
-          var loY = yScale.getPixelForValue(lows[i]);
-          var top = Math.min(bar.y, bar.base || bar.y);
-          var bottom = Math.max(bar.y, bar.base || bar.y);
-          ctx2.strokeStyle = isUp[i] ? upColor : downColor;
-          ctx2.beginPath();
-          ctx2.moveTo(cx, hiY); ctx2.lineTo(cx, top);
-          ctx2.moveTo(cx, bottom); ctx2.lineTo(cx, loY);
-          ctx2.stroke();
-        });
-        var meta1 = chart.getDatasetMeta(1);
-        var fStart = meta1.data[histLen - 1];
-        var fEnd = meta1.data[allLabels.length - 1];
-        if (fStart && fEnd && fEnd.x > fStart.x) {
-          ctx2.fillStyle = 'rgba(34,201,132,0.05)';
-          ctx2.fillRect(fStart.x, chart.chartArea.top, fEnd.x - fStart.x, chart.chartArea.bottom - chart.chartArea.top);
-          ctx2.strokeStyle = 'rgba(34,201,132,0.3)';
-          ctx2.setLineDash([4,4]);
-          ctx2.beginPath();
-          ctx2.moveTo(fStart.x, chart.chartArea.top);
-          ctx2.lineTo(fStart.x, chart.chartArea.bottom);
-          ctx2.stroke();
-          ctx2.setLineDash([]);
-          ctx2.fillStyle = 'rgba(34,201,132,0.7)';
-          ctx2.font = '9px Inter, sans-serif';
-          ctx2.fillText('FORECAST', fStart.x + 6, chart.chartArea.top + 14);
-        }
-        ctx2.restore();
-      }
-    }],
-  });
-  updateNetworthStats(pts, _nwCurrentNet);
-  document.querySelectorAll('.nw-range-btn').forEach(function(b) {
-    var active = String(b.dataset.range) === String(_nwRange);
-    b.classList.toggle('active-range', active);
-  });
-}
-
-function nwExternalTooltip(context) {
-  var tooltip = document.getElementById('nwTooltip');
-  if (!tooltip) return;
-  var chart = context.chart;
-  var t = context.tooltip;
-  if (!t || t.opacity === 0) { tooltip.classList.add('hidden'); return; }
-  var i = t.dataPoints?.[0]?.dataIndex;
-  if (i == null) return;
-  var pts = getFilteredPoints(_nwRange);
-  var ohlc = buildDailyOHLC(pts);
-  var useRaw = ohlc.length < 2;
-  var src = useRaw ? pts : ohlc;
-  var d = src[i];
-  var isForecast = i >= src.length;
-  var label = t.dataPoints[0]?.label || '';
-  var html;
-  if (isForecast) {
-    var fIdx = i - src.length;
-    var fVals = forecastNetWorth((useRaw ? pts.map(function(p){ return p.value; }) : ohlc.map(function(o){ return o.close; })), 7);
-    html = '<div class="font-semibold text-white mb-2">' + label + ' · Forecast</div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Predicted</span><span class="font-bold text-brand2">' + fmtUsd(fVals[fIdx] || 0) + '</span></div>';
-  } else if (d) {
-    var close = useRaw ? d.value : d.close;
-    var open = useRaw ? d.value : d.open;
-    var high = useRaw ? d.value : d.high;
-    var low = useRaw ? d.value : d.low;
-    var chg = open ? ((close - open) / open * 100) : 0;
-    var ma5pts = calcMA((useRaw ? pts.map(function(p){ return p.value; }) : ohlc.map(function(o){ return o.close; })), 5);
-    var ma5v = ma5pts[i];
-    html = '<div class="font-semibold text-white mb-2">' + label + '</div>' +
-      '<div class="space-y-1">' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Net Worth</span><span class="font-bold text-brand">' + fmtUsd(close) + '</span></div>' +
-      (!useRaw ? '<div class="flex justify-between gap-4"><span class="text-mute">Open</span><span>' + fmtUsd(open) + '</span></div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">High</span><span class="text-brand2">' + fmtUsd(high) + '</span></div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Low</span><span class="text-danger">' + fmtUsd(low) + '</span></div>' : '') +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Change</span><span class="' + (chg>=0?'text-brand2':'text-danger') + '">' + (chg>=0?'+':'') + chg.toFixed(2) + '%</span></div>' +
-      (ma5v != null ? '<div class="flex justify-between gap-4"><span class="text-mute">MA5</span><span class="text-blue-400">' + fmtUsd(ma5v) + '</span></div>' : '') +
-      '</div>';
-  } else { tooltip.classList.add('hidden'); return; }
-  tooltip.classList.remove('hidden');
-  tooltip.innerHTML = html;
-  var pos = chart.canvas.getBoundingClientRect();
-  var wrap = chart.canvas.closest('.relative')?.getBoundingClientRect() || pos;
-  var left = pos.left - wrap.left + t.caretX;
-  var top = pos.top - wrap.top + t.caretY;
-  var flip = left > (wrap.width / 2);
-  tooltip.style.left = flip ? (left - tooltip.offsetWidth - 12) + 'px' : (left + 12) + 'px';
-  tooltip.style.top = Math.max(0, top - 20) + 'px';
-}
-
-function updateNetworthStats(pts, currentNet) {
-  var vals = pts.map(function(p){ return p.value; }).concat([currentNet]).filter(function(v){ return v > 0; });
-  if (!vals.length) return;
-  var ath = Math.max.apply(null, vals);
-  var atl = Math.min.apply(null, vals);
-  var fc = forecastNetWorth(vals, 7);
-  var fc7 = fc[fc.length-1] || vals[vals.length-1];
-  var fcChg = vals.length ? ((fc7 - vals[vals.length-1]) / (vals[vals.length-1] || 1) * 100) : 0;
-  document.getElementById('nwATH').textContent = fmtUsd(ath);
-  document.getElementById('nwATL').textContent = fmtUsd(atl);
-  document.getElementById('nwForecast').textContent = fmtUsd(fc7) + ' (' + (fcChg >= 0 ? '+' : '') + fcChg.toFixed(1) + '%)';
-  var last = pts.slice().reverse().find(function(p){ return !p._seed; }) || pts[pts.length-1];
-  if (last) {
-    var d = new Date(last.ts);
-    document.getElementById('nwLastUpdate').textContent = (d.getUTCMonth()+1) + '/' + d.getUTCDate() + ' ' + String(d.getUTCHours()).padStart(2,'0') + ':' + String(d.getUTCMinutes()).padStart(2,'0') + ' UTC';
-  }
-}
-
-async function initNetworthChart(currentNet) {
-  var pts = await loadNetworthHistory();
-  renderNetworthChart(pts, currentNet);
-}
-
-document.addEventListener('click', function(e) {
-  var b = e.target.closest?.('.nw-range-btn');
-  if (!b) return;
-  e.preventDefault();
-  var r = b.dataset.range || 'all';
-  var currentNet = _nwCurrentNet || parseFloat(document.getElementById('netWorth')?.textContent?.replace(/[^0-9.]/g,'')) || 0;
-  if (!_nwInitialised) {
-    initNetworthChart(currentNet).then(function() { renderNetworthChartForRange(r, currentNet); });
-  } else {
-    renderNetworthChartForRange(r, currentNet);
+// Auth state listener
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    isGuest = false;
+    await createUserIfNeeded(user);
+    updateUI(user);
+    loadFeed();
+    loadTrendingTags();
+    setTimeout(() => splash.classList.add('hide'), 500);
+  } else if (!isGuest) {
+    // Show auth screen after splash
+    setTimeout(() => {
+      splash.classList.add('hide');
+      setTimeout(() => authScreen.classList.add('show'), 300);
+    }, 1500);
   }
 });
 
-// ============================================
-// BOOT
-// ============================================
-document.getElementById('yr').textContent = new Date().getFullYear();
+// ============================================================
+// CRYPTO TICKER
+// ============================================================
+const TICKER_CACHE_KEY = 'ys_ticker_v1';
+const TICKER_REFRESH = 5 * 60 * 1000;
+const COINS = [
+  {id:'bitcoin',sym:'BTC'}, {id:'ethereum',sym:'ETH'}, {id:'solana',sym:'SOL'},
+  {id:'binancecoin',sym:'BNB'}, {id:'ripple',sym:'XRP'}, {id:'dogecoin',sym:'DOGE'},
+  {id:'cardano',sym:'ADA'}, {id:'avalanche-2',sym:'AVAX'}, {id:'tron',sym:'TRX'},
+  {id:'chainlink',sym:'LINK'}, {id:'polkadot',sym:'DOT'}, {id:'litecoin',sym:'LTC'}
+];
 
-async function loadDashboardConfig() {
-  var cached = cachedToday('ys.dashConfig');
-  if (cached) {
-    applyDashboardConfig(cached);
+function fmtPrice(v) {
+  if (v == null || isNaN(v)) return '—';
+  if (v >= 1000) return '$' + v.toLocaleString('en-US', {maximumFractionDigits:0});
+  if (v >= 1) return '$' + v.toLocaleString('en-US', {maximumFractionDigits:2});
+  if (v >= 0.01) return '$' + v.toLocaleString('en-US', {maximumFractionDigits:4});
+  return '$' + v.toLocaleString('en-US', {maximumFractionDigits:8});
+}
+
+function fmtChg(c) {
+  if (c == null || isNaN(c)) return '';
+  return (c >= 0 ? '+' : '') + c.toFixed(2) + '%';
+}
+
+function buildTickerItem(coin, data) {
+  const price = data?.usd;
+  const chg = data?.usd_24h_change;
+  const dir = (chg ?? 0) >= 0 ? 'up' : 'down';
+  return `<div class="ticker-item">
+    <span class="t-sym">${coin.sym}</span>
+    <span class="t-price">${fmtPrice(price)}</span>
+    <span class="t-chg ${dir}">${dir === 'up' ? '▲' : '▼'} ${fmtChg(chg)}</span>
+  </div>`;
+}
+
+async function fetchTicker() {
+  const track = document.getElementById('tickerTrack');
+  try {
+    const ids = COINS.map(c => c.id).join(',');
+    const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const items = COINS.map(c => buildTickerItem(c, data[c.id])).join('');
+    track.innerHTML = items + items;
+    localStorage.setItem(TICKER_CACHE_KEY, JSON.stringify({ t: Date.now(), data }));
+  } catch (e) {
+    console.warn('[ticker]', e);
+    // Try cache
+    try {
+      const cached = JSON.parse(localStorage.getItem(TICKER_CACHE_KEY));
+      if (cached && cached.data) {
+        const items = COINS.map(c => buildTickerItem(c, cached.data[c.id])).join('');
+        track.innerHTML = items + items;
+      }
+    } catch (_) {}
+  }
+}
+
+// Init ticker
+(function() {
+  const track = document.getElementById('tickerTrack');
+  try {
+    const cached = JSON.parse(localStorage.getItem(TICKER_CACHE_KEY));
+    if (cached && cached.data) {
+      const items = COINS.map(c => buildTickerItem(c, cached.data[c.id])).join('');
+      track.innerHTML = items + items;
+    }
+  } catch (_) {}
+  fetchTicker();
+  setInterval(fetchTicker, TICKER_REFRESH);
+})();
+
+// ============================================================
+// TRENDING TAGS
+// ============================================================
+async function loadTrendingTags() {
+  const list = document.getElementById('rbTrendsList');
+  try {
+    const snapshot = await db.collection('posts').orderBy('timestamp', 'desc').limit(100).get();
+    const tagCount = {};
+    snapshot.forEach(doc => {
+      const tags = doc.data().tags || [];
+      tags.forEach(t => {
+        t = t.trim();
+        if (t) tagCount[t] = (tagCount[t] || 0) + 1;
+      });
+    });
+    const top = Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    if (top.length === 0) {
+      list.innerHTML = '<div class="rb-trend"><div class="rb-cat">No trends yet. Be the first to post!</div></div>';
+      return;
+    }
+    list.innerHTML = top.map(([tag, count]) => `
+      <div class="rb-trend" data-tag="${tag}">
+        <div class="rb-cat">#${tag}</div>
+        <div class="rb-posts">${count} post${count > 1 ? 's' : ''}</div>
+      </div>
+    `).join('');
+    // Click to follow
+    list.querySelectorAll('.rb-trend').forEach(el => {
+      el.addEventListener('click', () => {
+        const tag = el.dataset.tag;
+        toggleFollowTag(tag);
+      });
+    });
+  } catch (e) {
+    console.warn('[trends]', e);
+    list.innerHTML = '<div class="rb-trend"><div class="rb-cat">Could not load trends</div></div>';
+  }
+}
+
+// ============================================================
+// FEED
+// ============================================================
+function getPostTags(doc) {
+  return doc.data().tags || [];
+}
+
+function postHTML(doc, idx) {
+  const data = doc.data();
+  const id = doc.id;
+  const title = data.title || 'Untitled';
+  const content = data.content || '';
+  const tags = data.tags || [];
+  const authorName = data.authorName || 'User';
+  const time = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : 'Recently';
+
+  const snippet = content.length > 160 ? content.slice(0, 160) + '…' : content;
+
+  return `<article class="post" data-id="${id}">
+    <div class="post-head">
+      <div class="avatar"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%23ff7a18'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='48' font-weight='800' fill='white' text-anchor='middle'%3E${authorName.charAt(0).toUpperCase()}%3C/text%3E%3C/svg%3E" alt="${authorName}"/></div>
+      <div class="who">
+        <span class="name">${authorName}</span>
+        <span class="dot">·</span>
+        <span class="handle">${time}</span>
+      </div>
+    </div>
+    <h2 class="post-title">${title}</h2>
+    <p class="post-snippet">${snippet}</p>
+    <div class="post-tags">${tags.map(t => `
+      <span class="tag-chip">#${t}
+        <button class="tc-follow ${followedTags.has(t) ? 'following' : ''}" data-tag="${t}">${followedTags.has(t) ? 'Following' : 'Follow'}</button>
+      </span>
+    `).join('')}</div>
+  </article>`;
+}
+
+async function loadFeed(tab = 'following') {
+  feedEl.innerHTML = '<div class="feed-empty">Loading posts…</div>';
+  try {
+    let query = db.collection('posts').orderBy('timestamp', 'desc').limit(50);
+    let snapshot = await query.get();
+
+    let posts = [];
+    snapshot.forEach(doc => posts.push(doc));
+
+    if (tab === 'following' && followedTags.size > 0) {
+      posts = posts.filter(doc => {
+        const tags = getPostTags(doc);
+        return tags.some(t => followedTags.has(t));
+      });
+    }
+
+    if (posts.length === 0) {
+      feedEl.innerHTML = `<div class="feed-empty">
+        ${tab === 'following' && followedTags.size === 0 ? 'Follow some tags to see posts here!' : 'No posts yet. Be the first!'}
+        ${tab === 'following' ? '<br/><button onclick="openProfileModal()">Follow Tags</button>' : ''}
+      </div>`;
+      return;
+    }
+
+    allPosts = posts;
+    feedEl.innerHTML = posts.map((doc, i) => postHTML(doc, i)).join('');
+  } catch (e) {
+    console.error('[feed]', e);
+    feedEl.innerHTML = '<div class="feed-empty">Could not load feed. Please try again.</div>';
+  }
+}
+
+// ============================================================
+// TAG FOLLOW
+// ============================================================
+async function toggleFollowTag(tag) {
+  if (isGuest) {
+    showToast('Sign in to follow tags');
     return;
   }
+  if (!currentUser) return;
+
+  const wasFollowing = followedTags.has(tag);
+  if (wasFollowing) {
+    followedTags.delete(tag);
+  } else {
+    followedTags.add(tag);
+  }
+
+  // Update UI immediately
+  updateTagButtons(tag, !wasFollowing);
+
+  // Save to Firestore
   try {
-    var snap = await db.collection('config').doc('dashboard').get();
-    if (snap.exists) {
-      var d = snap.data();
-      cacheToday('ys.dashConfig', d);
-      applyDashboardConfig(d);
+    await db.collection('users').doc(currentUser.uid).update({
+      followedTags: Array.from(followedTags)
+    });
+    showToast(wasFollowing ? `Unfollowed #${tag}` : `Following #${tag}`);
+    // Reload feed if on following tab
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab && activeTab.dataset.tab === 'following') {
+      loadFeed('following');
     }
-  } catch(e) { console.warn('dashConfig fetch failed', e); }
-}
-
-function applyDashboardConfig(d) {
-  if (d.baseNetWorthUSD != null) CONFIG.baseNetWorthUSD = d.baseNetWorthUSD;
-  if (Array.isArray(d.cryptoHoldings)) {
-    d.cryptoHoldings.forEach(function(h) {
-      var c = CONFIG.cryptoHoldings.find(function(x) { return x.id === h.id; });
-      if (c) c.amount = h.amount || 0;
-    });
-  }
-  if (d.socials) {
-    CONFIG.socials.forEach(function(s) {
-      if (s.icon !== 'gh' && d.socials[s.icon] != null) {
-        s.count = d.socials[s.icon];
-      }
-    });
+    // Update profile tags
+    renderProfileTags();
+  } catch (e) {
+    console.error('[follow]', e);
+    // Revert
+    if (wasFollowing) followedTags.add(tag);
+    else followedTags.delete(tag);
+    showToast('Failed to update. Please try again.');
   }
 }
 
-// ============================================
+function updateTagButtons(tag, following) {
+  document.querySelectorAll(`[data-tag="${tag}"]`).forEach(btn => {
+    if (following) {
+      btn.textContent = 'Following';
+      btn.classList.add('following');
+    } else {
+      btn.textContent = 'Follow';
+      btn.classList.remove('following');
+    }
+  });
+}
+
+// ============================================================
+// PROFILE MODAL
+// ============================================================
+function openProfileModal() {
+  const modal = document.getElementById('profileModal');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  renderProfileTags();
+  updateWalletUI();
+}
+
+function closeProfileModal() {
+  const modal = document.getElementById('profileModal');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function renderProfileTags() {
+  const container = document.getElementById('profileTags');
+  if (followedTags.size === 0) {
+    container.innerHTML = '<span class="yp-handle">No tags followed yet. Explore and follow some!</span>';
+    return;
+  }
+  container.innerHTML = Array.from(followedTags).map(tag => `
+    <span class="yp-tag">#${tag}
+      <button data-profile-tag="${tag}">Unfollow</button>
+    </span>
+  `).join('');
+}
+
+// Profile tag click handler
+document.getElementById('profileTags').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-profile-tag]');
+  if (btn) {
+    const tag = btn.dataset.profileTag;
+    toggleFollowTag(tag);
+  }
+});
+
+// Profile modal close
+document.querySelector('[data-close-profile]').addEventListener('click', closeProfileModal);
+document.getElementById('profileModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeProfileModal();
+});
+
+// ============================================================
+// WALLET CONNECT
+// ============================================================
+let walletConnected = false;
+let walletAddress = '';
+
+function updateWalletUI() {
+  const status = document.getElementById('walletStatus');
+  const addrEl = document.getElementById('walletAddress');
+  if (walletConnected && walletAddress) {
+    status.textContent = 'Connected';
+    status.className = 'status connected';
+    addrEl.style.display = 'block';
+    addrEl.textContent = `📍 ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  } else {
+    status.textContent = 'Disconnected';
+    status.className = 'status disconnected';
+    addrEl.style.display = 'none';
+  }
+}
+
+// WalletConnect integration
+document.getElementById('walletConnectBtn').addEventListener('click', async () => {
+  if (walletConnected) {
+    // Disconnect
+    walletConnected = false;
+    walletAddress = '';
+    updateWalletUI();
+    showToast('Wallet disconnected');
+    return;
+  }
+
+  try {
+    showToast('Opening WalletConnect…');
+    // Simple WalletConnect URI simulation for now
+    // In production, use @walletconnect/web3wallet
+    const uri = 'wc:simulate-connection?bridge=https://bridge.walletconnect.org';
+    const wcUrl = `https://app.trustwallet.com/wc?uri=${encodeURIComponent(uri)}`;
+    window.open(wcUrl, '_blank');
+
+    // Simulate connection (in production, listen for approval)
+    setTimeout(() => {
+      walletConnected = true;
+      walletAddress = '0x' + Math.random().toString(16).slice(2, 12) + '...' + Math.random().toString(16).slice(2, 6);
+      updateWalletUI();
+      showToast('Wallet connected!');
+    }, 3000);
+  } catch (e) {
+    console.error('[wallet]', e);
+    showToast('Failed to connect wallet');
+  }
+});
+
+// ============================================================
+// TABS
+// ============================================================
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    loadFeed(tab.dataset.tab);
+  });
+});
+
+// ============================================================
+// SIDEBAR NAV
+// ============================================================
+document.querySelectorAll('.sb-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.sb-item').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    const key = el.dataset.sb;
+    if (key === 'home') {
+      document.querySelector('.tab[data-tab="following"]')?.click();
+    } else if (key === 'explore') {
+      document.querySelector('.tab[data-tab="discover"]')?.click();
+    } else if (key === 'profile') {
+      openProfileModal();
+    }
+  });
+});
+
+// ============================================================
+// TOP BAR
+// ============================================================
+document.getElementById('topBrand').addEventListener('click', () => {
+  document.querySelector('.tab[data-tab="following"]')?.click();
+});
+
+document.getElementById('topProfile').addEventListener('click', openProfileModal);
+
+document.getElementById('sbMe').addEventListener('click', openProfileModal);
+
+// ============================================================
+// LOGOUT
+// ============================================================
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+// ============================================================
+// GUEST LOGIN
+// ============================================================
+document.getElementById('guestLoginBtn').addEventListener('click', loginAsGuest);
+
+// ============================================================
+// GOOGLE LOGIN
+// ============================================================
+document.getElementById('googleLoginBtn').addEventListener('click', loginWithGoogle);
+
+// ============================================================
+// FEED CLICK DELEGATION - Tag following
+// ============================================================
+feedEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-tag]');
+  if (btn) {
+    e.stopPropagation();
+    const tag = btn.dataset.tag;
+    toggleFollowTag(tag);
+  }
+});
+
+// ============================================================
+// COPYRIGHT
+// ============================================================
+document.getElementById('rbCopyright').textContent = `© ${new Date().getFullYear()} Yong Social`;
+
+// ============================================================
 // INIT
-// ============================================
-async function initApp() {
-  try {
-    await loadProfile();
-    await loadDashboardConfig();
-    loadViewsCard();
-    loadSocials();
-    loadCrypto();
-    loadRecent();
-    route();
-    console.log('App initialized successfully');
-  } catch (error) {
-    console.error('App initialization error:', error);
-    var err = document.getElementById('profileError');
-    if (err) {
-      err.textContent = 'Error: ' + error.message;
-      err.classList.remove('hidden');
-    }
-    document.getElementById('profileLoading')?.classList.add('hidden');
+// ============================================================
+// Check if user already logged in via Firebase
+setTimeout(() => {
+  if (!auth.currentUser && !isGuest) {
+    splash.classList.add('hide');
+    setTimeout(() => authScreen.classList.add('show'), 300);
   }
-}
+}, 1000);
 
-initApp();
+// ============================================================
+// KEYBOARD SHORTCUTS (desktop)
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('profileModal').classList.contains('open')) {
+      closeProfileModal();
+    }
+  }
+});
 
-// Make functions globally accessible
-window.connectRealWallet = connectRealWallet;
-window.toggleSetupTag = toggleSetupTag;
-window.filterTags = filterTags;
-window.closeProfileSetup = closeProfileSetup;
-window.exploreCommunity = exploreCommunity;
-window.handleCommunityAccess = handleCommunityAccess;
-window.openProfileSetup = openProfileSetup;
-window.showProfileSetup = showProfileSetup;
+console.log('🚀 Yong Social loaded!');
+console.log('📱 Community app with Google Auth + WalletConnect');
 </script>
 </body>
 </html>
