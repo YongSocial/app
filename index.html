@@ -1567,7 +1567,10 @@ window.openSourcesModal = openSourcesModal;
     if(typeof currentTab!=='undefined' && currentTab==='following' && typeof loadFeed==='function') loadFeed('following');
   });
 
-  function openProfile(){ profileOverlay.classList.add('open'); profileOverlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+  function openProfile(){
+    if(typeof window.ysShowGate === 'function' && window.ysShowGate()) return;
+    profileOverlay.classList.add('open'); profileOverlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  }
   window.openProfileModal = openProfile;
 
   /* Firebase Google auth + Solana (Trust Wallet) */
@@ -2320,30 +2323,78 @@ window.openSourcesModal = openSourcesModal;
 
 <!-- ============== AUTH GATE (blocks app until Google sign-in) ============== -->
 <div id="ysAuthGate" role="dialog" aria-modal="true" aria-label="Sign in to YongSphere"
-     style="position:fixed;inset:0;z-index:99999;background:radial-gradient(1200px 600px at 20% 10%,#1d8fff22,transparent),radial-gradient(900px 500px at 80% 90%,#ff7a1822,transparent),#0b0d12;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,system-ui,sans-serif;color:#fff">
+     style="position:fixed;inset:0;z-index:99999;background:radial-gradient(1200px 600px at 20% 10%,#1d8fff22,transparent),radial-gradient(900px 500px at 80% 90%,#ff7a1822,transparent),#0b0d12;display:none;align-items:center;justify-content:center;padding:24px;font-family:Inter,system-ui,sans-serif;color:#fff">
   <div style="max-width:420px;width:100%;background:#11141c;border:1px solid #1f2430;border-radius:20px;padding:28px 24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);text-align:center">
     <div style="width:72px;height:72px;border-radius:20px;margin:0 auto 14px;background:linear-gradient(135deg,#ff7a18,#1d8fff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:28px">Y</div>
-    <h1 style="margin:0 0 6px;font-size:22px;font-weight:800">Welcome to YongSphere</h1>
-    <p style="margin:0 0 22px;font-size:14px;color:#8b94a3;line-height:1.5">Sign in with Google to follow your tags, connect your Trust Wallet, and access the feed.</p>
+    <h1 style="margin:0 0 6px;font-size:22px;font-weight:800">Welcome to Yong Social</h1>
+    <p style="margin:0 0 22px;font-size:14px;color:#8b94a3;line-height:1.5">Sign in with Google to access this feature.</p>
     <button id="ysGateGoogleBtn"
       style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 16px;border-radius:12px;border:1px solid #2a3142;background:#fff;color:#111;font-weight:700;font-size:15px;cursor:pointer">
       <i class="fa-brands fa-google" style="color:#ea4335;font-size:18px"></i>
       <span>Continue with Google</span>
     </button>
-    <p style="margin:18px 0 0;font-size:11px;color:#5b6478">By continuing you agree to our terms. We only read your basic Google profile.</p>
+    <button id="ysGateDismiss" style="margin-top:12px;background:none;border:none;color:#5b6478;font-size:13px;cursor:pointer">Maybe later</button>
+    <p style="margin:14px 0 0;font-size:11px;color:#5b6478">By continuing you agree to our terms. We only read your basic Google profile.</p>
   </div>
 </div>
 <script>
-  // Show/hide the gate based on cached user (Firebase onAuthStateChanged will also hide it once it confirms a session).
   (function(){
-    document.body.style.overflow = "hidden";
-    try{
-      var u = JSON.parse(localStorage.getItem("ys_user_v1")||"null");
-      if(u){
-        var g = document.getElementById("ysAuthGate");
-        if(g){ g.style.display = "none"; document.body.style.overflow = ""; }
-      }
-    }catch(e){}
+    // Hide gate on load — users can browse freely
+    var gate = document.getElementById('ysAuthGate');
+
+    function isLoggedIn(){
+      try{ return !!JSON.parse(localStorage.getItem('ys_user_v1')||'null'); }catch(e){ return false; }
+    }
+
+    function showGate(){
+      if(isLoggedIn()) return false;
+      gate.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      return true;
+    }
+
+    function hideGate(){
+      gate.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // Dismiss button
+    var dismiss = document.getElementById('ysGateDismiss');
+    if(dismiss) dismiss.addEventListener('click', hideGate);
+
+    // If already signed in, keep gate hidden
+    if(isLoggedIn()) hideGate();
+
+    // Intercept: sidebar items (explore, notifications, profile)
+    document.querySelectorAll('.sb-item').forEach(function(el){
+      el.addEventListener('click', function(e){
+        var key = el.dataset.sb;
+        if(key === 'home') return; // home is free
+        if(showGate()) e.stopImmediatePropagation();
+      }, true);
+    });
+
+    // Intercept: bottom nav (all except home)
+    document.querySelectorAll('.bottomnav .nav-btn').forEach(function(el){
+      el.addEventListener('click', function(e){
+        if(el.classList.contains('active')) return; // already on home
+        if(el.id === 'navProfile' || el.id === 'navSearch' || el.id === 'navBrowser' || el.id === 'navNotif'){
+          if(showGate()) e.stopImmediatePropagation();
+        }
+      }, true);
+    });
+
+    // Intercept: tabs (Traders, Champions, Community — but not Following)
+    document.querySelectorAll('.tab').forEach(function(el){
+      el.addEventListener('click', function(e){
+        var tab = el.dataset.tab;
+        if(tab === 'following') return; // following is free
+        if(showGate()) e.stopImmediatePropagation();
+      }, true);
+    });
+
+    // Expose so profile click can also trigger gate
+    window.ysShowGate = showGate;
   })();
 
 /* ---------- LIVE ASSETS (crypto prices + TradingView modal) ---------- */
