@@ -688,7 +688,6 @@ function postHTML(entry, idx){
 
     <div class="actions">
       <button class="a-btn x" data-action="smart-share" data-platform="x" data-idx="${idx}" aria-label="Share on X"><i class="fa-brands fa-x-twitter"></i></button>
-      <button class="a-btn fb" data-action="smart-share" data-platform="facebook" data-idx="${idx}" aria-label="Share on Facebook"><i class="fa-brands fa-facebook"></i></button>
       <div class="right">
         <button class="a-btn share" data-action="share" data-link="${link}" aria-label="Copy link"><i class="fa-solid fa-link"></i></button>
       </div>
@@ -1961,14 +1960,11 @@ window.openSourcesModal = openSourcesModal;
   window.smartShare = function(platform, idx){
     const entry = entryFromIdx(idx);
     if(!entry){ if(typeof showToast==='function') showToast('Post unavailable'); return; }
-    const { post, link } = buildSharePost(entry);
-    let url;
+    const { post } = buildSharePost(entry);
     if(platform==='x'){
-      url = 'https://twitter.com/intent/tweet?text='+encodeURIComponent(post);
-    } else if(platform==='facebook'){
-      url = 'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(link)+'&quote='+encodeURIComponent(post);
+      const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(post);
+      window.open(url, '_blank', 'noopener');
     }
-    if(url) window.open(url, '_blank', 'noopener');
   };
 })();
 
