@@ -215,7 +215,8 @@ const auth = firebase.auth();
         </div>
         <span id="walletStatus" class="text-xs text-mute block mt-2">Not connected</span>
         <input type="text" id="manualWalletInput" placeholder="Or paste wallet address manually..." 
-          class="w-full rounded-xl bg-surface2 border border-line px-4 py-2.5 text-sm outline-none focus:border-brand font-mono mt-2" />
+          class="w-full rounded-xl bg-surface2 border border-line px-4 py-2.5 text-sm outline-none focus:border-brand font-mono mt-2"
+          oninput="onManualWalletInput(this.value)" />
       </div>
 
       <!-- Tag Selection -->
@@ -656,7 +657,13 @@ function renderProfile() {
   // Wallet
   if (PROFILE.walletAddress) {
     document.getElementById('profileWallet').textContent = PROFILE.walletAddress;
-    document.getElementById('walletBalance').textContent = '—';
+    var balEl = document.getElementById('walletBalance');
+    if (balEl) {
+      balEl.textContent = '...';
+      fetchSolBalance(PROFILE.walletAddress).then(function(bal) {
+        balEl.textContent = bal !== null ? bal.toFixed(4) : '—';
+      });
+    }
   } else {
     document.getElementById('profileWallet').textContent = 'Not connected';
   }
@@ -832,6 +839,62 @@ function openProfileSetup() {
 // ============================================
 // WALLET CONNECTION
 // ============================================
+// ============================================
+// SOL BALANCE FETCHER
+// ============================================
+async function fetchSolBalance(addr) {
+  if (!addr || addr.length < 20) return null;
+  try {
+    var res = await fetch('https://api.mainnet-beta.solana.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1, method: 'getBalance',
+        params: [addr, { commitment: 'confirmed' }]
+      })
+    });
+    var json = await res.json();
+    if (json.result && json.result.value != null) {
+      return json.result.value / 1e9;
+    }
+  } catch(e) { console.warn('SOL balance fetch failed:', e); }
+  return null;
+}
+
+function setWalletUI(address, walletType) {
+  walletAddress = address;
+  if (walletType) connectedWallet = walletType;
+
+  var status = document.getElementById('walletStatus');
+  if (status) {
+    status.textContent = '\u2705 ' + address.slice(0, 6) + '...' + address.slice(-4);
+    status.style.color = '#22c984';
+  }
+
+  var manualInput = document.getElementById('manualWalletInput');
+  if (manualInput) manualInput.value = address;
+
+  var profileWallet = document.getElementById('profileWallet');
+  if (profileWallet) profileWallet.textContent = address;
+
+  document.querySelectorAll('.wallet-btn').forEach(function(btn) {
+    btn.classList.remove('connected');
+    var oc = btn.getAttribute('onclick') || '';
+    if (walletType && oc.indexOf(walletType) !== -1) {
+      btn.classList.add('connected');
+    }
+  });
+
+  // Fetch and show SOL balance
+  var balEl = document.getElementById('walletBalance');
+  if (balEl) {
+    balEl.textContent = '...';
+    fetchSolBalance(address).then(function(bal) {
+      balEl.textContent = bal !== null ? bal.toFixed(4) : '—';
+    });
+  }
+}
+
 async function connectWallet(walletType) {
   var address = null;
 
@@ -841,61 +904,60 @@ async function connectWallet(walletType) {
       if (phantom && phantom.isPhantom) {
         var resp = await phantom.connect();
         address = resp.publicKey.toString();
+      } else {
+        // Not inside Phantom browser — deep-link to open dapp inside Phantom's in-app browser
+        var dappUrl = encodeURIComponent(window.location.href);
+        var deepLink = 'https://phantom.app/ul/browse/' + dappUrl + '?ref=' + encodeURIComponent(window.location.origin);
+        showToast('Opening in Phantom browser...', 'success');
+        setTimeout(function() { window.location.href = deepLink; }, 800);
+        return;
       }
     } else if (walletType === 'solflare') {
       var solflare = window.solflare;
       if (solflare && solflare.isSolflare) {
         await solflare.connect();
         address = solflare.publicKey.toString();
+      } else {
+        showToast('Opening Solflare...', 'success');
+        setTimeout(function() { window.open('https://solflare.com/', '_blank'); }, 800);
+        return;
       }
     } else if (walletType === 'backpack') {
       var backpack = window.backpack || window.xnft?.solana;
       if (backpack) {
         var resp2 = await backpack.connect();
         address = resp2.publicKey.toString();
+      } else {
+        showToast('Opening Backpack...', 'success');
+        setTimeout(function() { window.open('https://backpack.app/', '_blank'); }, 800);
+        return;
       }
     }
   } catch (e) {
     console.warn('Wallet connect error:', e);
-    showToast('Wallet connection cancelled or failed.', 'error');
+    showToast('Wallet connection cancelled.', 'error');
     return;
   }
 
   if (!address) {
-    // Wallet extension not installed — open install link
-    var links = {
-      phantom: 'https://phantom.app/',
-      solflare: 'https://solflare.com/',
-      backpack: 'https://backpack.app/'
-    };
-    showToast(walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' not detected. Opening install page...', 'error');
-    setTimeout(function() { window.open(links[walletType], '_blank'); }, 1500);
+    showToast('Could not detect ' + walletType + '. Try pasting your address below.', 'error');
     return;
   }
 
-  walletAddress = address;
-  connectedWallet = walletType;
+  setWalletUI(address, walletType);
+  showToast('\u2705 ' + walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' connected!', 'success');
+}
 
-  var status = document.getElementById('walletStatus');
-  if (status) {
-    status.textContent = '✅ Connected (' + walletType + ')';
-    status.style.color = '#22c984';
-  }
-
-  var manualInput = document.getElementById('manualWalletInput');
-  if (manualInput) manualInput.value = address;
-
-  // Update button states by data attribute or button index
-  var walletBtns = document.querySelectorAll('.wallet-btn');
-  walletBtns.forEach(function(btn) {
-    btn.classList.remove('connected');
-    var onclick = btn.getAttribute('onclick') || '';
-    if (onclick.indexOf("'" + walletType + "'") !== -1 || onclick.indexOf('"' + walletType + '"') !== -1) {
-      btn.classList.add('connected');
-    }
-  });
-
-  showToast('✅ ' + walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' connected!', 'success');
+// Called when user types/pastes into the manual wallet input
+var _manualWalletTimer = null;
+function onManualWalletInput(val) {
+  val = val.trim();
+  clearTimeout(_manualWalletTimer);
+  if (val.length < 32) return; // Solana addresses are 32-44 chars
+  _manualWalletTimer = setTimeout(function() {
+    setWalletUI(val, null);
+    showToast('\u2705 Wallet address set.', 'success');
+  }, 600);
 }
 
 // ============================================
