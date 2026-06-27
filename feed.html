@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Yong Social · Topic Staking</title>
+  <title>Yong Social · Community</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,9 +11,6 @@
   
   <!-- Ad SDK -->
   <script src='//libtl.com/sdk.js' data-zone='11190801' data-sdk='show_11190801'></script>
-
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app-compat.js"></script>
@@ -58,7 +55,6 @@
     .btn-brand:hover { filter: brightness(1.05); }
     .btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -377,6 +373,7 @@
       font-size: 0.85rem;
     }
     .tweet .read-more:hover { text-decoration: underline; }
+    
     .tweet .staked-badge {
       display: inline-block;
       background: rgba(212, 178, 90, 0.12);
@@ -408,7 +405,7 @@
       color: #e7ecf5;
       word-break: break-all;
     }
-    .tweet .staked-wallet .tip-btn {
+    .tweet .staked-wallet .yongtap-btn {
       background: #d4b25a;
       color: #0b1120;
       border: none;
@@ -418,8 +415,9 @@
       font-weight: 600;
       cursor: pointer;
       transition: filter 0.15s;
+      font-family: 'Inter', sans-serif;
     }
-    .tweet .staked-wallet .tip-btn:hover { filter: brightness(1.05); }
+    .tweet .staked-wallet .yongtap-btn:hover { filter: brightness(1.05); }
 
     .youtube-embed {
       margin-top: 0.6rem;
@@ -719,7 +717,106 @@
     }
     .link-preview.no-img .lp-img { display: none; }
 
-    /* Profile Modal with Topic Staking */
+    /* YongTap Popup */
+    .yongtap-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(7, 11, 20, 0.95);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .yongtap-overlay.active { display: flex; }
+    .yongtap-modal { max-width: 440px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    
+    .yongtap-modal input {
+      width: 100%;
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      color: #e7ecf5;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .yongtap-modal input:focus { border-color: #d4b25a; }
+    .yongtap-modal input::placeholder { color: #5a6378; }
+
+    .profile-setup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(7, 11, 20, 0.97);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .profile-setup-overlay.active { display: flex; }
+    .profile-setup-modal { max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .profile-setup-modal::-webkit-scrollbar { width: 4px; }
+    .profile-setup-modal::-webkit-scrollbar-track { background: #0b1120; }
+    .profile-setup-modal::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
+    
+    .setup-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .setup-tag {
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #8a93a8;
+      font-family: 'Inter', sans-serif;
+    }
+    .setup-tag:hover { border-color: #d4b25a; }
+    .setup-tag.selected { border-color: #d4b25a; background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
+    .setup-tag.disabled { opacity: 0.4; cursor: not-allowed; }
+    
+    .wallet-btn {
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #e7ecf5;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .wallet-btn:hover { border-color: #d4b25a; background: rgba(212, 178, 90, 0.05); }
+    .wallet-btn.connected { border-color: #22c984; background: rgba(34, 201, 132, 0.08); }
+    
+    .search-tags {
+      width: 100%;
+      background: #121a2d;
+      border: 1px solid #1f2940;
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: #e7ecf5;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      margin-top: 0.5rem;
+    }
+    .search-tags:focus { border-color: #d4b25a; }
+    .search-tags::placeholder { color: #5a6378; }
+
     #profileView {
       display: none;
       padding: 2rem 1.5rem;
@@ -777,71 +874,6 @@
       border-radius: 6px;
       border: 1px solid #1f2940;
     }
-
-    /* Topic Staking Section */
-    .topic-staking {
-      background: #0f1626;
-      border: 1px solid #1f2940;
-      border-radius: 18px;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      max-width: 500px;
-    }
-    .topic-staking h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .topic-staking .sub {
-      font-size: 0.8rem;
-      color: #8a93a8;
-      margin-bottom: 1rem;
-    }
-    .topic-tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    .topic-tag {
-      background: #121a2d;
-      border: 1px solid #1f2940;
-      border-radius: 9999px;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: #8a93a8;
-      font-family: 'Inter', sans-serif;
-    }
-    .topic-tag:hover {
-      border-color: #d4b25a;
-    }
-    .topic-tag.selected {
-      border-color: #d4b25a;
-      background: rgba(212, 178, 90, 0.12);
-      color: #d4b25a;
-    }
-    .topic-tag.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .topic-staking .save-btn {
-      background: #d4b25a;
-      color: #0b1120;
-      border: none;
-      border-radius: 9999px;
-      padding: 0.4rem 1.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: filter 0.15s;
-    }
-    .topic-staking .save-btn:hover { filter: brightness(1.05); }
-    .topic-staking .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .bottomnav {
       display: none;
@@ -928,7 +960,8 @@
       .reactions { gap: 0.3rem; }
       .reaction-btn { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
       .reaction-btn .emoji { font-size: 0.85rem; }
-      .topic-staking { max-width: 100%; }
+      .profile-setup-modal { padding: 1.25rem; }
+      .post-images { aspect-ratio: 4 / 5; }
     }
     @media (min-width: 1024px) {
       .bottomnav, .fab { display: none !important; }
@@ -948,9 +981,9 @@
       </div>
     </a>
     <nav class="nav-links">
-      <button class="nav-link active" data-view="feed" onclick="switchView('feed')">Dashboard</button>
+      <button class="nav-link active" data-view="feed" onclick="switchView('feed')">Home</button>
       <button class="nav-link" data-view="profile" onclick="switchView('profile')">Profile</button>
-      <button class="nav-link" onclick="window.location.href='https://yongsocial.github.io/sphere/'">← Back</button>
+      <button class="nav-link" onclick="window.location.href='https://yongsocial.github.io/sphere/'">← Dashboard</button>
     </nav>
   </div>
 </header>
@@ -966,6 +999,88 @@
   🔄 <span id="newPostsCount">0</span> new posts - Tap to load
 </div>
 
+<!-- PROFILE SETUP POPUP -->
+<div id="profileSetupOverlay" class="profile-setup-overlay">
+  <div class="profile-setup-modal card p-6">
+    <div class="space-y-5">
+      <div class="text-center">
+        <div class="text-5xl mb-3">💎</div>
+        <h2 class="text-xl font-bold">Complete Your Profile</h2>
+        <p class="text-sm text-mute mt-2">Connect your Solana wallet and select 5 topics you care about.</p>
+      </div>
+
+      <!-- Wallet Connection -->
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-mute mb-2">Connect Solana Wallet</label>
+        <div class="flex flex-wrap gap-2">
+          <button class="wallet-btn" onclick="connectWallet('phantom')">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#AB9FF2"/><path d="M7 14L10 11L13 14" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/><path d="M7 7L10 10L13 7" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/></svg>
+            Phantom
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('solflare')">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#FF8C00"/><path d="M14 7H6C5.44772 7 5 7.44772 5 8V13C5 13.5523 5.44772 14 6 14H14C14.5523 14 15 13.5523 15 13V8C15 7.44772 14.5523 14 15 13.5523 15 13.5523 14.5523 15 13V8C15 7.44772 14.5523 7 14 7Z" stroke="white" stroke-width="1.5"/><circle cx="12.5" cy="10.5" r="1.5" fill="white"/></svg>
+            Solflare
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('backpack')">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
+            Backpack
+          </button>
+          <span id="walletStatus" class="text-xs text-mute flex items-center ml-2">Not connected</span>
+        </div>
+        <input type="text" id="manualWalletInput" placeholder="Or enter wallet address manually..." 
+          class="w-full rounded-xl bg-surface2 border border-line px-4 py-2.5 text-sm outline-none focus:border-brand font-mono mt-2" />
+      </div>
+
+      <!-- Tag Selection -->
+      <div>
+        <label class="block text-xs uppercase tracking-wider text-mute mb-2">Select 5 Topics</label>
+        <input type="text" id="tagSearch" class="search-tags" placeholder="Search tags..." oninput="filterTags()" />
+        <div id="tagList" class="setup-tag-list"></div>
+        <div class="text-xs text-mute mt-2"><span id="selectedTagCount">0</span>/5 selected</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeProfileSetup()" class="btn-ghost rounded-xl px-5 py-2.5 text-sm flex-1">Skip</button>
+        <button id="exploreBtn" class="btn-brand rounded-xl px-5 py-2.5 text-sm flex-1" onclick="saveAndExplore()">
+          🚀 Explore
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YONGTAP POPUP -->
+<div id="yongtapOverlay" class="yongtap-overlay">
+  <div class="yongtap-modal card p-6">
+    <div class="text-center mb-4">
+      <div class="text-4xl mb-2">💎</div>
+      <h3 class="text-lg font-bold">Send a YongTap</h3>
+      <p class="text-sm text-mute">Support creators you believe in</p>
+    </div>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs text-mute mb-1">Amount (SOL)</label>
+        <input type="number" id="yongtapAmount" step="0.0001" placeholder="0.001" />
+        <div class="text-xs text-mute mt-1">
+          Min: <span id="minSolDisplay">0.0001</span> SOL (~$0.10) · SOL Price: $<span id="solPriceDisplay">—</span>
+        </div>
+      </div>
+      
+      <div>
+        <label class="block text-xs text-mute mb-1">Memo</label>
+        <input type="text" id="yongtapMemo" placeholder="YongTap from @username" />
+      </div>
+      
+      <div class="flex gap-3">
+        <button onclick="closeYongTap()" class="btn-ghost rounded-xl px-4 py-2.5 text-sm flex-1">Cancel</button>
+        <button onclick="sendYongTap()" class="btn-brand rounded-xl px-4 py-2.5 text-sm flex-1">Send YongTap</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MAIN APP -->
 <div class="app-shell">
 
@@ -974,7 +1089,7 @@
     <div class="brand">Yong <span>Social</span></div>
     <button class="nav-item active" onclick="switchView('feed')"><i class="fa-solid fa-house"></i> Home</button>
     <button class="nav-item" onclick="switchView('profile')"><i class="fa-regular fa-user"></i> Profile</button>
-    <button class="nav-item" onclick="window.location.href='https://yongsocial.github.io/sphere/'"><i class="fa-solid fa-arrow-left"></i> Back to App</button>
+    <button class="nav-item" onclick="window.location.href='https://yongsocial.github.io/sphere/'"><i class="fa-solid fa-arrow-left"></i> Dashboard</button>
 
     <div class="sidebar-profile" id="sidebarProfile">
       <div id="sidebarAvatar" class="avatar">Y</div>
@@ -1023,18 +1138,13 @@
           <span class="value" id="profileWallet">Not set</span>
         </div>
         <div class="row">
-          <span class="label">Account Status</span>
-          <span class="value" id="profileStatus">—</span>
+          <span class="label">Staked Topics</span>
+          <span class="value" id="profileTopics">—</span>
         </div>
-      </div>
-
-      <!-- Topic Staking Section -->
-      <div class="topic-staking" id="topicStaking">
-        <h3>💎 Stake Your Topics</h3>
-        <div class="sub">Select up to 5 topics you want to stake your wallet to. When articles are published with these tags, your wallet will be eligible for tips.</div>
-        <div id="topicTags" class="topic-tag-list"></div>
-        <div style="font-size:0.7rem;color:#5a6378;margin-bottom:0.5rem;"><span id="selectedCount">0</span>/5 selected</div>
-        <button class="save-btn" id="saveTopicsBtn" onclick="saveStakedTopics()">💾 Save Topics</button>
+        <div class="row">
+          <span class="label">Status</span>
+          <span class="value" id="profileStatus">Ready</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1074,36 +1184,36 @@ var db = firebase.firestore();
 var auth = firebase.auth();
 
 // ============================================
-// CONSTANTS
-// ============================================
-var RSS_FEED_URL = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
-var RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
-var OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
-var MAX_STAKED_TOPICS = 5;
-var POSTS_CACHE_TTL = 10 * 60 * 1000;
-var RSS_CACHE_TTL = 15 * 60 * 1000;
-var CRYPTO_CACHE_TTL = 60 * 60 * 1000;
-
-// ============================================
 // STATE
 // ============================================
 var PROFILE = null;
 var currentUser = null;
 var cryptoData = [];
 var allPosts = [];
-var stakedTopics = [];
-var availableTags = [];
+var allTags = [];
 var selectedTopics = [];
-var postsCache = { data: [], timestamp: 0 };
+var walletAddress = '';
+var connectedWallet = null;
 var rssPostsCache = { data: [], timestamp: 0 };
+var RSS_FEED_URL = 'https://www.yongsocial.com/feeds/posts/default?alt=rss';
+var RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+var OG_PROXY = 'https://yongsocial.yongcomics.workers.dev/';
+var RSS_CACHE_TTL = 15 * 60 * 1000;
+var CRYPTO_CACHE_TTL = 60 * 60 * 1000;
 var _ogCache = {};
 var _players = {};
 var isInitialLoad = true;
-var unsubscribePosts = null;
+var targetWalletForYongTap = '';
+var currentUsername = '';
 
 // ============================================
 // CACHE HELPERS
 // ============================================
+function getUTCDay() {
+  var now = new Date();
+  return now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0') + '-' + String(now.getUTCDate()).padStart(2,'0');
+}
+
 var CACHE = {
   crypto: {
     get: function() {
@@ -1149,7 +1259,7 @@ var CACHE = {
 };
 
 // ============================================
-// GET TELEGRAM USER ID
+// TELEGRAM USER
 // ============================================
 function getTelegramUserId() {
   try {
@@ -1157,6 +1267,38 @@ function getTelegramUserId() {
     if (tgUser && tgUser.id) return String(tgUser.id);
   } catch(e) {}
   return null;
+}
+
+function getTgUser() {
+  var u = window.Telegram?.WebApp?.initDataUnsafe?.user;
+  if (u) return { ...u, _source: 'telegram' };
+  try {
+    var cached = JSON.parse(localStorage.getItem('ys.devTgUser') || 'null');
+    if (cached) return { ...cached, _source: 'guest' };
+  } catch(e) {}
+  var id = Math.floor(100000 + Math.random() * 900000);
+  var g = { id: id, first_name: 'Guest', username: 'guest_' + id };
+  localStorage.setItem('ys.devTgUser', JSON.stringify(g));
+  return { ...g, _source: 'guest' };
+}
+
+var TG_USER = getTgUser();
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(message, type) {
+  type = type || 'success';
+  var toast = document.getElementById('toast');
+  var icon = document.getElementById('toastIcon');
+  var msg = document.getElementById('toastMessage');
+  toast.className = 'toast show ' + type;
+  icon.textContent = type === 'success' ? '✅' : '❌';
+  msg.textContent = message;
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(function() {
+    toast.classList.remove('show');
+  }, 4000);
 }
 
 // ============================================
@@ -1198,7 +1340,7 @@ function switchView(view) {
       document.querySelector('.bottomnav .nav-item:nth-child(2)').classList.add('active');
     }
     if (PROFILE) updateProfileView();
-    renderTopicTags();
+    renderProfileSetup();
   }
 }
 
@@ -1218,144 +1360,192 @@ function updateProfileView() {
   document.getElementById('profileTgId').textContent = PROFILE.telegramId;
   
   var walletEl = document.getElementById('profileWallet');
-  if (PROFILE.solanaWallet) {
-    walletEl.innerHTML = '<span class="wallet-address">' + PROFILE.solanaWallet + '</span>';
+  if (PROFILE.walletAddress) {
+    walletEl.innerHTML = '<span class="wallet-address">' + PROFILE.walletAddress + '</span>';
   } else {
     walletEl.textContent = 'Not set';
     walletEl.style.color = '#8a93a8';
   }
   
+  var topics = PROFILE.stakedTopics || [];
+  document.getElementById('profileTopics').textContent = topics.length > 0 ? topics.map(function(t){ return '#' + t; }).join(', ') : 'None selected';
+  
   var statusEl = document.getElementById('profileStatus');
-  if (PROFILE.paymentStatus === 'paid') {
-    statusEl.innerHTML = '✅ Treasury Verified';
+  if (PROFILE.walletAddress && topics.length === 5) {
+    statusEl.innerHTML = '✅ Complete';
     statusEl.style.color = '#22c984';
   } else {
-    statusEl.innerHTML = '⏳ Pending Verification';
+    statusEl.innerHTML = '⏳ Setup Required';
     statusEl.style.color = '#d4b25a';
   }
   
-  // Load staked topics
-  if (PROFILE.stakedTopics) {
-    stakedTopics = PROFILE.stakedTopics;
-    selectedTopics = stakedTopics.slice();
+  updateSidebar();
+}
+
+function updateSidebar() {
+  var avatar = document.getElementById('sidebarAvatar');
+  var name = document.getElementById('sidebarName');
+  var handle = document.getElementById('sidebarHandle');
+  
+  if (!PROFILE) return;
+  
+  if (PROFILE.photoUrl) {
+    avatar.innerHTML = '<img src="' + PROFILE.photoUrl + '" alt="" class="avatar-img" />';
+  } else {
+    avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
   }
   
-  renderTopicTags();
+  name.textContent = PROFILE.displayName || 'Yong User';
+  handle.textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
 }
 
 // ============================================
-// TOAST
+// PROFILE SETUP
 // ============================================
-function showToast(message, type) {
-  type = type || 'success';
-  var toast = document.getElementById('toast');
-  var icon = document.getElementById('toastIcon');
-  var msg = document.getElementById('toastMessage');
-  toast.className = 'toast show ' + type;
-  icon.textContent = type === 'success' ? '✅' : '❌';
-  msg.textContent = message;
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(function() {
-    toast.classList.remove('show');
-  }, 4000);
+function showProfileSetup() {
+  var overlay = document.getElementById('profileSetupOverlay');
+  overlay.classList.add('active');
+  selectedTopics = (PROFILE.stakedTopics || []).slice();
+  loadTagsForSetup();
+  renderTagList();
 }
 
-// ============================================
-// TON PRICE SERVICE (Kept for backward compatibility)
-// ============================================
-function getUTCDay() {
-  var now = new Date();
-  return now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0') + '-' + String(now.getUTCDate()).padStart(2,'0');
+function closeProfileSetup() {
+  document.getElementById('profileSetupOverlay').classList.remove('active');
 }
 
-// ============================================
-// ROTATING TICKER - WITH CACHE
-// ============================================
-async function fetchTickerData() {
-  var track = document.getElementById('tickerTrack');
-  
-  var cached = CACHE.crypto.get();
-  if (cached && cached.length > 0) {
-    cryptoData = cached;
-    renderTicker();
+async function loadTagsForSetup() {
+  try {
+    var res = await fetch(RSS_PROXY + encodeURIComponent(RSS_FEED_URL));
+    var json = await res.json();
+    if (json.status === 'ok' && Array.isArray(json.items)) {
+      var tags = [];
+      json.items.forEach(function(item) {
+        if (item.categories && Array.isArray(item.categories)) {
+          item.categories.forEach(function(tag) {
+            if (tags.indexOf(tag) === -1) tags.push(tag);
+          });
+        }
+        var content = (item.content || item.description || '');
+        var matches = content.match(/#[a-zA-Z0-9_]+/g) || [];
+        matches.forEach(function(m) {
+          var tag = m.substring(1);
+          if (tags.indexOf(tag) === -1) tags.push(tag);
+        });
+      });
+      allTags = tags.sort();
+      renderTagList();
+    }
+  } catch(e) {
+    console.warn('Error loading tags:', e);
+    allTags = ['crypto', 'bitcoin', 'ethereum', 'solana', 'defi', 'web3', 'nft', 'finance', 'investing', 'wealth', 'blockchain', 'ai', 'gaming', 'metaverse', 'dao'];
+    renderTagList();
   }
+}
+
+function renderTagList() {
+  var container = document.getElementById('tagList');
+  var search = document.getElementById('tagSearch').value.toLowerCase();
+  var filtered = allTags.filter(function(tag) { return tag.toLowerCase().includes(search); });
+  
+  container.innerHTML = filtered.map(function(tag) {
+    var isSelected = selectedTopics.indexOf(tag) !== -1;
+    var isDisabled = !isSelected && selectedTopics.length >= 5;
+    return '<button class="setup-tag' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '') + '" ' +
+      'onclick="toggleSetupTag(\'' + tag + '\')">' +
+      '#' + tag +
+      '</button>';
+  }).join('');
+  
+  document.getElementById('selectedTagCount').textContent = selectedTopics.length;
+}
+
+function toggleSetupTag(tag) {
+  var index = selectedTopics.indexOf(tag);
+  if (index !== -1) {
+    selectedTopics.splice(index, 1);
+  } else {
+    if (selectedTopics.length >= 5) {
+      showToast('You can only select up to 5 topics.', 'error');
+      return;
+    }
+    selectedTopics.push(tag);
+  }
+  renderTagList();
+}
+
+function filterTags() {
+  renderTagList();
+}
+
+function connectWallet(walletType) {
+  var demoAddress = '7xY8' + Math.random().toString(36).substring(2, 10) + '...' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  walletAddress = demoAddress;
+  connectedWallet = walletType;
+  
+  var status = document.getElementById('walletStatus');
+  status.textContent = '✅ Connected (' + walletType + ')';
+  status.style.color = '#22c984';
+  document.getElementById('manualWalletInput').value = demoAddress;
+  
+  document.querySelectorAll('.wallet-btn').forEach(function(btn) {
+    btn.classList.remove('connected');
+    if (btn.textContent.toLowerCase().includes(walletType)) {
+      btn.classList.add('connected');
+    }
+  });
+  
+  showToast('Wallet connected: ' + demoAddress, 'success');
+}
+
+async function saveAndExplore() {
+  var manualInput = document.getElementById('manualWalletInput').value.trim();
+  var wallet = walletAddress || manualInput;
+  
+  if (!wallet || wallet.length < 20) {
+    showToast('Please connect a Solana wallet first.', 'error');
+    return;
+  }
+  
+  if (selectedTopics.length !== 5) {
+    showToast('Please select exactly 5 topics.', 'error');
+    return;
+  }
+  
+  var btn = document.getElementById('exploreBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving...';
   
   try {
-    if (!cached || cached.length === 0) {
-      track.innerHTML = '<div class="ticker-loading"><div class="spinner"></div> Loading crypto prices...</div>';
-    }
-    
-    var response = await fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=false'
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch crypto data');
-    
-    var data = await response.json();
-    cryptoData = data.map(function(coin) {
-      return {
-        id: coin.id,
-        symbol: coin.symbol,
-        name: coin.name,
-        price: coin.current_price,
-        change: coin.price_change_percentage_24h,
-        market_cap: coin.market_cap,
-        image: coin.image
-      };
+    await db.collection('profiles').doc(String(TG_USER.id)).update({
+      walletAddress: wallet,
+      stakedTopics: selectedTopics,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     
-    CACHE.crypto.set(cryptoData);
-    renderTicker();
+    PROFILE.walletAddress = wallet;
+    PROFILE.stakedTopics = selectedTopics;
+    
+    showToast('✅ Profile saved!', 'success');
+    closeProfileSetup();
+    loadPosts();
+    btn.disabled = false;
+    btn.textContent = '🚀 Explore';
     
   } catch(error) {
-    console.error('Crypto fetch error:', error);
-    if (!cached || cached.length === 0) {
-      track.innerHTML = '<div style="padding:0.5rem 1.5rem;color:#8a93a8;font-size:0.8rem;text-align:center;width:100%;">' +
-        '❌ Failed to load crypto data. ' +
-        '<button onclick="fetchTickerData()" class="btn-brand" style="margin-left:0.5rem;padding:0.2rem 0.8rem;font-size:0.7rem;">Retry</button>' +
-        '</div>';
-    }
+    console.error('Save error:', error);
+    showToast('Error saving profile: ' + error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '🚀 Explore';
   }
 }
 
-function renderTicker() {
-  var track = document.getElementById('tickerTrack');
-  var items = cryptoData.concat(cryptoData);
-  
-  track.innerHTML = items.map(function(coin) {
-    var changeClass = coin.change >= 0 ? 'positive' : 'negative';
-    var arrow = coin.change >= 0 ? '↑' : '↓';
-    return '<div class="ticker-item">' +
-      '<span class="symbol">' + coin.symbol + '</span>' +
-      '<span class="price">$' + coin.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }) + '</span>' +
-      '<span class="change ' + changeClass + '">' + arrow + ' ' + Math.abs(coin.change).toFixed(2) + '%</span>' +
-      '<span class="divider">|</span>' +
-      '</div>';
-  }).join('');
+function renderProfileSetup() {
+  // Show profile setup in profile view if needed
 }
 
 // ============================================
-// YOUTUBE EMBED DETECTION
-// ============================================
-function extractYouTubeId(url) {
-  if (!url) return null;
-  var patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
-    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/
-  ];
-  for (var i = 0; i < patterns.length; i++) {
-    var match = url.match(patterns[i]);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-function isYouTubeUrl(url) {
-  return url && (url.indexOf('youtube.com') !== -1 || url.indexOf('youtu.be') !== -1);
-}
-
-// ============================================
-// RSS FEED SYSTEM - WITH CACHE
+// RSS FEED SYSTEM
 // ============================================
 function rssPostId(url) {
   var hash = 0;
@@ -1385,7 +1575,6 @@ function extractTags(item) {
   if (item.categories && Array.isArray(item.categories)) {
     tags = item.categories;
   }
-  // Also try to extract hashtags from content
   var content = (item.content || item.description || '');
   var hashtagMatches = content.match(/#[a-zA-Z0-9_]+/g) || [];
   for (var i = 0; i < hashtagMatches.length; i++) {
@@ -1415,13 +1604,6 @@ async function loadRssPosts() {
       var snippet = stripHtml(item.description || item.content || '').slice(0, 280);
       var title = item.title || '';
       var tags = extractTags(item);
-      
-      // Add tags to availableTags list
-      for (var i = 0; i < tags.length; i++) {
-        if (availableTags.indexOf(tags[i]) === -1) {
-          availableTags.push(tags[i]);
-        }
-      }
 
       return {
         id: id,
@@ -1439,7 +1621,6 @@ async function loadRssPosts() {
         createdAt: pubDate,
         tags: tags,
         reactions: { like: 0, dislike: 0, celebrate: 0, angry: 0, diamond: 0 },
-        // Store staked wallets for this post
         stakedWallets: []
       };
     });
@@ -1452,29 +1633,6 @@ async function loadRssPosts() {
   }
 }
 
-// ============================================
-// GET STAKED WALLETS FOR A POST
-// ============================================
-function getStakedWalletsForPost(postTags) {
-  if (!postTags || postTags.length === 0) return [];
-  
-  var wallets = [];
-  var userIds = [];
-  
-  // Get all users who staked any of the post's tags
-  // In a real implementation, this would query Firestore
-  // For now, we'll use a simple in-memory approach
-  // This will be populated from Firestore in the main flow
-  
-  // Try to get from Firestore
-  // We'll query all profiles that have staked topics matching the post tags
-  
-  return wallets;
-}
-
-// ============================================
-// SHUFFLE ARRAY (Fisher-Yates)
-// ============================================
 function shuffleArray(arr) {
   var a = arr.slice();
   for (var i = a.length - 1; i > 0; i--) {
@@ -1487,39 +1645,35 @@ function shuffleArray(arr) {
 }
 
 // ============================================
-// LOAD POSTS - RSS ONLY
+// LOAD POSTS
 // ============================================
-function loadPosts() {
-  // Always fetch fresh RSS posts
-  loadRssPosts().then(function(rssPosts) {
-    allPosts = rssPosts;
-    
-    // For each post, find staked wallets
+async function loadPosts() {
+  var rssPosts = await loadRssPosts();
+  allPosts = rssPosts;
+  
+  // Get staked wallets for each post
+  if (PROFILE && PROFILE.walletAddress && PROFILE.stakedTopics && PROFILE.stakedTopics.length > 0) {
     for (var i = 0; i < allPosts.length; i++) {
       var post = allPosts[i];
-      if (post.tags && post.tags.length > 0 && PROFILE && PROFILE.solanaWallet) {
-        // Check if current user's staked topics match
+      if (post.tags && post.tags.length > 0) {
         var matched = false;
         for (var j = 0; j < post.tags.length; j++) {
-          if (stakedTopics.indexOf(post.tags[j]) !== -1) {
+          if (PROFILE.stakedTopics.indexOf(post.tags[j]) !== -1) {
             matched = true;
             break;
           }
         }
         if (matched) {
-          // Add this user's wallet to the post's staked wallets
           if (!post.stakedWallets) post.stakedWallets = [];
-          if (post.stakedWallets.indexOf(PROFILE.solanaWallet) === -1) {
-            post.stakedWallets.push(PROFILE.solanaWallet);
+          if (post.stakedWallets.indexOf(PROFILE.walletAddress) === -1) {
+            post.stakedWallets.push(PROFILE.walletAddress);
           }
         }
       }
     }
-    
-    renderPosts();
-  }).catch(function() {
-    renderPosts();
-  });
+  }
+  
+  renderPosts();
 }
 
 function loadNewPosts() {
@@ -1556,35 +1710,80 @@ function handleReaction(postId, reactionKey) {
   
   renderPosts();
   
-  // Store in Firestore for persistence (optional)
-  // For now, we'll just store in memory
-  // In production, you'd want to persist to Firestore
+  // Persist to Firestore
+  var updateData = { reactions: post.reactions };
+  if (post[userReactionKey]) {
+    updateData[userReactionKey] = post[userReactionKey];
+  } else {
+    updateData[userReactionKey] = firebase.firestore.FieldValue.delete();
+  }
+  
+  db.collection('rssReactions').doc(postId).set(updateData, { merge: true }).catch(function(error) {
+    console.error('Reaction save error:', error);
+  });
 }
 
 // ============================================
-// SOLANA TIP
+// YONGTAP
 // ============================================
-function openSolanaTip(walletAddress, amount) {
+function openYongTap(walletAddress, username) {
   if (!walletAddress) {
-    showToast('No wallet address available for this topic.', 'error');
+    showToast('No wallet available for this topic.', 'error');
     return;
   }
   
-  amount = amount || 0.001; // Default tip amount in SOL
+  targetWalletForYongTap = walletAddress;
+  currentUsername = username || PROFILE?.username || 'user';
   
-  // Build Solana wallet links
+  // Get SOL price
+  fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var solPrice = data.solana?.usd || 180;
+      var minSOL = 0.10 / solPrice;
+      
+      document.getElementById('solPriceDisplay').textContent = solPrice.toFixed(2);
+      document.getElementById('minSolDisplay').textContent = minSOL.toFixed(6);
+      document.getElementById('yongtapAmount').min = minSOL;
+      document.getElementById('yongtapAmount').placeholder = minSOL.toFixed(6);
+      document.getElementById('yongtapMemo').value = 'YongTap from @' + currentUsername + ' on Yong Social';
+      
+      document.getElementById('yongtapOverlay').classList.add('active');
+    })
+    .catch(function() {
+      document.getElementById('solPriceDisplay').textContent = '—';
+      document.getElementById('yongtapOverlay').classList.add('active');
+    });
+}
+
+function closeYongTap() {
+  document.getElementById('yongtapOverlay').classList.remove('active');
+}
+
+function sendYongTap() {
+  var amount = document.getElementById('yongtapAmount').value;
+  var memo = document.getElementById('yongtapMemo').value || 'YongTap from Yong Social';
+  
+  if (!amount || parseFloat(amount) <= 0) {
+    showToast('Please enter a valid amount.', 'error');
+    return;
+  }
+  
+  var wallet = targetWalletForYongTap;
+  var encodedMemo = encodeURIComponent(memo);
+  
   var links = {
-    phantom: 'https://phantom.app/ul/browse/' + encodeURIComponent('solana:') + '?q=' + walletAddress + '&amount=' + amount,
-    solflare: 'https://solflare.com/ul/v1/send?address=' + walletAddress + '&amount=' + amount,
-    backpack: 'https://backpack.app/ul/v1/send?address=' + walletAddress + '&amount=' + amount,
-    trust: 'https://link.trustwallet.com/send?coin=501&address=' + walletAddress + '&amount=' + amount,
-    native: 'solana:' + walletAddress + '?amount=' + amount
+    phantom: 'https://phantom.app/ul/browse/' + encodeURIComponent('solana:') + 
+              '?q=' + wallet + '&amount=' + amount + '&memo=' + encodedMemo,
+    solflare: 'https://solflare.com/ul/v1/send?address=' + wallet + 
+              '&amount=' + amount + '&memo=' + encodedMemo,
+    backpack: 'https://backpack.app/ul/v1/send?address=' + wallet + 
+              '&amount=' + amount + '&memo=' + encodedMemo,
   };
   
-  // Try Phantom first (most popular)
   window.open(links.phantom, '_blank');
-  
-  showToast('💎 Opening wallet to send ' + amount + ' SOL...', 'success');
+  closeYongTap();
+  showToast('💎 Opening wallet for YongTap...', 'success');
 }
 
 // ============================================
@@ -1640,17 +1839,15 @@ function renderPosts() {
     
     var postClick = ' onclick="openRssPost(\'' + rssUrl + '\')" style="cursor:pointer"';
     
-    // Get staked wallets for this post
     var stakedWallets = post.stakedWallets || [];
     var shuffledWallets = shuffleArray(stakedWallets);
     var displayWallet = shuffledWallets.length > 0 ? shuffledWallets[0] : null;
     var walletCount = shuffledWallets.length;
     
-    // Get matching tags
     var matchingTags = [];
-    if (post.tags && post.tags.length > 0 && stakedTopics.length > 0) {
+    if (post.tags && post.tags.length > 0 && PROFILE?.stakedTopics && PROFILE.stakedTopics.length > 0) {
       for (var t = 0; t < post.tags.length; t++) {
-        if (stakedTopics.indexOf(post.tags[t]) !== -1) {
+        if (PROFILE.stakedTopics.indexOf(post.tags[t]) !== -1) {
           matchingTags.push(post.tags[t]);
         }
       }
@@ -1686,22 +1883,21 @@ function renderPosts() {
       html += '<span class="read-more" onclick="event.stopPropagation();openRssPost(\'' + rssUrl + '\')">Read more →</span>';
     }
     
-    // Show staked topics badge
     if (matchingTags.length > 0) {
       html += '<div class="staked-badge">💎 You staked: ' + matchingTags.join(', ') + '</div>';
     }
     
-    // Show staked wallet section
     if (displayWallet) {
+      var username = PROFILE?.username || 'user';
       html += '<div class="staked-wallet">';
       html += '<span>💎 <span class="wallet-addr">' + displayWallet.substring(0, 6) + '...' + displayWallet.substring(displayWallet.length - 4) + '</span>';
       if (walletCount > 1) {
         html += ' <span style="color:#5a6378;font-size:0.65rem;">(shuffled from ' + walletCount + ' staked wallets)</span>';
       }
       html += '</span>';
-      html += '<button class="tip-btn" onclick="event.stopPropagation();openSolanaTip(\'' + displayWallet + '\', 0.001)">Tip 0.001 SOL</button>';
+      html += '<button class="yongtap-btn" onclick="event.stopPropagation();openYongTap(\'' + displayWallet + '\', \'' + username + '\')">💎 YongTap</button>';
       html += '</div>';
-    } else if (stakedTopics.length > 0) {
+    } else if (PROFILE?.stakedTopics && PROFILE.stakedTopics.length > 0) {
       html += '<div class="staked-wallet" style="color:#5a6378;font-size:0.75rem;">';
       html += '💎 No one has staked this topic yet. Be the first!';
       html += '</div>';
@@ -1782,112 +1978,39 @@ function renderPosts() {
 }
 
 // ============================================
-// TOPIC STAKING
+// HELPERS
 // ============================================
-function renderTopicTags() {
-  var container = document.getElementById('topicTags');
-  if (!container) return;
-  
-  // Get all available tags from RSS posts
-  var allTags = [];
-  for (var i = 0; i < allPosts.length; i++) {
-    if (allPosts[i].tags) {
-      for (var j = 0; j < allPosts[i].tags.length; j++) {
-        if (allTags.indexOf(allPosts[i].tags[j]) === -1) {
-          allTags.push(allPosts[i].tags[j]);
-        }
-      }
-    }
+function extractYouTubeId(url) {
+  if (!url) return null;
+  var patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var match = url.match(patterns[i]);
+    if (match) return match[1];
   }
-  
-  // Sort tags alphabetically
-  allTags.sort();
-  
-  if (allTags.length === 0) {
-    container.innerHTML = '<div style="color:#5a6378;font-size:0.85rem;">No tags available yet. Check back when articles are published.</div>';
-    return;
-  }
-  
-  var html = '';
-  for (var i = 0; i < allTags.length; i++) {
-    var tag = allTags[i];
-    var isSelected = selectedTopics.indexOf(tag) !== -1;
-    var isDisabled = !isSelected && selectedTopics.length >= MAX_STAKED_TOPICS;
-    html += '<button class="topic-tag' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '') + '" ' +
-      'onclick="toggleTopic(\'' + tag + '\')" ' +
-      'data-tag="' + tag + '">' +
-      '#' + tag +
-      '</button>';
-  }
-  
-  container.innerHTML = html;
-  document.getElementById('selectedCount').textContent = selectedTopics.length;
+  return null;
 }
 
-function toggleTopic(tag) {
-  var index = selectedTopics.indexOf(tag);
-  if (index !== -1) {
-    selectedTopics.splice(index, 1);
-  } else {
-    if (selectedTopics.length >= MAX_STAKED_TOPICS) {
-      showToast('You can only stake up to ' + MAX_STAKED_TOPICS + ' topics.', 'error');
-      return;
-    }
-    selectedTopics.push(tag);
-  }
-  renderTopicTags();
+function isYouTubeUrl(url) {
+  return url && (url.indexOf('youtube.com') !== -1 || url.indexOf('youtu.be') !== -1);
 }
 
-async function saveStakedTopics() {
-  if (!PROFILE) {
-    showToast('Please sign in first.', 'error');
-    return;
-  }
-  
-  var btn = document.getElementById('saveTopicsBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Saving...';
-  
-  try {
-    await db.collection('profiles').doc(String(PROFILE.telegramId)).update({
-      stakedTopics: selectedTopics,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+function extractFirstUrl(text) {
+  var m = text.match(/https?:\/\/[^\s]+/);
+  return m ? m[0] : null;
+}
+
+function linkifyText(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/(https?:\/\/[^\s<]+)/g, function(match) {
+      if (isYouTubeUrl(match)) return match;
+      return '<a href="' + match + '" target="_blank" rel="noopener" style="color:#d4b25a;text-decoration:underline;word-break:break-all;">' + match + '</a>';
     });
-    
-    PROFILE.stakedTopics = selectedTopics;
-    stakedTopics = selectedTopics.slice();
-    CACHE.profile.set(currentUser.uid, PROFILE);
-    
-    showToast('✅ Topics saved successfully!', 'success');
-    btn.textContent = '💾 Saved!';
-    
-    // Reload posts to update staked wallets
-    loadPosts();
-    
-    setTimeout(function() {
-      btn.textContent = '💾 Save Topics';
-      btn.disabled = false;
-    }, 2000);
-    
-  } catch(error) {
-    console.error('Save topics error:', error);
-    showToast('Error saving topics: ' + error.message, 'error');
-    btn.textContent = '💾 Save Topics';
-    btn.disabled = false;
-  }
 }
 
-// ============================================
-// POST MENU
-// ============================================
-function openRssPost(url) {
-  if (!url) return;
-  window.open(url, '_blank');
-}
-
-// ============================================
-// TIME AGO HELPER
-// ============================================
 function timeAgo(timestamp) {
   if (!timestamp) return 'Just now';
   var now = Date.now();
@@ -1905,21 +2028,9 @@ function timeAgo(timestamp) {
   return new Date(timestamp).toLocaleDateString();
 }
 
-// ============================================
-// LINK PREVIEW
-// ============================================
-function extractFirstUrl(text) {
-  var m = text.match(/https?:\/\/[^\s]+/);
-  return m ? m[0] : null;
-}
-
-function linkifyText(text) {
-  return text
-    .replace(/\n/g, '<br>')
-    .replace(/(https?:\/\/[^\s<]+)/g, function(match) {
-      if (isYouTubeUrl(match)) return match;
-      return '<a href="' + match + '" target="_blank" rel="noopener" style="color:#d4b25a;text-decoration:underline;word-break:break-all;">' + match + '</a>';
-    });
+function openRssPost(url) {
+  if (!url) return;
+  window.open(url, '_blank');
 }
 
 async function fetchLinkPreview(url, postId) {
@@ -1949,7 +2060,7 @@ function renderLinkPreview(el, data, url) {
 }
 
 // ============================================
-// PROFILE FUNCTIONS
+// PROFILE LOAD
 // ============================================
 async function loadProfileByGoogleUid(googleUid) {
   var tgId = getTelegramUserId();
@@ -1957,10 +2068,6 @@ async function loadProfileByGoogleUid(googleUid) {
   var cached = CACHE.profile.get(cacheKey);
   if (cached) {
     PROFILE = cached;
-    if (PROFILE.stakedTopics) {
-      stakedTopics = PROFILE.stakedTopics;
-      selectedTopics = stakedTopics.slice();
-    }
     updateSidebar();
     updateProfileView();
   }
@@ -1970,10 +2077,6 @@ async function loadProfileByGoogleUid(googleUid) {
       var profileSnap = await db.collection('profiles').doc(tgId).get();
       if (profileSnap.exists) {
         PROFILE = profileSnap.data();
-        if (PROFILE.stakedTopics) {
-          stakedTopics = PROFILE.stakedTopics;
-          selectedTopics = stakedTopics.slice();
-        }
         CACHE.profile.set(cacheKey, PROFILE);
         updateSidebar();
         updateProfileView();
@@ -1987,10 +2090,6 @@ async function loadProfileByGoogleUid(googleUid) {
       var profileSnap2 = await db.collection('profiles').doc(telegramId).get();
       if (profileSnap2.exists) {
         PROFILE = profileSnap2.data();
-        if (PROFILE.stakedTopics) {
-          stakedTopics = PROFILE.stakedTopics;
-          selectedTopics = stakedTopics.slice();
-        }
         CACHE.profile.set(cacheKey, PROFILE);
         updateSidebar();
         updateProfileView();
@@ -2002,10 +2101,6 @@ async function loadProfileByGoogleUid(googleUid) {
     if (!querySnap.empty) {
       var doc = querySnap.docs[0];
       PROFILE = doc.data();
-      if (PROFILE.stakedTopics) {
-        stakedTopics = PROFILE.stakedTopics;
-        selectedTopics = stakedTopics.slice();
-      }
       CACHE.profile.set(cacheKey, PROFILE);
       updateSidebar();
       updateProfileView();
@@ -2019,68 +2114,74 @@ async function loadProfileByGoogleUid(googleUid) {
   }
 }
 
-function updateSidebar() {
-  var avatar = document.getElementById('sidebarAvatar');
-  var name = document.getElementById('sidebarName');
-  var handle = document.getElementById('sidebarHandle');
+// ============================================
+// TICKER
+// ============================================
+async function fetchTickerData() {
+  var track = document.getElementById('tickerTrack');
   
-  if (!PROFILE) return;
-  
-  if (PROFILE.photoUrl) {
-    avatar.innerHTML = '<img src="' + PROFILE.photoUrl + '" alt="" class="avatar-img" />';
-  } else {
-    avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
+  var cached = CACHE.crypto.get();
+  if (cached && cached.length > 0) {
+    cryptoData = cached;
+    renderTicker();
   }
   
-  name.textContent = PROFILE.displayName || 'Yong User';
-  handle.textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
+  try {
+    if (!cached || cached.length === 0) {
+      track.innerHTML = '<div class="ticker-loading"><div class="spinner"></div> Loading crypto prices...</div>';
+    }
+    
+    var response = await fetch(
+      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&page=1&sparkline=false'
+    );
+    
+    if (!response.ok) throw new Error('Failed to fetch crypto data');
+    
+    var data = await response.json();
+    cryptoData = data.map(function(coin) {
+      return {
+        id: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        price: coin.current_price,
+        change: coin.price_change_percentage_24h,
+        market_cap: coin.market_cap,
+        image: coin.image
+      };
+    });
+    
+    CACHE.crypto.set(cryptoData);
+    renderTicker();
+    
+  } catch(error) {
+    console.error('Crypto fetch error:', error);
+    if (!cached || cached.length === 0) {
+      track.innerHTML = '<div style="padding:0.5rem 1.5rem;color:#8a93a8;font-size:0.8rem;text-align:center;width:100%;">' +
+        '❌ Failed to load crypto data. ' +
+        '<button onclick="fetchTickerData()" class="btn-brand" style="margin-left:0.5rem;padding:0.2rem 0.8rem;font-size:0.7rem;">Retry</button>' +
+        '</div>';
+    }
+  }
+}
+
+function renderTicker() {
+  var track = document.getElementById('tickerTrack');
+  var items = cryptoData.concat(cryptoData);
+  
+  track.innerHTML = items.map(function(coin) {
+    var changeClass = coin.change >= 0 ? 'positive' : 'negative';
+    var arrow = coin.change >= 0 ? '↑' : '↓';
+    return '<div class="ticker-item">' +
+      '<span class="symbol">' + coin.symbol + '</span>' +
+      '<span class="price">$' + coin.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 }) + '</span>' +
+      '<span class="change ' + changeClass + '">' + arrow + ' ' + Math.abs(coin.change).toFixed(2) + '%</span>' +
+      '<span class="divider">|</span>' +
+      '</div>';
+  }).join('');
 }
 
 // ============================================
-// AUTH STATE LISTENER
-// ============================================
-auth.onAuthStateChanged(async function(user) {
-  if (user) {
-    PROFILE = null;
-    currentUser = user;
-    
-    try {
-      var profileFound = await loadProfileByGoogleUid(user.uid);
-      if (profileFound) {
-        await fetchTickerData();
-        loadPosts();
-        
-        setInterval(function() {
-          // Refresh ticker every 5 minutes
-          fetchTickerData();
-        }, 300000);
-        
-        // Refresh RSS posts every 15 minutes
-        setInterval(function() {
-          loadPosts();
-        }, 15 * 60 * 1000);
-        
-        console.log('[Feed] Profile loaded:', PROFILE);
-      } else {
-        showToast('No profile found linked to this Google account.', 'error');
-        setTimeout(function() {
-          window.location.href = 'https://yongsocial.github.io/sphere/';
-        }, 3000);
-      }
-    } catch(error) {
-      console.error('Feed error:', error);
-      showToast('Error loading profile: ' + error.message, 'error');
-    }
-  } else {
-    showToast('Please sign in to access the community.', 'error');
-    setTimeout(function() {
-      window.location.href = 'https://yongsocial.github.io/sphere/';
-    }, 2000);
-  }
-});
-
-// ============================================
-// INLINE IMAGE VIDEO PLAYER
+// IMAGE PLAYER
 // ============================================
 function startPlayer(postId) {
   var vp = document.getElementById('vp-' + postId);
@@ -2165,6 +2266,49 @@ function seekPlayer(event, postId) {
   var totalMs = p.total * 5000;
   p.elapsed = Math.floor(ratio * totalMs / 100) * 100;
 }
+
+// ============================================
+// AUTH
+// ============================================
+auth.onAuthStateChanged(async function(user) {
+  if (user) {
+    currentUser = user;
+    try {
+      var profileFound = await loadProfileByGoogleUid(user.uid);
+      if (profileFound) {
+        await fetchTickerData();
+        await loadPosts();
+        
+        setInterval(function() {
+          fetchTickerData();
+        }, 300000);
+        
+        setInterval(function() {
+          loadPosts();
+        }, 15 * 60 * 1000);
+        
+        // Check if profile is complete
+        if (PROFILE && (!PROFILE.walletAddress || !PROFILE.stakedTopics || PROFILE.stakedTopics.length !== 5)) {
+          setTimeout(function() {
+            showProfileSetup();
+          }, 1000);
+        }
+        
+        console.log('[Feed] Profile loaded:', PROFILE);
+      } else {
+        showToast('No profile found linked to this Google account.', 'error');
+      }
+    } catch(error) {
+      console.error('Feed error:', error);
+      showToast('Error loading profile: ' + error.message, 'error');
+    }
+  } else {
+    showToast('Please sign in to access the community.', 'error');
+    setTimeout(function() {
+      window.location.href = 'https://yongsocial.github.io/sphere/';
+    }, 2000);
+  }
+});
 
 // ============================================
 // INIT
