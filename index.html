@@ -1946,7 +1946,8 @@ window.openSourcesModal = openSourcesModal;
   ];
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
   function buildSharePost(entry){
-    const title = (entry && entry.title && entry.title.$t) || 'Yong Social';
+    const rawTitle = (entry && entry.title && entry.title.$t) || 'Yong Social';
+    const title = rawTitle.length > 100 ? rawTitle.slice(0, 97) + '...' : rawTitle;
     const link = (typeof getPostLink==='function') ? getPostLink(entry) : '';
     const rawTags = (entry.category||[]).map(c=>(c.term||'').trim()).filter(Boolean);
     const tagSet = rawTags.slice(0,3);
@@ -1954,8 +1955,7 @@ window.openSourcesModal = openSourcesModal;
     const hashtags = tagSet.map(t=>'#'+t).join(' ');
     const prefix = pick(SHARE_PREFIXES);
     const cta = pick(SHARE_CTAS);
-    // Link placed right after title so it's never truncated by Twitter's 280-char limit
-    const post = prefix + ' ' + title + '\n' + link + '\n\n' + hashtags + '\n\n' + cta;
+    const post = prefix + ' ' + title + '\n\n' + hashtags + '\n\n' + cta + '\n' + link;
     return { post, link };
   }
   window.smartShare = function(platform, idx){
