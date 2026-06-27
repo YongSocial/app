@@ -701,12 +701,7 @@ function postHTML(entry, idx){
 }
 
 async function fetchFeed(url){
-  // Try direct fetch first (works when CORS is open)
-  try{
-    const r = await fetch(url, {cache:'no-cache'});
-    if(r.ok) return await r.json();
-  }catch(e){}
-  // Fallback: JSONP
+  // Use JSONP directly — direct fetch is blocked by CORS from app.yongsocial.com
   return new Promise((resolve,reject)=>{
     const cb='__yscb_'+Math.random().toString(36).slice(2);
     const jsonpUrl=url.replace('alt=json','alt=json-in-script')+'&callback='+cb;
@@ -1534,41 +1529,17 @@ window.openSourcesModal = openSourcesModal;
     if(e.target===profileOverlay || e.target.closest('[data-close-profile]')) closeProfile();
   });
 
-  function tagCountsFromCache(){
-    const counts = {};
-    const data = (window.cache && (window.cache.all || window.cache.discover)) || null;
-    const entries = (data && data.feed && data.feed.entry) || [];
-    entries.forEach(e=>{
-      (e.category||[]).forEach(c=>{
-        const t=(c.term||'').trim(); if(!t) return;
-        counts[t]=(counts[t]||0)+1;
-      });
-    });
-    return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  }
-  function renderTags(){
-    const wrap = document.getElementById('ypTags'); if(!wrap) return;
-    const top = tagCountsFromCache();
-    const followed = (typeof getFollowed==='function') ? getFollowed() : new Set();
-    if(!top.length){ wrap.innerHTML='<span class="yp-handle">No tags yet — load some posts first.</span>'; return; }
-    wrap.innerHTML = top.map(([t,n])=>{
-      const isF = followed.has(t);
-      return `<span class="yp-tag">#${t.replace(/[<>&"]/g,'')}<button data-yp-tag="${t.replace(/"/g,'')}" class="${isF?'following':''}">${isF?'Following':'Follow'}</button></span>`;
-    }).join('');
-  }
-  document.getElementById('ypTags').addEventListener('click', e=>{
-    const b = e.target.closest('[data-yp-tag]'); if(!b) return;
-    const tag = b.dataset.ypTag;
-    const set = getFollowed();
-    if(set.has(tag)){ set.delete(tag); b.textContent='Follow'; b.classList.remove('following'); }
-    else { set.add(tag); b.textContent='Following'; b.classList.add('following'); }
-    setFollowed(set);
-    if(typeof showToast==='function') showToast(set.has(tag)?'Following #'+tag:'Unfollowed #'+tag);
-    if(typeof currentTab!=='undefined' && currentTab==='following' && typeof loadFeed==='function') loadFeed('following');
-  });
-
   function openProfile(){
-    if(typeof window.ysShowGate === 'function' && window.ysShowGate()) return;
+    // If gate is defined and user is not logged in, show gate instead
+    if(typeof window.ysShowGate === 'function'){
+      if(window.ysShowGate()) return;
+    } else {
+      // Gate not loaded yet - check localStorage directly
+      try{
+        var u = JSON.parse(localStorage.getItem('ys_user_v1')||'null');
+        if(!u){ return; } // not signed in, do nothing (gate will be set up shortly)
+      }catch(e){}
+    }
     profileOverlay.classList.add('open'); profileOverlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
   }
   window.openProfileModal = openProfile;
@@ -1615,6 +1586,7 @@ window.openSourcesModal = openSourcesModal;
         // hide the full-screen auth gate once the user is signed in
         var gate = document.getElementById("ysAuthGate");
         if(gate){ gate.style.display = "none"; document.body.style.overflow=""; }
+        if(typeof window.ysHideGate === 'function') window.ysHideGate();
       }
     }
 
@@ -2339,12 +2311,10 @@ window.openSourcesModal = openSourcesModal;
 </div>
 <script>
   (function(){
-    // Hide gate on load — users can browse freely
-    var gate = document.getElementById('ysAuthGate');
-
     function isLoggedIn(){
       try{ return !!JSON.parse(localStorage.getItem('ys_user_v1')||'null'); }catch(e){ return false; }
     }
+    var gate = document.getElementById('ysAuthGate');
 
     function showGate(){
       if(isLoggedIn()) return false;
@@ -2352,49 +2322,47 @@ window.openSourcesModal = openSourcesModal;
       document.body.style.overflow = 'hidden';
       return true;
     }
-
     function hideGate(){
       gate.style.display = 'none';
       document.body.style.overflow = '';
     }
 
+    // Expose immediately so openProfile can use it
+    window.ysShowGate = showGate;
+    window.ysHideGate = hideGate;
+
     // Dismiss button
     var dismiss = document.getElementById('ysGateDismiss');
     if(dismiss) dismiss.addEventListener('click', hideGate);
 
-    // If already signed in, keep gate hidden
-    if(isLoggedIn()) hideGate();
-
-    // Intercept: sidebar items (explore, notifications, profile)
+    // Intercept: sidebar items — skip home
     document.querySelectorAll('.sb-item').forEach(function(el){
       el.addEventListener('click', function(e){
-        var key = el.dataset.sb;
-        if(key === 'home') return; // home is free
-        if(showGate()) e.stopImmediatePropagation();
+        if(el.dataset.sb === 'home') return;
+        if(showGate()){ e.stopImmediatePropagation(); e.preventDefault(); }
       }, true);
     });
 
-    // Intercept: bottom nav (all except home)
+    // Intercept: bottom nav — skip the active home button
     document.querySelectorAll('.bottomnav .nav-btn').forEach(function(el){
       el.addEventListener('click', function(e){
-        if(el.classList.contains('active')) return; // already on home
-        if(el.id === 'navProfile' || el.id === 'navSearch' || el.id === 'navBrowser' || el.id === 'navNotif'){
-          if(showGate()) e.stopImmediatePropagation();
+        // navProfile is handled by openProfile itself
+        if(el.id === 'navProfile') return;
+        // first nav-btn (home) is free — check if it has no id (home has no id in this file)
+        if(!el.id && el.classList.contains('active')) return;
+        if(el.id === 'navSearch' || el.id === 'navBrowser' || el.id === 'navNotif'){
+          if(showGate()){ e.stopImmediatePropagation(); e.preventDefault(); }
         }
       }, true);
     });
 
-    // Intercept: tabs (Traders, Champions, Community — but not Following)
+    // Intercept: tabs — Following is free, rest need login
     document.querySelectorAll('.tab').forEach(function(el){
       el.addEventListener('click', function(e){
-        var tab = el.dataset.tab;
-        if(tab === 'following') return; // following is free
-        if(showGate()) e.stopImmediatePropagation();
+        if(el.dataset.tab === 'following') return;
+        if(showGate()){ e.stopImmediatePropagation(); e.preventDefault(); }
       }, true);
     });
-
-    // Expose so profile click can also trigger gate
-    window.ysShowGate = showGate;
   })();
 
 /* ---------- LIVE ASSETS (crypto prices + TradingView modal) ---------- */
