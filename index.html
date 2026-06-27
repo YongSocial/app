@@ -49,10 +49,46 @@
   .brand-mark{width:34px;height:34px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--border)}
   .brand-mark img{width:100%;height:100%;object-fit:cover}
 
-  .tabs{position:sticky;top:69px;z-index:29;display:flex;background:rgba(11,13,18,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-  .tab{flex:1;padding:14px 0;text-align:center;font-weight:600;color:var(--muted);font-size:15px;position:relative;letter-spacing:.2px}
-  .tab.active{color:var(--text)}
-  .tab.active::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);width:48px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+  .tabs{position:sticky;top:69px;z-index:29;display:flex;gap:8px;align-items:center;padding:10px 12px;background:rgba(11,13,18,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-weight:600;color:var(--muted);font-size:13.5px;letter-spacing:.2px;border:1px solid var(--border);background:rgba(255,255,255,.02);white-space:nowrap;cursor:pointer;transition:.15s}
+  .tab i{font-size:13px;opacity:.85}
+  .tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+  .tab.active{color:#fff;border-color:rgba(234,88,12,.55);background:linear-gradient(180deg,rgba(234,88,12,.18),rgba(234,88,12,.06));box-shadow:0 0 0 1px rgba(234,88,12,.25) inset}
+  .tab-filter{margin-left:auto;flex:0 0 auto;width:38px;height:36px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--border);color:var(--muted);background:rgba(255,255,255,.02);cursor:pointer}
+  .tab-filter:hover{color:var(--text)}
+
+  /* HOME PANELS (Live, Predict, Activity) */
+  .panel{margin:14px 14px 0;border:1px solid var(--border);border-radius:16px;background:linear-gradient(180deg,rgba(20,24,33,.6),rgba(11,13,18,.6));overflow:hidden}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+  .panel-head h3{margin:0;font-size:17px;font-weight:800;color:#fff;letter-spacing:.2px}
+  .panel-head .view-all{font-size:13px;font-weight:700;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  .live-list{display:flex;flex-direction:column;gap:8px;padding:0 12px 12px}
+  .live-row{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid rgba(234,88,12,.35);border-radius:12px;background:rgba(234,88,12,.04)}
+  .live-row img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0}
+  .live-meta{flex:1;min-width:0}
+  .live-title{font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+  .live-title .em{font-size:13px}
+  .live-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .live-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#dc2626;color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;flex-shrink:0}
+  .live-badge .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:livepulse 1.2s ease-in-out infinite}
+  @keyframes livepulse{50%{opacity:.4}}
+
+  .predict{margin:14px 14px 0;border:1px solid var(--border);border-radius:16px;padding:22px 20px;background:radial-gradient(120% 140% at 90% 50%,rgba(234,88,12,.18),transparent 60%),linear-gradient(180deg,#0f1a2c,#0a0f1a);display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;overflow:hidden}
+  .predict-text h4{margin:0 0 6px;font-size:22px;font-weight:900;color:#fff;line-height:1.05;letter-spacing:.5px;text-transform:uppercase}
+  .predict-text p{margin:0;font-size:13px;color:var(--muted);max-width:240px}
+  .predict-cta{flex-shrink:0;padding:11px 18px;border-radius:999px;background:linear-gradient(180deg,#ea580c,#c2410c);color:#fff;font-weight:700;font-size:13px;border:none;cursor:pointer;box-shadow:0 6px 18px -6px rgba(234,88,12,.7)}
+  .predict-arrow{position:absolute;right:130px;top:50%;transform:translateY(-50%);font-size:46px;color:#c9a84c;opacity:.55;pointer-events:none}
+
+  .activity{display:flex;flex-direction:column;gap:2px;padding:0 4px 10px}
+  .act-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px}
+  .act-row .av{position:relative;width:38px;height:38px;flex-shrink:0}
+  .act-row .av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+  .act-row .av .ticket{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:5px;background:#dc2626;display:grid;place-items:center;color:#fff;font-size:9px;border:2px solid #0b0d12}
+  .act-text{font-size:13.5px;color:var(--text);line-height:1.35}
+  .act-text b{font-weight:700;color:#fff}
+  .act-text .u{color:#fff;font-weight:700}
+  .act-time{font-size:11.5px;color:var(--muted);margin-top:2px}
 
   /* CRYPTO TICKER */
   .ticker{position:sticky;top:118px;z-index:28;overflow:hidden;background:linear-gradient(90deg,rgba(11,13,18,.95),rgba(20,24,33,.95));backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:38px;display:flex;align-items:center;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
@@ -413,16 +449,41 @@
     <button class="icon-btn" aria-label="Notifications" id="topNotif" style="position:relative"><i class="fa-regular fa-bell"></i><span class="notif-badge" id="topNotifBadge" hidden>0</span></button>
   </header>
 
-  <nav class="tabs">
-    <div class="tab" data-tab="following">Following</div>
-    <div class="tab active" data-tab="discover">Discover</div>
+  <nav class="tabs" id="feedTabs">
+    <div class="tab active" data-tab="discover"><i class="fa-solid fa-wand-magic-sparkles"></i>For You</div>
+    <div class="tab" data-tab="following"><i class="fa-solid fa-user-group"></i>Following</div>
+    <div class="tab" data-tab="latest"><i class="fa-regular fa-clock"></i>Latest</div>
+    <div class="tab" data-tab="newusers"><i class="fa-solid fa-user-plus"></i>New Users</div>
+    <button class="tab-filter" id="tabFilter" aria-label="Filter feed"><i class="fa-solid fa-sliders"></i></button>
   </nav>
 
-  <div class="ticker" id="cryptoTicker" aria-label="Live cryptocurrency prices" role="marquee">
-    <div class="ticker-track" id="tickerTrack">
-      <div class="ticker-item ticker-loading"><i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Loading live market data…</div>
+  <!-- LIVE -->
+  <section class="panel" id="livePanel" aria-label="Live now">
+    <div class="panel-head">
+      <h3>Live</h3>
+      <a href="#" class="view-all">View all <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-  </div>
+    <div class="live-list" id="liveList"></div>
+  </section>
+
+  <!-- PREDICT -->
+  <section class="predict" id="predictPanel" aria-label="Predict what's next">
+    <div class="predict-text">
+      <h4>Predict<br/>What's Next</h4>
+      <p>Trade outcomes on real-time market sentiment.</p>
+    </div>
+    <i class="fa-solid fa-arrow-trend-up predict-arrow"></i>
+    <button class="predict-cta" type="button">Explore Now</button>
+  </section>
+
+  <!-- ACTIVITY FEED -->
+  <section class="panel" id="activityPanel" aria-label="Activity feed">
+    <div class="panel-head">
+      <h3>Activity Feed</h3>
+      <a href="#" class="view-all">View all <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="activity" id="activityList"></div>
+  </section>
 
   <main id="feed" class="feed">
     <!-- skeletons / posts -->
@@ -2367,6 +2428,67 @@ window.openSourcesModal = openSourcesModal;
       }
     }catch(e){}
   })();
+</script>
+<script>
+/* ---------- LIVE + ACTIVITY FEED (static demo content) ---------- */
+(function(){
+  const live = [
+    { av:'https://i.pravatar.cc/80?img=15', title:'FREIDAY WITH CHILL VIBES', emojis:'😎 💙', sub:'1.2K watching' },
+    { av:'https://i.pravatar.cc/80?img=32', title:'mobile legend + Spotify',  emojis:'',       sub:'856 watching' }
+  ];
+  const liveEl = document.getElementById('liveList');
+  if(liveEl){
+    liveEl.innerHTML = live.map(l => `
+      <div class="live-row">
+        <img src="${l.av}" alt=""/>
+        <div class="live-meta">
+          <div class="live-title">${l.emojis?`<span class="em">${l.emojis}</span>`:''}<span>${l.title}</span></div>
+          <div class="live-sub">${l.sub}</div>
+        </div>
+        <span class="live-badge"><span class="dot"></span>LIVE</span>
+      </div>`).join('');
+  }
+
+  const acts = [
+    { av:'https://i.pravatar.cc/80?img=47', user:'Hegi', action:'bought', amt:'0.19', who:'KriptoBlue', price:'$1.67',    time:'9 mins ago' },
+    { av:'https://i.pravatar.cc/80?img=47', user:'Hegi', action:'bought', amt:'0.09', who:'Philip9000', price:'$0.9530', time:'10 mins ago' },
+    { av:'https://i.pravatar.cc/80?img=22', user:'NFA',  action:'bought', amt:'0.42', who:'OmegaKid',   price:'$3.21',   time:'14 mins ago' }
+  ];
+  const actEl = document.getElementById('activityList');
+  if(actEl){
+    actEl.innerHTML = acts.map(a => `
+      <div class="act-row">
+        <div class="av"><img src="${a.av}" alt=""/><span class="ticket"><i class="fa-solid fa-ticket"></i></span></div>
+        <div style="flex:1;min-width:0">
+          <div class="act-text"><b>${a.user}</b> ${a.action} <b>${a.amt}</b> tickets of <span class="u">${a.who}</span> for <b>${a.price}</b></div>
+          <div class="act-time">${a.time}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  /* Wire extra tabs ("Latest", "New Users") to the existing discover stream
+     and surface a small toast when the filter button is tapped. */
+  document.querySelectorAll('.tab[data-tab="latest"], .tab[data-tab="newusers"]').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      const d = document.querySelector('.tab[data-tab="discover"]');
+      if(d){ /* keep visual active on the clicked tab but reuse discover logic */
+        const evt = new Event('click', { bubbles:true });
+        // Trigger logic without flipping the visual highlight back
+        const prev = d.classList.contains('active');
+        d.classList.add('active');
+        d.dispatchEvent(evt);
+        if(!prev) d.classList.remove('active');
+        t.classList.add('active');
+      }
+    });
+  });
+  const fbtn = document.getElementById('tabFilter');
+  if(fbtn) fbtn.addEventListener('click', () => {
+    if(typeof showToast === 'function') showToast('Filters coming soon');
+  });
+})();
 </script>
 </body>
 </html>
