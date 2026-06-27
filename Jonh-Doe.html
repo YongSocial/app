@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Doe | About Me</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+        background:linear-gradient(135deg,#0f172a,#1e293b);
+        color:#fff;
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:30px;
+    }
+
+    .container{
+        max-width:1000px;
+        width:100%;
+        background:rgba(255,255,255,0.08);
+        backdrop-filter:blur(15px);
+        border-radius:25px;
+        overflow:hidden;
+        box-shadow:0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .hero{
+        padding:50px;
+        text-align:center;
+        background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    }
+
+    .profile-pic{
+        width:140px;
+        height:140px;
+        border-radius:50%;
+        background:#fff;
+        color:#3b82f6;
+        font-size:50px;
+        font-weight:bold;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        margin:auto;
+        margin-bottom:20px;
+        border:5px solid rgba(255,255,255,0.4);
+    }
+
+    .hero h1{
+        font-size:3rem;
+        margin-bottom:10px;
+    }
+
+    .hero p{
+        opacity:0.9;
+        font-size:1.1rem;
+    }
+
+    .content{
+        padding:50px;
+    }
+
+    .section{
+        margin-bottom:40px;
+    }
+
+    .section h2{
+        color:#60a5fa;
+        margin-bottom:15px;
+        font-size:1.7rem;
+    }
+
+    .section p{
+        line-height:1.8;
+        color:#ddd;
+    }
+
+    .skills{
+        display:flex;
+        flex-wrap:wrap;
+        gap:15px;
+        margin-top:20px;
+    }
+
+    .skill{
+        background:#2563eb;
+        padding:12px 20px;
+        border-radius:30px;
+        transition:0.3s;
+        cursor:pointer;
+    }
+
+    .skill:hover{
+        transform:translateY(-5px);
+        background:#3b82f6;
+    }
+
+    .contact-btn{
+        margin-top:20px;
+        padding:15px 30px;
+        border:none;
+        background:#8b5cf6;
+        color:#fff;
+        font-size:1rem;
+        border-radius:50px;
+        cursor:pointer;
+        transition:0.3s;
+    }
+
+    .contact-btn:hover{
+        background:#7c3aed;
+        transform:scale(1.05);
+    }
+
+    .footer{
+        text-align:center;
+        padding:25px;
+        background:rgba(255,255,255,0.05);
+        color:#bbb;
+    }
+
+    #message{
+        margin-top:20px;
+        color:#60a5fa;
+        font-weight:bold;
+        display:none;
+    }
+
+    @media(max-width:768px){
+        .hero h1{
+            font-size:2.3rem;
+        }
+
+        .content{
+            padding:30px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="hero">
+        <div class="profile-pic">JD</div>
+        <h1>John Doe</h1>
+        <p>Web Developer • Designer • Tech Enthusiast</p>
+    </div>
+
+    <div class="content">
+
+        <div class="section">
+            <h2>About Me</h2>
+            <p>
+                Hello! I'm John Doe, a passionate web developer who enjoys
+                building modern websites and digital experiences. I love
+                learning new technologies, solving problems, and turning ideas
+                into beautiful and functional applications.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>My Skills</h2>
+
+            <div class="skills">
+                <div class="skill">HTML</div>
+                <div class="skill">CSS</div>
+                <div class="skill">JavaScript</div>
+                <div class="skill">React</div>
+                <div class="skill">UI/UX Design</div>
+                <div class="skill">Responsive Design</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>My Interests</h2>
+            <p>
+                I enjoy coding, reading about technology, creating side
+                projects, gaming, and exploring new innovations in software
+                development.
+            </p>
+        </div>
+
+        <button class="contact-btn" onclick="showMessage()">
+            Contact Me
+        </button>
+
+        <div id="message">
+            📧 Email: john.doe@example.com
+        </div>
+
+    </div>
+
+    <div class="footer">
+        © <span id="year"></span> John Doe. All Rights Reserved.
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("year").textContent =
+        new Date().getFullYear();
+
+    function showMessage() {
+        const msg = document.getElementById("message");
+
+        if (msg.style.display === "block") {
+            msg.style.display = "none";
+        } else {
+            msg.style.display = "block";
+        }
+    }
+
+    // Animate skill tags on load
+    const skills = document.querySelectorAll(".skill");
+
+    skills.forEach((skill, index) => {
+        skill.style.opacity = "0";
+        skill.style.transform = "translateY(20px)";
+
+        setTimeout(() => {
+            skill.style.transition = "0.5s";
+            skill.style.opacity = "1";
+            skill.style.transform = "translateY(0)";
+        }, index * 150);
+    });
+</script>
+
+</body>
+</html>
