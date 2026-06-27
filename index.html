@@ -212,9 +212,9 @@ const auth = firebase.auth();
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
             Backpack
           </button>
-          <span id="walletStatus" class="text-xs text-mute flex items-center ml-2">Not connected</span>
         </div>
-        <input type="text" id="manualWalletInput" placeholder="Or enter wallet address manually..." 
+        <span id="walletStatus" class="text-xs text-mute block mt-2">Not connected</span>
+        <input type="text" id="manualWalletInput" placeholder="Or paste wallet address manually..." 
           class="w-full rounded-xl bg-surface2 border border-line px-4 py-2.5 text-sm outline-none focus:border-brand font-mono mt-2" />
       </div>
 
@@ -566,6 +566,10 @@ function route() {
   });
   
   if (isProfile && PROFILE) renderProfile();
+  else if (isProfile) {
+    // PROFILE not yet loaded — show loading, renderProfile will be called after initApp
+    document.getElementById('profileLoading')?.classList.remove('hidden');
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 window.addEventListener("hashchange", route);
@@ -619,6 +623,13 @@ function paintNavAvatar() {
 function renderProfile() {
   if (!PROFILE) return;
   
+  // Update subtitle
+  var modeEl = document.getElementById('profileMode');
+  if (modeEl) {
+    modeEl.textContent = PROFILE._source === 'telegram'
+      ? 'Connected via Telegram'
+      : (PROFILE.walletAddress ? 'Wallet connected · ' + (PROFILE.stakedTopics?.length || 0) + '/5 topics staked' : 'Setup your wallet & topics to join the community');
+  }
   document.getElementById('profileLoading').classList.add('hidden');
   document.getElementById('profileCard').classList.remove('hidden');
   document.getElementById('walletSection').classList.remove('hidden');
@@ -822,30 +833,70 @@ function openProfileSetup() {
 // ============================================
 // WALLET CONNECTION
 // ============================================
-function connectWallet(walletType) {
-  // Generate a random Solana wallet for demo purposes
-  // In production, this would use Phantom/Solflare/Backpack SDK
-  var demoAddress = '7xY8' + Math.random().toString(36).substring(2, 10) + '...' + Math.random().toString(36).substring(2, 6).toUpperCase();
-  
-  walletAddress = demoAddress;
+async function connectWallet(walletType) {
+  var address = null;
+
+  try {
+    if (walletType === 'phantom') {
+      var phantom = window.phantom?.solana || window.solana;
+      if (phantom && phantom.isPhantom) {
+        var resp = await phantom.connect();
+        address = resp.publicKey.toString();
+      }
+    } else if (walletType === 'solflare') {
+      var solflare = window.solflare;
+      if (solflare && solflare.isSolflare) {
+        await solflare.connect();
+        address = solflare.publicKey.toString();
+      }
+    } else if (walletType === 'backpack') {
+      var backpack = window.backpack || window.xnft?.solana;
+      if (backpack) {
+        var resp2 = await backpack.connect();
+        address = resp2.publicKey.toString();
+      }
+    }
+  } catch (e) {
+    console.warn('Wallet connect error:', e);
+    showToast('Wallet connection cancelled or failed.', 'error');
+    return;
+  }
+
+  if (!address) {
+    // Wallet extension not installed — open install link
+    var links = {
+      phantom: 'https://phantom.app/',
+      solflare: 'https://solflare.com/',
+      backpack: 'https://backpack.app/'
+    };
+    showToast(walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' not detected. Opening install page...', 'error');
+    setTimeout(function() { window.open(links[walletType], '_blank'); }, 1500);
+    return;
+  }
+
+  walletAddress = address;
   connectedWallet = walletType;
-  
+
   var status = document.getElementById('walletStatus');
-  status.textContent = '✅ Connected (' + walletType + ')';
-  status.style.color = '#22c984';
-  
-  // Also set the manual input
-  document.getElementById('manualWalletInput').value = demoAddress;
-  
-  // Update wallet buttons
-  document.querySelectorAll('.wallet-btn').forEach(function(btn) {
+  if (status) {
+    status.textContent = '✅ Connected (' + walletType + ')';
+    status.style.color = '#22c984';
+  }
+
+  var manualInput = document.getElementById('manualWalletInput');
+  if (manualInput) manualInput.value = address;
+
+  // Update button states by data attribute or button index
+  var walletBtns = document.querySelectorAll('.wallet-btn');
+  walletBtns.forEach(function(btn) {
     btn.classList.remove('connected');
-    if (btn.textContent.toLowerCase().includes(walletType)) {
+    var onclick = btn.getAttribute('onclick') || '';
+    if (onclick.indexOf("'" + walletType + "'") !== -1 || onclick.indexOf('"' + walletType + '"') !== -1) {
       btn.classList.add('connected');
     }
   });
-  
-  showToast('Wallet connected: ' + demoAddress, 'success');
+
+  showToast('✅ ' + walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' connected!', 'success');
 }
 
 // ============================================
@@ -887,6 +938,11 @@ var fmt = {
     return "" + n;
   },
   pct: function(n) { return (n >= 0 ? "+" : "") + (n || 0).toFixed(2) + "%"; },
+  date: function(ts) {
+    if (!ts) return "";
+    var d = new Date(ts);
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  },
 };
 
 var store = {
@@ -1611,6 +1667,10 @@ function showCommunityBar() {
 // ============================================
 async function initApp() {
   try {
+    // Sign in anonymously so Firebase Auth is valid for Firestore rules
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
     await loadProfile();
     if (location.hash.startsWith("#/profile")) renderProfile();
     route();
