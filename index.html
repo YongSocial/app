@@ -905,11 +905,25 @@ async function connectWallet(walletType) {
         var resp = await phantom.connect();
         address = resp.publicKey.toString();
       } else {
-        // Not inside Phantom browser — deep-link to open dapp inside Phantom's in-app browser
+        // Not inside Phantom — use universal link that opens the Phantom mobile app.
+        // phantomapp:// triggers iOS/Android app directly; fallback to https for desktop.
         var dappUrl = encodeURIComponent(window.location.href);
-        var deepLink = 'https://phantom.app/ul/browse/' + dappUrl + '?ref=' + encodeURIComponent(window.location.origin);
-        showToast('Opening in Phantom browser...', 'success');
-        setTimeout(function() { window.location.href = deepLink; }, 800);
+        var ref = encodeURIComponent(window.location.origin);
+        var isAndroid = /android/i.test(navigator.userAgent);
+        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (isIOS || isAndroid) {
+          // Mobile: try native app scheme first, fall back to universal link after 1.5s
+          var appLink = 'phantom://browse/' + dappUrl + '?ref=' + ref;
+          var universalLink = 'https://phantom.app/ul/browse/' + dappUrl + '?ref=' + ref;
+          showToast('Opening Phantom app...', 'success');
+          window.location.href = appLink;
+          // If app not installed, universal link opens App Store / Play Store
+          setTimeout(function() { window.location.href = universalLink; }, 1500);
+        } else {
+          // Desktop: go to phantom.app download
+          showToast('Install Phantom extension for desktop, or use your mobile.', 'error');
+          setTimeout(function() { window.open('https://phantom.app/', '_blank'); }, 800);
+        }
         return;
       }
     } else if (walletType === 'solflare') {
