@@ -2342,7 +2342,14 @@ function seekPlayer(event, postId) {
 async function initFeed() {
   console.log('[Feed] Initializing with TG user:', TG_USER.id);
 
-  // Try to load profile from Firestore using TG ID
+  // Sign in anonymously so Firebase Auth is valid for Firestore rules
+  try {
+    if (!auth.currentUser) {
+      await auth.signInAnonymously();
+    }
+  } catch(e) {
+    console.warn('[Feed] Anonymous auth failed:', e);
+  }
   try {
     var snap = await db.collection('profiles').doc(String(TG_USER.id)).get();
     if (snap.exists) {
