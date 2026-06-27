@@ -1588,7 +1588,12 @@ window.openSourcesModal = openSourcesModal;
     if(typeof currentTab!=='undefined' && currentTab==='following' && typeof loadFeed==='function') loadFeed('following');
   });
 
-  function openProfile(){ renderTags(); profileOverlay.classList.add('open'); profileOverlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+  function openProfile(){
+    var u = loadUser();
+    var name = (u && (u.displayName || u.email || '').split('@')[0] || '').trim().replace(/\s+/g,'').toLowerCase();
+    var slug = name || 'profile';
+    window.location.href = 'https://app.yongsocial.com/#' + slug;
+  }
   window.openProfileModal = openProfile;
 
   /* Firebase Google auth + Solana (Trust Wallet) */
