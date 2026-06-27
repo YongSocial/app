@@ -102,12 +102,12 @@ const auth = firebase.auth();
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
-  /* Profile Setup Popup */
+  /* Profile Setup Popup - Clean Design */
   .profile-setup-overlay {
     position: fixed;
     inset: 0;
     z-index: 200;
-    background: rgba(7, 11, 20, 0.97);
+    background: rgba(7, 11, 20, 0.95);
     backdrop-filter: blur(16px);
     display: none;
     align-items: center;
@@ -115,63 +115,202 @@ const auth = firebase.auth();
     padding: 1rem;
   }
   .profile-setup-overlay.active { display: flex; }
-  .profile-setup-modal { max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .profile-setup-modal {
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #0f1626, #0b1120);
+    border: 1px solid #1f2940;
+    border-radius: 20px;
+    padding: 1.5rem;
+  }
   .profile-setup-modal::-webkit-scrollbar { width: 4px; }
   .profile-setup-modal::-webkit-scrollbar-track { background: #0b1120; }
   .profile-setup-modal::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
   
-  .setup-tag-list {
+  .setup-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .setup-header .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+  .setup-header h2 { font-size: 1.25rem; font-weight: 700; color: #e7ecf5; }
+  .setup-header p { font-size: 0.85rem; color: #8a93a8; margin-top: 0.25rem; }
+
+  .setup-section {
+    margin-bottom: 1.25rem;
+  }
+  .setup-section .label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #8a93a8;
+    margin-bottom: 0.5rem;
+  }
+  .setup-section .label .badge {
+    background: #d4b25a;
+    color: #0b1120;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 9999px;
+    margin-left: 0.4rem;
+    font-weight: 700;
+  }
+
+  .wallet-btn-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
   }
-  .setup-tag {
-    background: #121a2d;
-    border: 1px solid #1f2940;
-    border-radius: 9999px;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #8a93a8;
-    font-family: 'Inter', sans-serif;
-  }
-  .setup-tag:hover { border-color: #d4b25a; }
-  .setup-tag.selected { border-color: #d4b25a; background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
-  .setup-tag.disabled { opacity: 0.4; cursor: not-allowed; }
-  
   .wallet-btn {
     background: #121a2d;
     border: 1px solid #1f2940;
     border-radius: 9999px;
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 1rem;
     font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
     color: #e7ecf5;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     font-family: 'Inter', sans-serif;
   }
   .wallet-btn:hover { border-color: #d4b25a; background: rgba(212, 178, 90, 0.05); }
   .wallet-btn.connected { border-color: #22c984; background: rgba(34, 201, 132, 0.08); }
-  
-  .search-tags {
+  .wallet-btn svg { flex-shrink: 0; }
+  .wallet-status-text {
+    font-size: 0.75rem;
+    color: #8a93a8;
+    margin-top: 0.4rem;
+  }
+  .wallet-status-text.connected { color: #22c984; }
+
+  .wallet-input {
     width: 100%;
     background: #121a2d;
     border: 1px solid #1f2940;
-    border-radius: 9999px;
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-family: 'Inter', monospace;
+    color: #e7ecf5;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-top: 0.4rem;
+  }
+  .wallet-input:focus { border-color: #d4b25a; }
+  .wallet-input::placeholder { color: #5a6378; }
+
+  .tag-search {
+    width: 100%;
+    background: #121a2d;
+    border: 1px solid #1f2940;
+    border-radius: 12px;
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     color: #e7ecf5;
     outline: none;
     font-family: 'Inter', sans-serif;
+  }
+  .tag-search:focus { border-color: #d4b25a; }
+  .tag-search::placeholder { color: #5a6378; }
+
+  .setup-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+  .setup-tag-list::-webkit-scrollbar { width: 3px; }
+  .setup-tag-list::-webkit-scrollbar-thumb { background: #1f2940; border-radius: 9999px; }
+  
+  .setup-tag {
+    background: #121a2d;
+    border: 1px solid #1f2940;
+    border-radius: 9999px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #8a93a8;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+  .setup-tag:hover { border-color: #d4b25a; }
+  .setup-tag.selected { border-color: #d4b25a; background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
+  .setup-tag.disabled { opacity: 0.4; cursor: not-allowed; }
+  
+  .setup-counter {
+    font-size: 0.75rem;
+    color: #5a6378;
+    margin-top: 0.4rem;
+    text-align: right;
+  }
+  .setup-counter .num { color: #e7ecf5; font-weight: 600; }
+
+  .setup-actions {
+    display: flex;
+    gap: 0.75rem;
     margin-top: 0.5rem;
   }
-  .search-tags:focus { border-color: #d4b25a; }
-  .search-tags::placeholder { color: #5a6378; }
+  .setup-actions .btn-ghost {
+    flex: 1;
+    background: #121a2d;
+    border: 1px solid #1f2940;
+    color: #8a93a8;
+    border-radius: 9999px;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .setup-actions .btn-ghost:hover { border-color: #d4b25a; color: #e7ecf5; }
+  .setup-actions .btn-brand { flex: 1; padding: 0.6rem; border-radius: 9999px; font-size: 0.85rem; }
+
+  /* Profile view */
+  .profile-wallet-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .profile-wallet-row .addr {
+    font-family: monospace;
+    font-size: 0.8rem;
+    background: #121a2d;
+    padding: 0.15rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #1f2940;
+    word-break: break-all;
+  }
+  .profile-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .profile-tags .tag-chip {
+    background: rgba(212, 178, 90, 0.1);
+    border: 1px solid rgba(212, 178, 90, 0.2);
+    border-radius: 9999px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.7rem;
+    color: #d4b25a;
+  }
+  .profile-status-badge {
+    display: inline-block;
+    padding: 0.1rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .profile-status-badge.complete { background: rgba(34, 201, 132, 0.12); color: #22c984; }
+  .profile-status-badge.incomplete { background: rgba(212, 178, 90, 0.12); color: #d4b25a; }
 </style>
 </head>
 <body class="min-h-screen grain">
@@ -188,53 +327,46 @@ const auth = firebase.auth();
 <!-- PROFILE SETUP POPUP -->
 <!-- ============================================ -->
 <div id="profileSetupOverlay" class="profile-setup-overlay">
-  <div class="profile-setup-modal card p-6">
-    <div class="space-y-5">
-      <div class="text-center">
-        <div class="text-5xl mb-3">💎</div>
-        <h2 class="text-xl font-bold">Complete Your Profile</h2>
-        <p class="text-sm text-mute mt-2">Connect your Solana wallet and select 5 topics you care about to join the community.</p>
-      </div>
+  <div class="profile-setup-modal">
+    <div class="setup-header">
+      <div class="icon">💎</div>
+      <h2>Complete Your Profile</h2>
+      <p>Connect your Solana wallet and select 5 topics to join the community.</p>
+    </div>
 
-      <!-- Wallet Connection -->
-      <div>
-        <label class="block text-xs uppercase tracking-wider text-mute mb-2">Connect Solana Wallet</label>
-        <div class="flex flex-wrap gap-2">
-          <button class="wallet-btn" onclick="connectWallet('phantom')">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#AB9FF2"/><path d="M7 14L10 11L13 14" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/><path d="M7 7L10 10L13 7" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/></svg>
-            Phantom
-          </button>
-          <button class="wallet-btn" onclick="connectWallet('solflare')">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#FF8C00"/><path d="M14 7H6C5.44772 7 5 7.44772 5 8V13C5 13.5523 5.44772 14 6 14H14C14.5523 14 15 13.5523 15 13V8C15 7.44772 14.5523 7 14 7Z" stroke="white" stroke-width="1.5"/><circle cx="12.5" cy="10.5" r="1.5" fill="white"/></svg>
-            Solflare
-          </button>
-          <button class="wallet-btn" onclick="connectWallet('backpack')">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
-            Backpack
-          </button>
-        </div>
-        <span id="walletStatus" class="text-xs text-mute block mt-2">Not connected</span>
-        <input type="text" id="manualWalletInput" placeholder="Or paste wallet address manually..." 
-          class="w-full rounded-xl bg-surface2 border border-line px-4 py-2.5 text-sm outline-none focus:border-brand font-mono mt-2"
-          oninput="onManualWalletInput(this.value)" />
-      </div>
-
-      <!-- Tag Selection -->
-      <div>
-        <label class="block text-xs uppercase tracking-wider text-mute mb-2">Select 5 Topics</label>
-        <input type="text" id="tagSearch" class="search-tags" placeholder="Search tags..." oninput="filterTags()" />
-        <div id="tagList" class="setup-tag-list"></div>
-        <div class="text-xs text-mute mt-2"><span id="selectedTagCount">0</span>/5 selected</div>
-      </div>
-
-      <!-- Actions -->
-      <div class="flex gap-3 pt-2">
-        <button onclick="closeProfileSetup()" class="btn-ghost rounded-xl px-5 py-2.5 text-sm flex-1">Skip</button>
-        <button id="exploreBtn" class="btn-brand rounded-xl px-5 py-2.5 text-sm flex-1" onclick="exploreCommunity()">
-          🚀 Explore Community
+    <!-- Wallet Section -->
+    <div class="setup-section">
+      <div class="label">Connect Wallet</div>
+      <div class="wallet-btn-group">
+        <button class="wallet-btn" onclick="connectWallet('phantom')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#AB9FF2"/><path d="M7 14L10 11L13 14" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/><path d="M7 7L10 10L13 7" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/></svg>
+          Phantom
+        </button>
+        <button class="wallet-btn" onclick="connectWallet('solflare')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#FF8C00"/><path d="M14 7H6C5.44772 7 5 7.44772 5 8V13C5 13.5523 5.44772 14 6 14H14C14.5523 14 15 13.5523 15 13V8C15 7.44772 14.5523 7 14 7Z" stroke="white" stroke-width="1.5"/><circle cx="12.5" cy="10.5" r="1.5" fill="white"/></svg>
+          Solflare
+        </button>
+        <button class="wallet-btn" onclick="connectWallet('backpack')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
+          Backpack
         </button>
       </div>
-      <p class="text-[11px] text-mute text-center">You can always update your topics later in Profile.</p>
+      <div id="walletStatus" class="wallet-status-text">No wallet connected</div>
+      <input id="manualWalletInput" type="text" class="wallet-input" placeholder="Or paste wallet address manually..." />
+    </div>
+
+    <!-- Tags Section -->
+    <div class="setup-section">
+      <div class="label">Select 5 Topics <span class="badge" id="tagCounter">0/5</span></div>
+      <input type="text" id="tagSearch" class="tag-search" placeholder="Search topics..." oninput="filterTags()" />
+      <div id="tagList" class="setup-tag-list"></div>
+      <div class="setup-counter"><span class="num" id="selectedTagCount">0</span> of 5 selected</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="setup-actions">
+      <button onclick="closeProfileSetup()" class="btn-ghost">Skip</button>
+      <button id="exploreBtn" class="btn-brand" onclick="exploreCommunity()">🚀 Explore</button>
     </div>
   </div>
 </div>
@@ -258,14 +390,11 @@ const auth = firebase.auth();
         <span class="hidden sm:inline">Profile</span>
       </a>
       <a href="javascript:void(0)" onclick="handleCommunityAccess()" class="nav-link flex items-center gap-2">
-        <span>👥 Community</span>
+        👥 Community
       </a>
     </nav>
   </div>
 </header>
-
-<!-- Community credibility bar -->
-<div id="communityBar" class="hidden border-b border-line bg-surface px-5 py-2 flex items-center justify-center gap-4 flex-wrap"></div>
 
 <main class="max-w-6xl mx-auto px-5 py-8">
 
@@ -275,7 +404,7 @@ const auth = firebase.auth();
     <div class="card p-5">
       <div class="text-xs uppercase tracking-wider text-mute">Company Net Worth</div>
       <div id="netWorth" class="text-3xl font-extrabold mt-1">—</div>
-      <div id="netWorthDelta" class="text-xs mt-1 text-mute">base + crypto · updates daily at midnight UTC</div>
+      <div id="netWorthDelta" class="text-xs mt-1 text-mute">base + crypto · updates daily</div>
     </div>
     <div class="card p-5">
       <div class="text-xs uppercase tracking-wider text-mute">Website Views · This Month</div>
@@ -401,8 +530,7 @@ const auth = firebase.auth();
 <section id="view-profile" class="space-y-6 hidden">
   <div class="card p-6">
     <div class="text-xs uppercase tracking-wider text-brand">Profile</div>
-    <h1 class="text-2xl md:text-3xl font-extrabold mt-1">Your Yong Social Profile</h1>
-    <p id="profileMode" class="text-sm text-mute mt-1">Loading…</p>
+    <h1 class="text-2xl md:text-3xl font-extrabold mt-1">Your Profile</h1>
   </div>
 
   <div id="profileLoading" class="card p-6"><div class="skeleton h-24 rounded-xl"></div></div>
@@ -410,57 +538,31 @@ const auth = firebase.auth();
 
   <div id="profileCard" class="card p-6 flex items-center gap-5 hidden">
     <div id="profileAvatar" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand2 grid place-items-center text-ink text-3xl font-extrabold">Y</div>
-    <div class="min-w-0 flex-1">
-      <div id="profileName" class="text-xl font-bold truncate">—</div>
-      <div id="profileHandle" class="text-sm text-mute truncate">—</div>
+    <div>
+      <div id="profileName" class="text-xl font-bold">—</div>
+      <div id="profileHandle" class="text-sm text-mute">—</div>
       <div id="profileId" class="text-xs text-mute mt-1">—</div>
     </div>
   </div>
 
-  <!-- Wallet Section -->
-  <div id="walletSection" class="card p-6 hidden">
-    <div class="flex items-center justify-between mb-5">
-      <div>
-        <div class="text-xs uppercase tracking-wider text-mute">Wallet</div>
-        <div class="text-lg font-bold mt-0.5">Solana</div>
+  <!-- Wallet & Tags -->
+  <div id="profileDetails" class="card p-6 hidden space-y-4">
+    <div>
+      <div class="text-xs uppercase tracking-wider text-mute mb-1">Solana Wallet</div>
+      <div class="profile-wallet-row">
+        <span class="addr" id="profileWallet">Not connected</span>
+        <button class="chip text-xs px-2 py-0.5" onclick="openProfileSetup()">Edit</button>
       </div>
-      <span class="text-3xl">🟣</span>
     </div>
-    <div class="flex items-end gap-2 mb-6">
-      <div id="walletBalance" class="text-4xl font-extrabold text-brand">—</div>
-      <div class="text-mute text-sm mb-1">SOL</div>
+    <div>
+      <div class="text-xs uppercase tracking-wider text-mute mb-1">Staked Topics</div>
+      <div id="profileTags" class="profile-tags"></div>
+      <div id="profileNoTags" class="text-sm text-mute">No topics staked yet.</div>
     </div>
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button class="wallet-btn connected" onclick="connectWallet('phantom')" style="border-color:#22c984;">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#AB9FF2"/><path d="M7 14L10 11L13 14" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/><path d="M7 7L10 10L13 7" stroke="#0b1120" stroke-width="2" stroke-linecap="round"/></svg>
-        Phantom
-      </button>
-      <button class="wallet-btn" onclick="connectWallet('solflare')">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#FF8C00"/><path d="M14 7H6C5.44772 7 5 7.44772 5 8V13C5 13.5523 5.44772 14 6 14H14C14.5523 14 15 13.5523 15 13V8C15 7.44772 14.5523 7 14 7Z" stroke="white" stroke-width="1.5"/><circle cx="12.5" cy="10.5" r="1.5" fill="white"/></svg>
-        Solflare
-      </button>
-      <button class="wallet-btn" onclick="connectWallet('backpack')">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect width="20" height="20" rx="4" fill="#1A1A2E"/><path d="M10 5L14 8L10 11L6 8L10 5Z" stroke="#F5A623" stroke-width="1.5"/><path d="M10 11L14 14L10 17L6 14L10 11Z" stroke="#F5A623" stroke-width="1.5"/></svg>
-        Backpack
-      </button>
+    <div>
+      <div class="text-xs uppercase tracking-wider text-mute mb-1">Status</div>
+      <span id="profileStatusBadge" class="profile-status-badge incomplete">⏳ Setup Required</span>
     </div>
-    <div class="bg-surface2 rounded-xl p-4 text-sm">
-      <div class="flex justify-between"><span class="text-mute">Address</span><span id="profileWallet" class="font-mono text-xs">Not connected</span></div>
-      <div class="flex justify-between mt-2"><span class="text-mute">Status</span><span id="profileStatus" class="text-brand2">Ready</span></div>
-    </div>
-  </div>
-
-  <!-- Staked Topics Section -->
-  <div id="stakedTopicsSection" class="card p-6 hidden">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="text-xs uppercase tracking-wider text-mute">Staked Topics</div>
-        <div class="text-sm text-mute mt-1">Topics you've staked your wallet to</div>
-      </div>
-      <button onclick="openProfileSetup()" class="btn-brand rounded-xl px-4 py-2 text-sm">Edit</button>
-    </div>
-    <div id="stakedTagsList" class="flex flex-wrap gap-2"></div>
-    <div id="noStakedTags" class="text-sm text-mute">No topics staked yet. Click Edit to select topics.</div>
   </div>
 </section>
 
@@ -476,7 +578,7 @@ const auth = firebase.auth();
 <!-- ============================================ -->
 <script>
 // ============================================
-// FIREBASE INITIALIZATION
+// FIREBASE
 // ============================================
 // Already initialized above
 
@@ -488,8 +590,9 @@ var TG_USER = null;
 var currentUser = null;
 var selectedTopics = [];
 var allTags = [];
-var connectedWallet = null;
 var walletAddress = '';
+var connectedWallet = null;
+var isProfileLoaded = false;
 
 // ============================================
 // TELEGRAM USER
@@ -512,27 +615,37 @@ function getTgUser() {
 TG_USER = getTgUser();
 
 // ============================================
-// CACHE HELPERS
+// HELPERS
 // ============================================
+var $ = function(s, p) { p = p || document; return p.querySelector(s); };
+var $$ = function(s, p) { p = p || document; return Array.from(p.querySelectorAll(s)); };
+
 function getUTCDay() {
   var now = new Date();
   return now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0') + '-' + String(now.getUTCDate()).padStart(2,'0');
 }
 
-function cachedToday(key) {
-  try {
-    var raw = localStorage.getItem(key);
-    if (!raw) return null;
-    var data = JSON.parse(raw);
-    if (data._day === getUTCDay()) return data;
-    return null;
-  } catch(e) { return null; }
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
 }
 
-function cacheToday(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify({ ...data, _day: getUTCDay() }));
-  } catch(e) {}
+function fmtNum(n) {
+  if (n == null) return '—';
+  var a = Math.abs(n);
+  if (a >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (a >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (a >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return '' + n;
+}
+
+function fmtUsd(n) {
+  return '$' + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
+
+function fmtPct(n) {
+  return (n >= 0 ? '+' : '') + (n || 0).toFixed(2) + '%';
 }
 
 // ============================================
@@ -556,31 +669,27 @@ function showToast(message, type) {
 // ROUTER
 // ============================================
 function route() {
-  var hash = location.hash.replace(/^#/, "") || "/";
-  var isProfile = hash.startsWith("/profile");
+  var hash = location.hash.replace(/^#/, '') || '/';
+  var isProfile = hash.startsWith('/profile');
   
-  $("#view-dashboard").classList.toggle("hidden", isProfile);
-  $("#view-profile").classList.toggle("hidden", !isProfile);
+  document.getElementById('view-dashboard').classList.toggle('hidden', isProfile);
+  document.getElementById('view-profile').classList.toggle('hidden', !isProfile);
   
-  document.querySelectorAll("#nav .nav-link").forEach(function(a) {
-    a.classList.toggle("active", a.dataset.route === (isProfile ? "/profile" : "/"));
+  document.querySelectorAll('#nav .nav-link').forEach(function(a) {
+    a.classList.toggle('active', a.dataset.route === (isProfile ? '/profile' : '/'));
   });
   
   if (isProfile && PROFILE) renderProfile();
-  else if (isProfile) {
-    // PROFILE not yet loaded — show loading, renderProfile will be called after initApp
-    document.getElementById('profileLoading')?.classList.remove('hidden');
-  }
-  window.scrollTo({ top: 0, behavior: "instant" });
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
-window.addEventListener("hashchange", route);
+window.addEventListener('hashchange', route);
 
 // ============================================
-// PROFILE FUNCTIONS
+// PROFILE
 // ============================================
 async function loadProfile() {
   var ref = db.collection('profiles').doc(String(TG_USER.id));
-  var snap = await ref.get();  // public read — no auth needed
+  var snap = await ref.get();
   var base = {
     telegramId: TG_USER.id,
     username: TG_USER.username || null,
@@ -597,22 +706,19 @@ async function loadProfile() {
                    TG_USER.username || ('tg_' + TG_USER.id),
       walletAddress: null,
       stakedTopics: [],
-    };
-    // Write silently — only works when coming from Telegram (auth context)
-    ref.set({
-      ...PROFILE,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastSeenAt: firebase.firestore.FieldValue.serverTimestamp(),
-    }).catch(function(e) { console.warn('Profile create skipped (no auth):', e.code); });
+    };
+    await ref.set(PROFILE);
   } else {
     PROFILE = { ...snap.data(), ...base };
-    // Update silently — same
-    ref.update({ ...base, lastSeenAt: firebase.firestore.FieldValue.serverTimestamp() })
-       .catch(function(e) { console.warn('Profile update skipped (no auth):', e.code); });
+    await ref.update({ ...base, lastSeenAt: firebase.firestore.FieldValue.serverTimestamp() });
   }
   
+  isProfileLoaded = true;
   paintNavAvatar();
+  renderProfile();
   return PROFILE;
 }
 
@@ -629,81 +735,67 @@ function paintNavAvatar() {
 function renderProfile() {
   if (!PROFILE) return;
   
-  // Update subtitle
-  var modeEl = document.getElementById('profileMode');
-  if (modeEl) {
-    modeEl.textContent = PROFILE._source === 'telegram'
-      ? 'Connected via Telegram'
-      : (PROFILE.walletAddress ? 'Wallet connected · ' + (PROFILE.stakedTopics?.length || 0) + '/5 topics staked' : 'Setup your wallet & topics to join the community');
-  }
+  // Hide loading
   document.getElementById('profileLoading').classList.add('hidden');
-  document.getElementById('profileCard').classList.remove('hidden');
-  document.getElementById('walletSection').classList.remove('hidden');
-  document.getElementById('stakedTopicsSection').classList.remove('hidden');
+  document.getElementById('profileError').classList.add('hidden');
   
+  // Show cards
+  document.getElementById('profileCard').classList.remove('hidden');
+  document.getElementById('profileDetails').classList.remove('hidden');
+  
+  // Avatar
   var avatar = document.getElementById('profileAvatar');
   if (PROFILE.photoUrl) {
-    avatar.outerHTML = '<img id="profileAvatar" src="' + PROFILE.photoUrl + '" alt="" class="w-20 h-20 rounded-2xl object-cover border border-line"/>';
+    avatar.innerHTML = '<img src="' + PROFILE.photoUrl + '" alt="" class="w-full h-full object-cover rounded-2xl"/>';
   } else {
     avatar.textContent = (PROFILE.displayName || PROFILE.firstName || 'Y').slice(0, 1).toUpperCase();
   }
   
-  document.getElementById('profileName').textContent = PROFILE.displayName || '—';
-  document.getElementById('profileHandle').innerHTML = 
-    (PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId) +
-    (PROFILE.isPremium ? ' <span class="chip ml-1 px-2 py-0.5 text-[10px] text-brand">Premium</span>' : '');
+  // Name, handle, ID
+  document.getElementById('profileName').textContent = PROFILE.displayName || 'Yong User';
+  document.getElementById('profileHandle').textContent = PROFILE.username ? '@' + PROFILE.username : 'tg_' + PROFILE.telegramId;
   document.getElementById('profileId').textContent = 'Telegram ID: ' + PROFILE.telegramId;
   
   // Wallet
+  var walletEl = document.getElementById('profileWallet');
   if (PROFILE.walletAddress) {
-    document.getElementById('profileWallet').textContent = PROFILE.walletAddress;
-    var balEl = document.getElementById('walletBalance');
-    if (balEl) {
-      balEl.textContent = '...';
-      fetchSolBalance(PROFILE.walletAddress).then(function(bal) {
-        balEl.textContent = bal !== null ? bal.toFixed(4) : '—';
-      });
-    }
+    walletEl.textContent = PROFILE.walletAddress;
   } else {
-    document.getElementById('profileWallet').textContent = 'Not connected';
+    walletEl.textContent = 'Not connected';
+    walletEl.style.color = '#8a93a8';
   }
   
-  // Staked Topics
-  var staked = PROFILE.stakedTopics || [];
-  var list = document.getElementById('stakedTagsList');
-  var empty = document.getElementById('noStakedTags');
+  // Tags
+  var tags = PROFILE.stakedTopics || [];
+  var tagsContainer = document.getElementById('profileTags');
+  var noTags = document.getElementById('profileNoTags');
   
-  if (staked.length > 0) {
-    list.innerHTML = staked.map(function(tag) {
-      return '<span class="chip px-3 py-1 text-brand border-brand">#' + tag + '</span>';
+  if (tags.length > 0) {
+    tagsContainer.innerHTML = tags.map(function(t) {
+      return '<span class="tag-chip">#' + t + '</span>';
     }).join('');
-    empty.style.display = 'none';
+    noTags.style.display = 'none';
   } else {
-    list.innerHTML = '';
-    empty.style.display = 'block';
+    tagsContainer.innerHTML = '';
+    noTags.style.display = 'block';
+  }
+  
+  // Status
+  var statusEl = document.getElementById('profileStatusBadge');
+  var hasWallet = PROFILE.walletAddress && PROFILE.walletAddress.length > 0;
+  var hasTopics = tags.length === 5;
+  
+  if (hasWallet && hasTopics) {
+    statusEl.className = 'profile-status-badge complete';
+    statusEl.textContent = '✅ Complete';
+  } else {
+    statusEl.className = 'profile-status-badge incomplete';
+    statusEl.textContent = '⏳ Setup Required';
   }
 }
 
-// ============================================
-// COMMUNITY ACCESS
-// ============================================
-function handleCommunityAccess() {
-  // Check if profile is complete
-  if (!PROFILE) {
-    showToast('Loading profile...', 'success');
-    return;
-  }
-  
-  var hasWallet = PROFILE.walletAddress && PROFILE.walletAddress.length > 0;
-  var hasTopics = PROFILE.stakedTopics && PROFILE.stakedTopics.length === 5;
-  
-  if (hasWallet && hasTopics) {
-    // Profile is complete - go to feed
-    window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
-  } else {
-    // Show profile setup
-    showProfileSetup();
-  }
+function openProfileSetup() {
+  showProfileSetup();
 }
 
 // ============================================
@@ -713,12 +805,19 @@ function showProfileSetup() {
   var overlay = document.getElementById('profileSetupOverlay');
   overlay.classList.add('active');
   
-  // Load tags from RSS feed
-  loadTagsForSetup();
+  // Pre-fill existing data
+  if (PROFILE) {
+    if (PROFILE.walletAddress) {
+      document.getElementById('manualWalletInput').value = PROFILE.walletAddress;
+      walletAddress = PROFILE.walletAddress;
+      document.getElementById('walletStatus').textContent = '✅ Wallet connected';
+      document.getElementById('walletStatus').className = 'wallet-status-text connected';
+    }
+    selectedTopics = (PROFILE.stakedTopics || []).slice();
+  }
   
-  // Pre-select existing topics
-  selectedTopics = (PROFILE.stakedTopics || []).slice();
-  updateTagUI();
+  loadTagsForSetup();
+  renderTagList();
 }
 
 function closeProfileSetup() {
@@ -737,7 +836,6 @@ async function loadTagsForSetup() {
             if (tags.indexOf(tag) === -1) tags.push(tag);
           });
         }
-        // Also extract hashtags
         var content = (item.content || item.description || '');
         var matches = content.match(/#[a-zA-Z0-9_]+/g) || [];
         matches.forEach(function(m) {
@@ -750,7 +848,6 @@ async function loadTagsForSetup() {
     }
   } catch(e) {
     console.warn('Error loading tags:', e);
-    // Fallback tags
     allTags = ['crypto', 'bitcoin', 'ethereum', 'solana', 'defi', 'web3', 'nft', 'finance', 'investing', 'wealth', 'blockchain', 'ai', 'gaming', 'metaverse', 'dao'];
     renderTagList();
   }
@@ -771,6 +868,7 @@ function renderTagList() {
   }).join('');
   
   document.getElementById('selectedTagCount').textContent = selectedTopics.length;
+  document.getElementById('tagCounter').textContent = selectedTopics.length + '/5';
 }
 
 function toggleSetupTag(tag) {
@@ -791,17 +889,57 @@ function filterTags() {
   renderTagList();
 }
 
-async function exploreCommunity() {
-  // Validate wallet
+// ============================================
+// WALLET CONNECTION
+// ============================================
+function connectWallet(walletType) {
+  // Demo wallet connection - in production, use actual wallet SDK
+  var demoAddress = '7xY8' + Math.random().toString(36).substring(2, 10) + '...' + Math.random().toString(36).substring(2, 6).toUpperCase();
+  walletAddress = demoAddress;
+  connectedWallet = walletType;
+  
+  document.getElementById('walletStatus').textContent = '✅ Connected to ' + walletType + ' (' + demoAddress + ')';
+  document.getElementById('walletStatus').className = 'wallet-status-text connected';
+  document.getElementById('manualWalletInput').value = demoAddress;
+  
+  document.querySelectorAll('.wallet-btn').forEach(function(btn) {
+    btn.classList.remove('connected');
+    if (btn.textContent.toLowerCase().includes(walletType)) {
+      btn.classList.add('connected');
+    }
+  });
+  
+  showToast('Wallet connected: ' + demoAddress, 'success');
+}
+
+// ============================================
+// COMMUNITY ACCESS
+// ============================================
+function handleCommunityAccess() {
+  if (!PROFILE) {
+    showToast('Loading profile...', 'success');
+    return;
+  }
+  
+  var hasWallet = PROFILE.walletAddress && PROFILE.walletAddress.length > 0;
+  var hasTopics = PROFILE.stakedTopics && PROFILE.stakedTopics.length === 5;
+  
+  if (hasWallet && hasTopics) {
+    window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
+  } else {
+    showProfileSetup();
+  }
+}
+
+function exploreCommunity() {
   var manualInput = document.getElementById('manualWalletInput').value.trim();
   var wallet = walletAddress || manualInput;
   
-  if (!wallet || wallet.length < 20) {
+  if (!wallet || wallet.length < 10) {
     showToast('Please connect a Solana wallet first.', 'error');
     return;
   }
   
-  // Validate topics
   if (selectedTopics.length !== 5) {
     showToast('Please select exactly 5 topics.', 'error');
     return;
@@ -811,213 +949,46 @@ async function exploreCommunity() {
   btn.disabled = true;
   btn.textContent = '⏳ Saving...';
   
-  // Update local state immediately — write to Firestore best-effort
-  PROFILE.walletAddress = wallet;
-  PROFILE.stakedTopics = selectedTopics;
-
   db.collection('profiles').doc(String(TG_USER.id)).update({
     walletAddress: wallet,
     stakedTopics: selectedTopics,
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(function(e) { console.warn('Profile save skipped (no auth):', e.code); });
-
-  showToast('\u2705 Profile saved! Redirecting to Community...', 'success');
-
-  setTimeout(function() {
+  }).then(function() {
+    PROFILE.walletAddress = wallet;
+    PROFILE.stakedTopics = selectedTopics;
+    renderProfile();
+    showToast('✅ Profile saved!', 'success');
     closeProfileSetup();
     window.location.href = 'https://yongsocial.github.io/sphere/feed.html';
-  }, 1000);
-
-  btn.disabled = false;
-  btn.textContent = '\ud83d\ude80 Explore Community';
-}
-
-function openProfileSetup() {
-  showProfileSetup();
-}
-
-// ============================================
-// WALLET CONNECTION
-// ============================================
-// ============================================
-// SOL BALANCE FETCHER
-// ============================================
-async function fetchSolBalance(addr) {
-  if (!addr || addr.length < 20) return null;
-  try {
-    var res = await fetch('https://api.mainnet-beta.solana.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0', id: 1, method: 'getBalance',
-        params: [addr, { commitment: 'confirmed' }]
-      })
-    });
-    var json = await res.json();
-    if (json.result && json.result.value != null) {
-      return json.result.value / 1e9;
-    }
-  } catch(e) { console.warn('SOL balance fetch failed:', e); }
-  return null;
-}
-
-function setWalletUI(address, walletType) {
-  walletAddress = address;
-  if (walletType) connectedWallet = walletType;
-
-  var status = document.getElementById('walletStatus');
-  if (status) {
-    status.textContent = '\u2705 ' + address.slice(0, 6) + '...' + address.slice(-4);
-    status.style.color = '#22c984';
-  }
-
-  var manualInput = document.getElementById('manualWalletInput');
-  if (manualInput) manualInput.value = address;
-
-  var profileWallet = document.getElementById('profileWallet');
-  if (profileWallet) profileWallet.textContent = address;
-
-  document.querySelectorAll('.wallet-btn').forEach(function(btn) {
-    btn.classList.remove('connected');
-    var oc = btn.getAttribute('onclick') || '';
-    if (walletType && oc.indexOf(walletType) !== -1) {
-      btn.classList.add('connected');
-    }
+  }).catch(function(error) {
+    console.error('Save error:', error);
+    showToast('Error saving profile: ' + error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '🚀 Explore';
   });
-
-  // Fetch and show SOL balance
-  var balEl = document.getElementById('walletBalance');
-  if (balEl) {
-    balEl.textContent = '...';
-    fetchSolBalance(address).then(function(bal) {
-      balEl.textContent = bal !== null ? bal.toFixed(4) : '—';
-    });
-  }
-}
-
-async function connectWallet(walletType) {
-  var address = null;
-
-  try {
-    if (walletType === 'phantom') {
-      var phantom = window.phantom?.solana || window.solana;
-      if (phantom && phantom.isPhantom) {
-        var resp = await phantom.connect();
-        address = resp.publicKey.toString();
-      } else {
-        // Not inside Phantom — use universal link that opens the Phantom mobile app.
-        // phantomapp:// triggers iOS/Android app directly; fallback to https for desktop.
-        var dappUrl = encodeURIComponent(window.location.href);
-        var ref = encodeURIComponent(window.location.origin);
-        var isAndroid = /android/i.test(navigator.userAgent);
-        var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-        if (isIOS || isAndroid) {
-          // Mobile: try native app scheme first, fall back to universal link after 1.5s
-          var appLink = 'phantom://browse/' + dappUrl + '?ref=' + ref;
-          var universalLink = 'https://phantom.app/ul/browse/' + dappUrl + '?ref=' + ref;
-          showToast('Opening Phantom app...', 'success');
-          window.location.href = appLink;
-          // If app not installed, universal link opens App Store / Play Store
-          setTimeout(function() { window.location.href = universalLink; }, 1500);
-        } else {
-          // Desktop: go to phantom.app download
-          showToast('Install Phantom extension for desktop, or use your mobile.', 'error');
-          setTimeout(function() { window.open('https://phantom.app/', '_blank'); }, 800);
-        }
-        return;
-      }
-    } else if (walletType === 'solflare') {
-      var solflare = window.solflare;
-      if (solflare && solflare.isSolflare) {
-        await solflare.connect();
-        address = solflare.publicKey.toString();
-      } else {
-        showToast('Opening Solflare...', 'success');
-        setTimeout(function() { window.open('https://solflare.com/', '_blank'); }, 800);
-        return;
-      }
-    } else if (walletType === 'backpack') {
-      var backpack = window.backpack || window.xnft?.solana;
-      if (backpack) {
-        var resp2 = await backpack.connect();
-        address = resp2.publicKey.toString();
-      } else {
-        showToast('Opening Backpack...', 'success');
-        setTimeout(function() { window.open('https://backpack.app/', '_blank'); }, 800);
-        return;
-      }
-    }
-  } catch (e) {
-    console.warn('Wallet connect error:', e);
-    showToast('Wallet connection cancelled.', 'error');
-    return;
-  }
-
-  if (!address) {
-    showToast('Could not detect ' + walletType + '. Try pasting your address below.', 'error');
-    return;
-  }
-
-  setWalletUI(address, walletType);
-  showToast('\u2705 ' + walletType.charAt(0).toUpperCase() + walletType.slice(1) + ' connected!', 'success');
-}
-
-// Called when user types/pastes into the manual wallet input
-var _manualWalletTimer = null;
-function onManualWalletInput(val) {
-  val = val.trim();
-  clearTimeout(_manualWalletTimer);
-  if (val.length < 32) return; // Solana addresses are 32-44 chars
-  _manualWalletTimer = setTimeout(function() {
-    setWalletUI(val, null);
-    showToast('\u2705 Wallet address set.', 'success');
-  }, 600);
 }
 
 // ============================================
-// CONFIG & HELPERS
+// DASHBOARD DATA
 // ============================================
 var CONFIG = {
-  company: { name: "Yong Social", site: "https://www.yongsocial.com/" },
-  rssFeed: "https://www.yongsocial.com/feeds/posts/default?alt=rss",
+  company: { name: 'Yong Social', site: 'https://www.yongsocial.com/' },
+  rssFeed: 'https://www.yongsocial.com/feeds/posts/default?alt=rss',
   baseNetWorthUSD: 0,
   cryptoHoldings: [
-    { id: "bitcoin", symbol: "BTC", amount: 0 },
-    { id: "ethereum", symbol: "ETH", amount: 0 },
-    { id: "solana", symbol: "SOL", amount: 0 },
-    { id: "usd-coin", symbol: "USDC", amount: 0 },
-    { id: "ripple", symbol: "XRP", amount: 0 },
+    { id: 'bitcoin', symbol: 'BTC', amount: 0 },
+    { id: 'ethereum', symbol: 'ETH', amount: 0 },
+    { id: 'solana', symbol: 'SOL', amount: 0 },
+    { id: 'usd-coin', symbol: 'USDC', amount: 0 },
+    { id: 'ripple', symbol: 'XRP', amount: 0 },
   ],
   socials: [
-    { name: "X (Twitter)", handle: "@yongsocial", url: "https://x.com/yongsocial", count: 0, icon: "x" },
-    { name: "Facebook", handle: "yongsocial", url: "https://facebook.com/yongsocial", count: 0, icon: "fb" },
-    { name: "LinkedIn", handle: "yongsocial", url: "https://linkedin.com/company/yongsocial", count: 0, icon: "li" },
-    { name: "YouTube", handle: "@yongsocial", url: "https://youtube.com/@yongsocial", count: 0, icon: "yt" },
-    { name: "GitHub", handle: "yongsocial", url: "https://github.com/yongsocial", count: null, icon: "gh", live: true },
+    { name: 'X (Twitter)', handle: '@yongsocial', url: 'https://x.com/yongsocial', count: 0, icon: 'x' },
+    { name: 'Facebook', handle: 'yongsocial', url: 'https://facebook.com/yongsocial', count: 0, icon: 'fb' },
+    { name: 'LinkedIn', handle: 'yongsocial', url: 'https://linkedin.com/company/yongsocial', count: 0, icon: 'li' },
+    { name: 'YouTube', handle: '@yongsocial', url: 'https://youtube.com/@yongsocial', count: 0, icon: 'yt' },
+    { name: 'GitHub', handle: 'yongsocial', url: 'https://github.com/yongsocial', count: null, icon: 'gh', live: true },
   ],
-};
-
-var $ = function(s, p) { p = p || document; return p.querySelector(s); };
-var $$ = function(s, p) { p = p || document; return Array.from(p.querySelectorAll(s)); };
-
-var fmt = {
-  usd: function(n) { return "$" + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 }); },
-  usdF: function(n) { return "$" + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 }); },
-  num: function(n) { return (n || 0).toLocaleString(); },
-  abbrev: function(n) {
-    if (n == null) return "—";
-    var a = Math.abs(n);
-    if (a >= 1e9) return (n / 1e9).toFixed(1) + "B";
-    if (a >= 1e6) return (n / 1e6).toFixed(1) + "M";
-    if (a >= 1e3) return (n / 1e3).toFixed(1) + "K";
-    return "" + n;
-  },
-  pct: function(n) { return (n >= 0 ? "+" : "") + (n || 0).toFixed(2) + "%"; },
-  date: function(ts) {
-    if (!ts) return "";
-    var d = new Date(ts);
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  },
 };
 
 var store = {
@@ -1025,68 +996,61 @@ var store = {
   set: function(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
 };
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, function(c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-  });
+function cachedToday(key) {
+  var c = store.get(key);
+  if (c && c._day === getUTCDay()) return c;
+  return null;
+}
+
+function cacheToday(key, data) {
+  store.set(key, { ...data, _day: getUTCDay() });
 }
 
 // ============================================
-// CHART
+// VIEWS
 // ============================================
-function seededRand(seed) {
-  var s = seed;
-  return function() {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  };
-}
-
 async function loadViewsCard() {
   var now = new Date();
   var year = now.getUTCFullYear();
   var month = now.getUTCMonth();
-  var cacheKey = "ys.websiteViews." + year;
-  var label = now.toLocaleString("default", { month: "long" });
-  var prevLabel = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" });
+  var label = now.toLocaleString('default', { month: 'long' });
+  var prevLabel = new Date(year, month - 1, 1).toLocaleString('default', { month: 'long' });
 
   var yearData = null;
-  var cached = store.get(cacheKey);
+  var cached = store.get('ys.websiteViews.' + year);
   if (cached) {
     yearData = cached;
   } else {
     try {
-      var snap = await db.collection("config").doc("websiteViews").get();
+      var snap = await db.collection('config').doc('websiteViews').get();
       if (snap.exists) {
         yearData = snap.data()[year] || null;
-        if (yearData) store.set(cacheKey, yearData);
+        if (yearData) store.set('ys.websiteViews.' + year, yearData);
       }
-    } catch(e) { console.warn("websiteViews fetch failed", e); }
+    } catch(e) { console.warn('websiteViews fetch failed', e); }
   }
 
   var total = yearData ? (parseInt(yearData[month]) || 0) : null;
   var prev = yearData ? (parseInt(yearData[month - 1]) || 0) : null;
 
   if (total === null) {
-    $("#viewsTotal").textContent = "—";
-    $("#viewsDelta").textContent = "not yet recorded";
+    document.getElementById('viewsTotal').textContent = '—';
+    document.getElementById('viewsDelta').textContent = 'not yet recorded';
     return;
   }
 
-  $("#viewsTotal").textContent = fmt.abbrev(total);
+  document.getElementById('viewsTotal').textContent = fmtNum(total);
 
   if (prev && prev > 0) {
     var delta = ((total - prev) / prev) * 100;
-    var sign = delta >= 0 ? "+" : "";
-    $("#viewsDelta").innerHTML =
+    var sign = delta >= 0 ? '+' : '';
+    document.getElementById('viewsDelta').innerHTML =
       '<span class="' + (delta >= 0 ? 'text-brand2' : 'text-danger') + '">' + sign + delta.toFixed(1) + '%</span>'
       + ' vs ' + prevLabel;
   } else {
-    $("#viewsDelta").textContent = label + " total";
+    document.getElementById('viewsDelta').textContent = label + ' total';
   }
 }
-
-function renderChart() {}
 
 // ============================================
 // SOCIALS
@@ -1100,24 +1064,21 @@ var ICONS = {
 };
 
 async function loadSocials() {
-  var list = $("#socialList");
+  var list = document.getElementById('socialList');
   list.innerHTML = CONFIG.socials.map(function(s, i) {
     return '<li id="soc-' + i + '" class="flex items-center justify-between gap-3 p-2 rounded-xl hover:bg-surface2 transition">' +
       '<a href="' + s.url + '" target="_blank" rel="noreferrer" class="flex items-center gap-3 min-w-0">' +
-      '<span class="w-8 h-8 grid place-items-center rounded-lg bg-surface2 border border-line text-brand">' + (ICONS[s.icon] || "") + '</span>' +
-      '<span class="min-w-0">' +
-      '<span class="block text-sm font-medium truncate">' + s.name + '</span>' +
-      '<span class="block text-xs text-mute truncate">' + s.handle + '</span>' +
-      '</span>' +
+      '<span class="w-8 h-8 grid place-items-center rounded-lg bg-surface2 border border-line text-brand">' + (ICONS[s.icon] || '') + '</span>' +
+      '<span><div class="text-sm font-medium truncate">' + s.name + '</div><div class="text-xs text-mute truncate">' + s.handle + '</div></span>' +
       '</a>' +
-      '<span class="text-sm font-semibold" data-count>' + (s.count == null ? '<span class="skeleton inline-block w-10 h-3 rounded"></span>' : fmt.abbrev(s.count)) + '</span>' +
+      '<span class="text-sm font-semibold" data-count>' + (s.count == null ? '<span class="skeleton inline-block w-10 h-3 rounded"></span>' : fmtNum(s.count)) + '</span>' +
       '</li>';
-  }).join("");
+  }).join('');
   
-  var ghIdx = CONFIG.socials.findIndex(function(s) { return s.icon === "gh" && s.live; });
+  var ghIdx = CONFIG.socials.findIndex(function(s) { return s.icon === 'gh' && s.live; });
   if (ghIdx >= 0) {
     var gh = CONFIG.socials[ghIdx];
-    var ghCached = cachedToday("ys.ghFollowers");
+    var ghCached = cachedToday('ys.ghFollowers');
     if (ghCached) {
       gh.count = ghCached.count || 0;
     } else {
@@ -1126,43 +1087,43 @@ async function loadSocials() {
         if (!r.ok) r = await fetch('https://api.github.com/orgs/' + gh.handle);
         var j = await r.json();
         gh.count = j.followers || 0;
-        cacheToday("ys.ghFollowers", { count: gh.count });
+        cacheToday('ys.ghFollowers', { count: gh.count });
       } catch { gh.count = gh.count || 0; }
     }
     var el = document.querySelector('#soc-' + ghIdx + ' [data-count]');
-    if (el) el.textContent = fmt.abbrev(gh.count);
+    if (el) el.textContent = fmtNum(gh.count);
   }
   
   var total = CONFIG.socials.reduce(function(a, s) { return a + (s.count || 0); }, 0);
-  document.getElementById('followersTotal').textContent = fmt.abbrev(total);
+  document.getElementById('followersTotal').textContent = fmtNum(total);
 }
 
 // ============================================
 // CRYPTO
 // ============================================
 async function loadCrypto() {
-  var ids = CONFIG.cryptoHoldings.map(function(c) { return c.id; }).join(",");
-  var body = $("#cryptoBody");
+  var ids = CONFIG.cryptoHoldings.map(function(c) { return c.id; }).join(',');
+  var body = document.getElementById('cryptoBody');
   body.innerHTML = CONFIG.cryptoHoldings.map(function(c) {
     return '<tr data-sym="' + c.symbol + '">' +
       '<td class="py-3"><span class="font-semibold">' + c.symbol + '</span> <span class="text-mute text-xs">' + c.id + '</span></td>' +
-      '<td class="py-3">' + fmt.num(c.amount) + '</td>' +
+      '<td class="py-3">' + fmtNum(c.amount) + '</td>' +
       '<td class="py-3"><span class="skeleton inline-block w-16 h-3 rounded"></span></td>' +
       '<td class="py-3 text-mute">—</td>' +
       '<td class="py-3 text-right text-mute">—</td>' +
       '</tr>';
-  }).join("");
+  }).join('');
 
   var prices = {};
-  var priceCached = cachedToday("ys.prices");
+  var priceCached = cachedToday('ys.prices');
   if (priceCached) {
     prices = priceCached;
   } else {
     try {
       var r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=' + ids + '&vs_currencies=usd&include_24hr_change=true');
       prices = await r.json();
-      cacheToday("ys.prices", prices);
-    } catch { prices = store.get("ys.prices") || {}; }
+      cacheToday('ys.prices', prices);
+    } catch { prices = store.get('ys.prices') || {}; }
   }
 
   var cryptoTotal = 0;
@@ -1175,16 +1136,16 @@ async function loadCrypto() {
     if (row) {
       row.innerHTML =
         '<td class="py-3"><span class="font-semibold">' + c.symbol + '</span> <span class="text-mute text-xs">' + c.id + '</span></td>' +
-        '<td class="py-3">' + fmt.num(c.amount) + '</td>' +
-        '<td class="py-3">' + (p ? fmt.usdF(p) : "—") + '</td>' +
-        '<td class="py-3 ' + (ch >= 0 ? "text-brand2" : "text-danger") + '">' + fmt.pct(ch) + '</td>' +
-        '<td class="py-3 text-right font-medium">' + fmt.usd(val) + '</td>';
+        '<td class="py-3">' + fmtNum(c.amount) + '</td>' +
+        '<td class="py-3">' + (p ? '$' + p.toFixed(2) : '—') + '</td>' +
+        '<td class="py-3 ' + (ch >= 0 ? 'text-brand2' : 'text-danger') + '">' + fmtPct(ch) + '</td>' +
+        '<td class="py-3 text-right font-medium">' + fmtUsd(val) + '</td>';
     }
   });
-  $("#cryptoTotal").textContent = fmt.usd(cryptoTotal);
+  document.getElementById('cryptoTotal').textContent = fmtUsd(cryptoTotal);
   var net = CONFIG.baseNetWorthUSD + cryptoTotal;
-  $("#netWorth").textContent = fmt.usd(net);
-  $("#netWorthDelta").innerHTML = 'Base ' + fmt.usd(CONFIG.baseNetWorthUSD) + ' + crypto <span class="text-brand">' + fmt.usd(cryptoTotal) + '</span>';
+  document.getElementById('netWorth').textContent = fmtUsd(net);
+  document.getElementById('netWorthDelta').innerHTML = 'Base ' + fmtUsd(CONFIG.baseNetWorthUSD) + ' + crypto <span class="text-brand">' + fmtUsd(cryptoTotal) + '</span>';
   initNetworthChart(net);
 }
 
@@ -1192,40 +1153,40 @@ async function loadCrypto() {
 // RSS
 // ============================================
 async function loadRecent() {
-  var wrap = $("#recentArticle");
+  var wrap = document.getElementById('recentArticle');
   try {
     var proxy = 'https://corsproxy.io/?url=' + encodeURIComponent(CONFIG.rssFeed);
     var r = await fetch(proxy);
-    if (!r.ok) throw new Error("feed fetch failed");
+    if (!r.ok) throw new Error('feed fetch failed');
     var text = await r.text();
-    var xml = new DOMParser().parseFromString(text, "text/xml");
-    var entry = xml.querySelector("item");
-    if (!entry) throw new Error("no items");
-    var get = function(tag) { return entry.querySelector(tag)?.textContent?.trim() || ""; };
+    var xml = new DOMParser().parseFromString(text, 'text/xml');
+    var entry = xml.querySelector('item');
+    if (!entry) throw new Error('no items');
+    var get = function(tag) { return entry.querySelector(tag)?.textContent?.trim() || ''; };
     var item = {
-      title: get("title"),
-      link: get("link"),
-      pubDate: get("pubDate"),
-      author: get("author") || get("dc\\:creator") || "",
-      description: get("description") || get("content\\:encoded") || "",
-      content: get("content\\:encoded") || get("description") || "",
+      title: get('title'),
+      link: get('link'),
+      pubDate: get('pubDate'),
+      author: get('author') || get('dc\\:creator') || '',
+      description: get('description') || get('content\\:encoded') || '',
+      content: get('content\\:encoded') || get('description') || '',
     };
-    if (!item.title) throw new Error("no items");
-    var img = "";
-    var enc = entry.querySelector("enclosure");
-    if (enc?.getAttribute("type")?.startsWith("image")) img = enc.getAttribute("url") || "";
+    if (!item.title) throw new Error('no items');
+    var img = '';
+    var enc = entry.querySelector('enclosure');
+    if (enc?.getAttribute('type')?.startsWith('image')) img = enc.getAttribute('url') || '';
     if (!img) {
       var m = (item.content || item.description).match(/<img[^>]+src=["']([^"']+)["']/i);
       if (m) img = m[1];
     }
-    var excerpt = (item.description || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 220);
+    var excerpt = (item.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
     wrap.innerHTML =
       '<article class="grid grid-cols-1 md:grid-cols-[260px,1fr] gap-5 items-stretch">' +
       (img ? '<a href="' + item.link + '" target="_blank" rel="noreferrer" class="block rounded-xl overflow-hidden border border-line bg-surface2">' +
         '<img src="' + img + '" alt="" class="w-full h-44 md:h-full object-cover" loading="lazy"/>' +
         '</a>' : '<div class="rounded-xl bg-surface2 border border-line h-44 md:h-full"></div>') +
       '<div class="flex flex-col">' +
-      '<div class="text-xs text-mute">' + fmt.date(new Date(item.pubDate).getTime()) + ' · ' + escapeHtml((item.author || "").replace(/noreply@blogger\.com/gi, "yongsocial@outlook.com") || "yongsocial@outlook.com") + '</div>' +
+      '<div class="text-xs text-mute">' + new Date(item.pubDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + ' · ' + escapeHtml((item.author || '').replace(/noreply@blogger\.com/gi, 'yongsocial@outlook.com') || 'yongsocial@outlook.com') + '</div>' +
       '<h3 class="text-xl font-bold mt-1 leading-snug"><a href="' + item.link + '" target="_blank" rel="noreferrer" class="hover:text-brand">' + escapeHtml(item.title) + '</a></h3>' +
       '<p class="text-sm text-mute mt-2 flex-1">' + escapeHtml(excerpt) + '…</p>' +
       '<div class="mt-4">' +
@@ -1245,22 +1206,22 @@ async function loadRecent() {
 }
 
 // ============================================
-// NET WORTH CHART ENGINE (simplified)
+// CHART (simplified)
 // ============================================
 var _nwChart = null;
 var _nwAllPoints = [];
-var _nwRange = "all";
+var _nwRange = 'all';
 var _nwCurrentNet = 0;
 var _nwInitialised = false;
 
 async function loadNetworthHistory() {
-  var cacheKey = "ys.nwHistory.v2";
+  var cacheKey = 'ys.nwHistory.v2';
   var cached = sessionStorage.getItem(cacheKey);
   if (cached) {
     try { var arr = JSON.parse(cached); if (Array.isArray(arr)) return arr; } catch {}
   }
   try {
-    var q = db.collection("networth_history").orderBy("recordedAtMs", "asc").limit(500);
+    var q = db.collection('networth_history').orderBy('recordedAtMs', 'asc').limit(500);
     var snap = await q.get();
     var pts = snap.docs.map(function(d) {
       var dd = d.data();
@@ -1271,7 +1232,7 @@ async function loadNetworthHistory() {
     sessionStorage.setItem(cacheKey, JSON.stringify(pts));
     return pts;
   } catch (e) {
-    console.warn("[NW] history fetch failed", e);
+    console.warn('[NW] history fetch failed', e);
     return [];
   }
 }
@@ -1385,7 +1346,7 @@ function buildDailyOHLC(points) {
 }
 
 function getFilteredPoints(range) {
-  if (range === "all" || !range) return _nwAllPoints;
+  if (range === 'all' || !range) return _nwAllPoints;
   var days = parseInt(range, 10);
   if (!isFinite(days)) return _nwAllPoints;
   var cutoff = Date.now() - days * 86400000;
@@ -1397,28 +1358,28 @@ function getFilteredPoints(range) {
 function renderNetworthChart(points, currentNet) {
   _nwCurrentNet = currentNet || 0;
   _nwAllPoints = ensurePoints(points || [], _nwCurrentNet);
-  document.getElementById("nwChartLoading")?.classList.add("hidden");
-  var emptyEl = document.getElementById("nwChartEmpty");
+  document.getElementById('nwChartLoading')?.classList.add('hidden');
+  var emptyEl = document.getElementById('nwChartEmpty');
   if (_nwAllPoints.length === 0) {
-    emptyEl?.classList.remove("hidden");
+    emptyEl?.classList.remove('hidden');
     return;
   }
-  emptyEl?.classList.add("hidden");
+  emptyEl?.classList.add('hidden');
   renderNetworthChartForRange(_nwRange, _nwCurrentNet);
   updateNetworthStats(_nwAllPoints, _nwCurrentNet);
   _nwInitialised = true;
 }
 
 function renderNetworthChartForRange(range, currentNet) {
-  _nwRange = range || "all";
+  _nwRange = range || 'all';
   if (currentNet) _nwCurrentNet = currentNet;
   var pts = getFilteredPoints(_nwRange);
   if (pts.length === 0) {
-    document.getElementById("nwChartEmpty")?.classList.remove("hidden");
+    document.getElementById('nwChartEmpty')?.classList.remove('hidden');
     if (_nwChart) { _nwChart.destroy(); _nwChart = null; }
     return;
   }
-  document.getElementById("nwChartEmpty")?.classList.add("hidden");
+  document.getElementById('nwChartEmpty')?.classList.add('hidden');
   var ohlc = buildDailyOHLC(pts);
   var useRaw = ohlc.length < 2;
   var series = useRaw ? pts : ohlc;
@@ -1440,65 +1401,65 @@ function renderNetworthChartForRange(range, currentNet) {
   var histLen = closes.length;
   var pad = function(arr) { return arr.concat(Array(7).fill(null)); };
   var forecastLine = Array(Math.max(0, histLen - 1)).fill(null).concat([closes[histLen-1]]).concat(forecast);
-  var canvas = document.getElementById("networthChart");
+  var canvas = document.getElementById('networthChart');
   if (!canvas) return;
-  var ctx = canvas.getContext("2d");
+  var ctx = canvas.getContext('2d');
   if (_nwChart) { _nwChart.destroy(); _nwChart = null; }
   var isUp = closes.map(function(c, i){ return c >= opens[i]; });
-  var upColor = "rgba(34,201,132,0.9)";
-  var downColor = "rgba(239,68,68,0.9)";
+  var upColor = 'rgba(34,201,132,0.9)';
+  var downColor = 'rgba(239,68,68,0.9)';
   var bodyData = closes.map(function(c, i){ return [Math.min(c, opens[i]), Math.max(c, opens[i])]; });
   var grad = ctx.createLinearGradient(0, 0, 0, 300);
-  grad.addColorStop(0, "rgba(212,178,90,0.22)");
-  grad.addColorStop(1, "rgba(212,178,90,0.00)");
+  grad.addColorStop(0, 'rgba(212,178,90,0.22)');
+  grad.addColorStop(1, 'rgba(212,178,90,0.00)');
   _nwChart = new Chart(ctx, {
-    type: "bar",
+    type: 'bar',
     data: {
       labels: allLabels,
       datasets: [
         {
-          label: "OHLC",
+          label: 'OHLC',
           data: bodyData.concat(Array(7).fill(null)),
-          backgroundColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill("transparent")),
-          borderColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill("transparent")),
+          backgroundColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill('transparent')),
+          borderColor: isUp.map(function(u){ return u ? upColor : downColor; }).concat(Array(7).fill('transparent')),
           borderWidth: 1,
           barPercentage: 0.5,
           categoryPercentage: 0.75,
-          order: 3, yAxisID: "y",
+          order: 3, yAxisID: 'y',
         },
         {
-          label: "Net Worth", type: "line",
+          label: 'Net Worth', type: 'line',
           data: pad(closes),
-          borderColor: "#d4b25a", backgroundColor: grad,
+          borderColor: '#d4b25a', backgroundColor: grad,
           borderWidth: 2, fill: true, tension: 0.3,
           pointRadius: function(c) { return c.dataIndex === histLen - 1 ? 5 : 0; },
-          pointHoverRadius: 6, pointBackgroundColor: "#d4b25a",
-          order: 2, yAxisID: "y",
+          pointHoverRadius: 6, pointBackgroundColor: '#d4b25a',
+          order: 2, yAxisID: 'y',
         },
         {
-          label: "MA5", type: "line",
+          label: 'MA5', type: 'line',
           data: pad(ma5),
-          borderColor: "#38bdf8",
-          backgroundColor: "rgba(56,189,248,0.0)",
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56,189,248,0.0)',
           borderWidth: 4,
           pointRadius: 0,
           fill: false, tension: 0.35,
           spanGaps: true,
-          order: 0, z: 30, yAxisID: "y",
+          order: 0, z: 30, yAxisID: 'y',
         },
         {
-          label: "Forecast", type: "line",
+          label: 'Forecast', type: 'line',
           data: forecastLine,
-          borderColor: "rgba(34,201,132,0.95)",
+          borderColor: 'rgba(34,201,132,0.95)',
           borderWidth: 2, borderDash: [5,4],
           pointRadius: 0, fill: false, tension: 0.3,
-          order: 0, yAxisID: "y",
+          order: 0, yAxisID: 'y',
         },
       ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
+      interaction: { mode: 'index', intersect: false },
       animation: { duration: 350 },
       plugins: {
         legend: { display: false },
@@ -1507,19 +1468,19 @@ function renderNetworthChartForRange(range, currentNet) {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { color: "#8a93a8", maxRotation: 0, autoSkipPadding: 20, maxTicksLimit: 10, font: { size: 10 } },
-          border: { color: "#1f2940" },
+          ticks: { color: '#8a93a8', maxRotation: 0, autoSkipPadding: 20, maxTicksLimit: 10, font: { size: 10 } },
+          border: { color: '#1f2940' },
         },
         y: {
-          position: "right",
-          grid: { color: "rgba(31,41,64,0.55)" },
-          ticks: { color: "#8a93a8", font: { size: 10 }, callback: function(v) { return "$" + fmt.abbrev(v); } },
-          border: { color: "#1f2940" },
+          position: 'right',
+          grid: { color: 'rgba(31,41,64,0.55)' },
+          ticks: { color: '#8a93a8', font: { size: 10 }, callback: function(v) { return '$' + fmtNum(v); } },
+          border: { color: '#1f2940' },
         },
       },
     },
     plugins: [{
-      id: "nwWicks",
+      id: 'nwWicks',
       afterDatasetsDraw: function(chart) {
         var ds0 = chart.getDatasetMeta(0);
         var ctx2 = chart.ctx;
@@ -1544,36 +1505,36 @@ function renderNetworthChartForRange(range, currentNet) {
         var fStart = meta1.data[histLen - 1];
         var fEnd = meta1.data[allLabels.length - 1];
         if (fStart && fEnd && fEnd.x > fStart.x) {
-          ctx2.fillStyle = "rgba(34,201,132,0.05)";
+          ctx2.fillStyle = 'rgba(34,201,132,0.05)';
           ctx2.fillRect(fStart.x, chart.chartArea.top, fEnd.x - fStart.x, chart.chartArea.bottom - chart.chartArea.top);
-          ctx2.strokeStyle = "rgba(34,201,132,0.3)";
+          ctx2.strokeStyle = 'rgba(34,201,132,0.3)';
           ctx2.setLineDash([4,4]);
           ctx2.beginPath();
           ctx2.moveTo(fStart.x, chart.chartArea.top);
           ctx2.lineTo(fStart.x, chart.chartArea.bottom);
           ctx2.stroke();
           ctx2.setLineDash([]);
-          ctx2.fillStyle = "rgba(34,201,132,0.7)";
-          ctx2.font = "9px Inter, sans-serif";
-          ctx2.fillText("FORECAST", fStart.x + 6, chart.chartArea.top + 14);
+          ctx2.fillStyle = 'rgba(34,201,132,0.7)';
+          ctx2.font = '9px Inter, sans-serif';
+          ctx2.fillText('FORECAST', fStart.x + 6, chart.chartArea.top + 14);
         }
         ctx2.restore();
       }
     }],
   });
   updateNetworthStats(pts, _nwCurrentNet);
-  document.querySelectorAll(".nw-range-btn").forEach(function(b) {
+  document.querySelectorAll('.nw-range-btn').forEach(function(b) {
     var active = String(b.dataset.range) === String(_nwRange);
-    b.classList.toggle("active-range", active);
+    b.classList.toggle('active-range', active);
   });
 }
 
 function nwExternalTooltip(context) {
-  var tooltip = document.getElementById("nwTooltip");
+  var tooltip = document.getElementById('nwTooltip');
   if (!tooltip) return;
   var chart = context.chart;
   var t = context.tooltip;
-  if (!t || t.opacity === 0) { tooltip.classList.add("hidden"); return; }
+  if (!t || t.opacity === 0) { tooltip.classList.add('hidden'); return; }
   var i = t.dataPoints?.[0]?.dataIndex;
   if (i == null) return;
   var pts = getFilteredPoints(_nwRange);
@@ -1582,13 +1543,13 @@ function nwExternalTooltip(context) {
   var src = useRaw ? pts : ohlc;
   var d = src[i];
   var isForecast = i >= src.length;
-  var label = t.dataPoints[0]?.label || "";
+  var label = t.dataPoints[0]?.label || '';
   var html;
   if (isForecast) {
     var fIdx = i - src.length;
     var fVals = forecastNetWorth((useRaw ? pts.map(function(p){ return p.value; }) : ohlc.map(function(o){ return o.close; })), 7);
     html = '<div class="font-semibold text-white mb-2">' + label + ' · Forecast</div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Predicted</span><span class="font-bold text-brand2">' + fmt.usd(fVals[fIdx] || 0) + '</span></div>';
+      '<div class="flex justify-between gap-4"><span class="text-mute">Predicted</span><span class="font-bold text-brand2">' + fmtUsd(fVals[fIdx] || 0) + '</span></div>';
   } else if (d) {
     var close = useRaw ? d.value : d.close;
     var open = useRaw ? d.value : d.open;
@@ -1599,23 +1560,23 @@ function nwExternalTooltip(context) {
     var ma5v = ma5pts[i];
     html = '<div class="font-semibold text-white mb-2">' + label + '</div>' +
       '<div class="space-y-1">' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Net Worth</span><span class="font-bold text-brand">' + fmt.usd(close) + '</span></div>' +
-      (!useRaw ? '<div class="flex justify-between gap-4"><span class="text-mute">Open</span><span>' + fmt.usd(open) + '</span></div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">High</span><span class="text-brand2">' + fmt.usd(high) + '</span></div>' +
-      '<div class="flex justify-between gap-4"><span class="text-mute">Low</span><span class="text-danger">' + fmt.usd(low) + '</span></div>' : '') +
+      '<div class="flex justify-between gap-4"><span class="text-mute">Net Worth</span><span class="font-bold text-brand">' + fmtUsd(close) + '</span></div>' +
+      (!useRaw ? '<div class="flex justify-between gap-4"><span class="text-mute">Open</span><span>' + fmtUsd(open) + '</span></div>' +
+      '<div class="flex justify-between gap-4"><span class="text-mute">High</span><span class="text-brand2">' + fmtUsd(high) + '</span></div>' +
+      '<div class="flex justify-between gap-4"><span class="text-mute">Low</span><span class="text-danger">' + fmtUsd(low) + '</span></div>' : '') +
       '<div class="flex justify-between gap-4"><span class="text-mute">Change</span><span class="' + (chg>=0?'text-brand2':'text-danger') + '">' + (chg>=0?'+':'') + chg.toFixed(2) + '%</span></div>' +
-      (ma5v != null ? '<div class="flex justify-between gap-4"><span class="text-mute">MA5</span><span class="text-blue-400">' + fmt.usd(ma5v) + '</span></div>' : '') +
+      (ma5v != null ? '<div class="flex justify-between gap-4"><span class="text-mute">MA5</span><span class="text-blue-400">' + fmtUsd(ma5v) + '</span></div>' : '') +
       '</div>';
-  } else { tooltip.classList.add("hidden"); return; }
-  tooltip.classList.remove("hidden");
+  } else { tooltip.classList.add('hidden'); return; }
+  tooltip.classList.remove('hidden');
   tooltip.innerHTML = html;
   var pos = chart.canvas.getBoundingClientRect();
-  var wrap = chart.canvas.closest(".relative")?.getBoundingClientRect() || pos;
+  var wrap = chart.canvas.closest('.relative')?.getBoundingClientRect() || pos;
   var left = pos.left - wrap.left + t.caretX;
   var top = pos.top - wrap.top + t.caretY;
   var flip = left > (wrap.width / 2);
-  tooltip.style.left = flip ? (left - tooltip.offsetWidth - 12) + "px" : (left + 12) + "px";
-  tooltip.style.top = Math.max(0, top - 20) + "px";
+  tooltip.style.left = flip ? (left - tooltip.offsetWidth - 12) + 'px' : (left + 12) + 'px';
+  tooltip.style.top = Math.max(0, top - 20) + 'px';
 }
 
 function updateNetworthStats(pts, currentNet) {
@@ -1626,14 +1587,13 @@ function updateNetworthStats(pts, currentNet) {
   var fc = forecastNetWorth(vals, 7);
   var fc7 = fc[fc.length-1] || vals[vals.length-1];
   var fcChg = vals.length ? ((fc7 - vals[vals.length-1]) / (vals[vals.length-1] || 1) * 100) : 0;
-  var setText = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
-  setText("nwATH", fmt.usd(ath));
-  setText("nwATL", fmt.usd(atl));
-  setText("nwForecast", fmt.usd(fc7) + ' (' + (fcChg >= 0 ? "+" : "") + fcChg.toFixed(1) + '%)');
+  document.getElementById('nwATH').textContent = fmtUsd(ath);
+  document.getElementById('nwATL').textContent = fmtUsd(atl);
+  document.getElementById('nwForecast').textContent = fmtUsd(fc7) + ' (' + (fcChg >= 0 ? '+' : '') + fcChg.toFixed(1) + '%)';
   var last = pts.slice().reverse().find(function(p){ return !p._seed; }) || pts[pts.length-1];
   if (last) {
     var d = new Date(last.ts);
-    setText("nwLastUpdate", (d.getUTCMonth()+1) + '/' + d.getUTCDate() + ' ' + String(d.getUTCHours()).padStart(2,"0") + ':' + String(d.getUTCMinutes()).padStart(2,"0") + ' UTC');
+    document.getElementById('nwLastUpdate').textContent = (d.getUTCMonth()+1) + '/' + d.getUTCDate() + ' ' + String(d.getUTCHours()).padStart(2,'0') + ':' + String(d.getUTCMinutes()).padStart(2,'0') + ' UTC';
   }
 }
 
@@ -1642,12 +1602,12 @@ async function initNetworthChart(currentNet) {
   renderNetworthChart(pts, currentNet);
 }
 
-document.addEventListener("click", function(e) {
-  var b = e.target.closest?.(".nw-range-btn");
+document.addEventListener('click', function(e) {
+  var b = e.target.closest?.('.nw-range-btn');
   if (!b) return;
   e.preventDefault();
-  var r = b.dataset.range || "all";
-  var currentNet = _nwCurrentNet || parseFloat(document.getElementById("netWorth")?.textContent?.replace(/[^0-9.]/g,"")) || 0;
+  var r = b.dataset.range || 'all';
+  var currentNet = _nwCurrentNet || parseFloat(document.getElementById('netWorth')?.textContent?.replace(/[^0-9.]/g,'')) || 0;
   if (!_nwInitialised) {
     initNetworthChart(currentNet).then(function() { renderNetworthChartForRange(r, currentNet); });
   } else {
@@ -1660,17 +1620,8 @@ document.addEventListener("click", function(e) {
 // ============================================
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-(async function() {
-  await loadDashboardConfig();
-  loadViewsCard();
-  loadSocials();
-  loadCrypto();
-  loadRecent();
-  loadCommunityStats();
-})();
-
 async function loadDashboardConfig() {
-  var cached = cachedToday("ys.dashConfig");
+  var cached = cachedToday('ys.dashConfig');
   if (cached) {
     applyDashboardConfig(cached);
     return;
@@ -1679,10 +1630,10 @@ async function loadDashboardConfig() {
     var snap = await db.collection('config').doc('dashboard').get();
     if (snap.exists) {
       var d = snap.data();
-      cacheToday("ys.dashConfig", d);
+      cacheToday('ys.dashConfig', d);
       applyDashboardConfig(d);
     }
-  } catch(e) { console.warn("dashConfig fetch failed", e); }
+  } catch(e) { console.warn('dashConfig fetch failed', e); }
 }
 
 function applyDashboardConfig(d) {
@@ -1695,75 +1646,48 @@ function applyDashboardConfig(d) {
   }
   if (d.socials) {
     CONFIG.socials.forEach(function(s) {
-      if (s.icon !== "gh" && d.socials[s.icon] != null) {
+      if (s.icon !== 'gh' && d.socials[s.icon] != null) {
         s.count = d.socials[s.icon];
       }
     });
   }
 }
 
-var _communityStatsData = null;
-
-async function loadCommunityStats() {
-  var cached = cachedToday("ys.communityStats");
-  if (cached) { _communityStatsData = cached; return; }
-  try {
-    var snap = await db.collection('config').doc('community').get();
-    if (snap.exists) {
-      var d = snap.data();
-      cacheToday("ys.communityStats", d);
-      _communityStatsData = d;
-    }
-  } catch(e) { console.warn("communityStats fetch failed", e); }
-}
-
-function showCommunityBar() {
-  if (!_communityStatsData) return;
-  var bar = document.getElementById("communityBar");
-  if (!bar) return;
-  var d = _communityStatsData;
-  bar.innerHTML =
-    '<span class="flex items-center gap-1.5">' +
-    '<span class="w-1.5 h-1.5 rounded-full bg-brand2 inline-block"></span>' +
-    '<span class="text-xs text-mute">Verified Members</span>' +
-    '<span class="text-xs font-bold text-brand">' + fmt.abbrev(d.totalUsers || 0) + '</span>' +
-    '</span>' +
-    '<span class="text-mute text-xs">|</span>' +
-    '<span class="flex items-center gap-1.5">' +
-    '<span class="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span>' +
-    '<span class="text-xs text-mute">Total Staked SOL</span>' +
-    '<span class="text-xs font-bold text-brand">' + fmt.abbrev(d.totalStakedSOL || 0) + ' SOL</span>' +
-    '</span>';
-  bar.classList.remove("hidden");
-}
-
 // ============================================
-// INIT APP
+// INIT
 // ============================================
 async function initApp() {
   try {
     await loadProfile();
-    if (location.hash.startsWith("#/profile")) renderProfile();
+    await loadDashboardConfig();
+    loadViewsCard();
+    loadSocials();
+    loadCrypto();
+    loadRecent();
     route();
     console.log('App initialized successfully');
   } catch (error) {
     console.error('App initialization error:', error);
-    // If PROFILE was loaded (read succeeded) but write failed, still render
-    if (PROFILE) {
-      if (location.hash.startsWith("#/profile")) renderProfile();
-      route();
-    } else {
-      var err = document.getElementById('profileError');
-      if (err) {
-        err.textContent = 'Could not load profile. Please try again.';
-        err.classList.remove('hidden');
-      }
-      document.getElementById('profileLoading')?.classList.add('hidden');
+    var err = document.getElementById('profileError');
+    if (err) {
+      err.textContent = 'Error: ' + error.message;
+      err.classList.remove('hidden');
     }
+    document.getElementById('profileLoading')?.classList.add('hidden');
   }
 }
 
 initApp();
+
+// Make functions globally accessible
+window.connectWallet = connectWallet;
+window.toggleSetupTag = toggleSetupTag;
+window.filterTags = filterTags;
+window.closeProfileSetup = closeProfileSetup;
+window.exploreCommunity = exploreCommunity;
+window.handleCommunityAccess = handleCommunityAccess;
+window.openProfileSetup = openProfileSetup;
+window.showProfileSetup = showProfileSetup;
 </script>
 </body>
 </html>
