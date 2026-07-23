@@ -1530,145 +1530,6 @@
     justify-content:center;
     padding:20px 0 30px;
   }
-  .ad-card{
-    margin:0 16px 16px;
-    background:var(--card);
-    border-radius:16px;
-    overflow:hidden;
-    border:1px solid #2a2a2c;
-  }
-  .ad-media{
-    position:relative;
-  }
-  .ad-media img{
-    width:100%;
-    height:200px;
-    object-fit:cover;
-    display:block;
-  }
-  .ad-tag{
-    position:absolute;
-    top:10px;
-    left:10px;
-    background:rgba(0,0,0,0.6);
-    color:#e8eaed;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:0.4px;
-    padding:3px 9px;
-    border-radius:5px;
-    border:1px solid rgba(255,255,255,0.25);
-  }
-  .ad-body{
-    padding:14px 16px;
-  }
-  .ad-title{
-    font-size:16px;
-    font-weight:600;
-    color:var(--text);
-    margin:0 0 4px;
-  }
-  .ad-desc{
-    font-size:14px;
-    color:var(--sub);
-    margin:0 0 14px;
-  }
-  .ad-cta{
-    display:block;
-    width:100%;
-    text-align:center;
-    background:#1a9e5c;
-    color:#fff;
-    font-size:15px;
-    font-weight:600;
-    letter-spacing:0.3px;
-    padding:12px;
-    border-radius:8px;
-    text-decoration:none;
-    border:none;
-  }
-  /* Reward wheel ad — shown as every 5th ad slot in the feed */
-  .reward-ad-card{
-    margin:0 16px 16px;
-    background:var(--card);
-    border-radius:16px;
-    overflow:hidden;
-    border:1px solid #2a2a2c;
-    padding:18px 16px 20px;
-  }
-  .reward-ad-tag{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    background:rgba(74,168,255,0.14);
-    color:#7ab8ff;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.4px;
-    text-transform:uppercase;
-    padding:5px 10px;
-    border-radius:6px;
-    margin-bottom:14px;
-  }
-  .reward-ad-title{
-    font-size:17px;
-    font-weight:700;
-    color:var(--text);
-    margin:0 0 6px;
-    text-align:center;
-  }
-  .reward-ad-desc{
-    font-size:13.5px;
-    color:var(--sub);
-    text-align:center;
-    margin:0 0 18px;
-    line-height:1.45;
-  }
-  .reward-wheel-stage{
-    position:relative;
-    width:150px;
-    height:150px;
-    margin:0 auto 20px;
-  }
-  .reward-wheel-pointer{
-    position:absolute;
-    top:-4px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:2;
-    filter:drop-shadow(0 1px 1px rgba(0,0,0,0.4));
-  }
-  .reward-wheel-svg{
-    display:block;
-    width:100%;
-    height:100%;
-  }
-  .reward-wheel-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    width:100%;
-    background:linear-gradient(135deg,#f28c28,#4aa8ff);
-    color:#fff;
-    border:none;
-    border-radius:26px;
-    padding:14px;
-    font-size:15px;
-    font-weight:700;
-    text-align:center;
-    cursor:pointer;
-  }
-  .reward-wheel-btn:disabled{
-    opacity:0.85;
-    cursor:default;
-  }
-  .reward-ad-fine-print{
-    text-align:center;
-    font-size:11px;
-    color:var(--sub);
-    margin-top:12px;
-  }
   .bottom-nav{
     position:fixed;
     bottom:0;left:0;right:0;
@@ -1816,7 +1677,7 @@
   </main>
 
   <div class="home-post-fab-wrap">
-    <a href="go:reels" class="home-post-fab" aria-label="Post">
+    <a href="go:reels" class="home-post-fab" id="homePostFab" aria-label="Post">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
         <path d="M20.5 3.5c-4.5 0-11 3-14.5 8.5C4 15 3 18 3 21c3 0 6-1 9-3 5.5-3.5 8.5-10 8.5-14.5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
         <path d="M11.5 15.5L20 3.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
@@ -2583,6 +2444,13 @@
     setTimeout(() => authOverlay.classList.add('hidden'), 280);
   }
 
+  document.getElementById('homePostFab').addEventListener('click', (e) => {
+    if(!currentUser){
+      e.preventDefault();
+      openAuthModal('login');
+    }
+  });
+
   document.getElementById('authCloseBtn').addEventListener('click', closeAuthModal);
   authOverlay.addEventListener('click', (e) => { if(e.target === authOverlay) closeAuthModal(); });
 
@@ -3177,6 +3045,10 @@
   }
 
   function openMarkets(){
+    if(!currentUser){
+      openAuthModal('login');
+      return;
+    }
     homeScreen.classList.add('hidden');
     searchScreen.classList.add('hidden');
     assetDetailScreen.classList.add('hidden');
@@ -3840,126 +3712,6 @@
     return tmp.textContent || tmp.innerText || '';
   }
 
-  // ---- Ad card (demo) ----
-  const demoAds = [
-    {
-      tag:'Ad',
-      img:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=500&fit=crop',
-      title:'Play Local Music Free',
-      desc:'Play all your downloaded music for free!',
-      cta:'PLAY NOW',
-      link:'#'
-    },
-    {
-      tag:'Ad',
-      img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=500&fit=crop',
-      title:'Track Your Spending Smarter',
-      desc:'See where your money goes with one simple app.',
-      cta:'GET STARTED',
-      link:'#'
-    },
-    {
-      tag:'Ad',
-      img:'https://images.unsplash.com/photo-1526178613658-3f1622045557?w=800&h=500&fit=crop',
-      title:'Learn a New Language',
-      desc:'15 minutes a day. Fun lessons backed by science.',
-      cta:'START FREE',
-      link:'#'
-    }
-  ];
-
-  function buildAdCard(adIndex){
-    const ad = demoAds[adIndex % demoAds.length];
-    const card = document.createElement('div');
-    card.className = 'ad-card';
-    card.innerHTML = `
-      <div class="ad-media">
-        <img src="${ad.img}" alt="${ad.title}" loading="lazy" decoding="async">
-        <span class="ad-tag">${ad.tag}</span>
-      </div>
-      <div class="ad-body">
-        <p class="ad-title">${ad.title}</p>
-        <p class="ad-desc">${ad.desc}</p>
-        <a class="ad-cta" href="${ad.link}" target="_top" rel="noopener">${ad.cta}</a>
-      </div>
-    `;
-    return card;
-  }
-
-  // ---- Reward wheel ad (every 5th ad slot) ----
-  const REWARD_WHEEL_OFFERS = [
-    { label: 'Personal Development', url: 'https://alison.com/courses/personal-development?utm_source=alison_user&utm_medium=affiliate&utm_campaign=43172863' },
-    { label: 'Marketing', url: 'https://alison.com/courses/marketing?utm_source=alison_user&utm_medium=affiliate&utm_campaign=43172863' },
-    { label: 'Business', url: 'https://alison.com/courses/business?utm_source=alison_user&utm_medium=affiliate&utm_campaign=43172863' },
-    { label: 'Management', url: 'https://alison.com/courses/management?utm_source=alison_user&utm_medium=affiliate&utm_campaign=43172863' }
-  ];
-  const REWARD_WHEEL_BTN_DEFAULT = '🎓 Spin & Claim a Free Course';
-  const REWARD_WHEEL_BTN_SPINNING = 'Spinning…';
-
-  function buildRewardWheelAd(){
-    const card = document.createElement('div');
-    card.className = 'reward-ad-card';
-    card.innerHTML = `
-      <div class="reward-ad-tag">Explore Offers From Alison</div>
-      <div class="reward-ad-title">Spin to Reveal a Free Certificate Course</div>
-      <div class="reward-ad-desc">One spin, one free course — tap below for a chance to unlock a certified Alison course, on us.</div>
-      <div class="reward-wheel-stage">
-        <div class="reward-wheel-pointer">
-          <svg width="14" height="11" viewBox="0 0 12 9" fill="none"><path d="M6 9L0 0h12L6 9z" fill="#fff"></path></svg>
-        </div>
-        <svg class="reward-wheel-svg" viewBox="0 0 24 24">
-          <path d="M12,12 L12,1 A11,11 0 0,1 19.78,4.22 Z" fill="#f28c28"></path>
-          <path d="M12,12 L19.78,4.22 A11,11 0 0,1 23,12 Z" fill="#4aa8ff"></path>
-          <path d="M12,12 L23,12 A11,11 0 0,1 19.78,19.78 Z" fill="#f28c28"></path>
-          <path d="M12,12 L19.78,19.78 A11,11 0 0,1 12,23 Z" fill="#4aa8ff"></path>
-          <path d="M12,12 L12,23 A11,11 0 0,1 4.22,19.78 Z" fill="#f28c28"></path>
-          <path d="M12,12 L4.22,19.78 A11,11 0 0,1 1,12 Z" fill="#4aa8ff"></path>
-          <path d="M12,12 L1,12 A11,11 0 0,1 4.22,4.22 Z" fill="#f28c28"></path>
-          <path d="M12,12 L4.22,4.22 A11,11 0 0,1 12,1 Z" fill="#4aa8ff"></path>
-          <circle cx="12" cy="12" r="11" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.55"></circle>
-          <circle cx="12" cy="12" r="2.3" fill="#fff"></circle>
-          <circle cx="12" cy="12" r="2.3" fill="none" stroke="#e0b84a" stroke-width="0.7"></circle>
-        </svg>
-      </div>
-      <button class="reward-wheel-btn" type="button">
-        <span class="reward-wheel-btn-label">${REWARD_WHEEL_BTN_DEFAULT}</span>
-      </button>
-      <div class="reward-ad-fine-print">Powered by Alison — free certified online courses</div>
-    `;
-
-    const wheelSvg = card.querySelector('.reward-wheel-svg');
-    const btn = card.querySelector('.reward-wheel-btn');
-    const btnLabel = card.querySelector('.reward-wheel-btn-label');
-    let spinning = false;
-    let currentRotation = 0;
-
-    btn.addEventListener('click', () => {
-      if(spinning) return;
-      spinning = true;
-      btn.disabled = true;
-      btnLabel.textContent = REWARD_WHEEL_BTN_SPINNING;
-
-      const offer = REWARD_WHEEL_OFFERS[Math.floor(Math.random() * REWARD_WHEEL_OFFERS.length)];
-      const extraSpins = 6 + Math.floor(Math.random() * 3); // 6-8 full turns for a satisfying spin
-      const randomStopAngle = Math.random() * 360;
-      currentRotation += extraSpins * 360 + randomStopAngle;
-      wheelSvg.style.transition = 'transform 3.8s cubic-bezier(0.15, 0.85, 0.25, 1)';
-      wheelSvg.style.transform = `rotate(${currentRotation}deg)`;
-
-      setTimeout(() => {
-        btnLabel.textContent = `🎉 You unlocked: ${offer.label}!`;
-        setTimeout(() => {
-          window.open(offer.url, '_top', 'noopener');
-          spinning = false;
-          btn.disabled = false;
-          btnLabel.textContent = REWARD_WHEEL_BTN_DEFAULT;
-        }, 900);
-      }, 3800);
-    });
-
-    return card;
-  }
-
   function upscaleBloggerImage(url){
     if(!url) return url;
     // Blogger/Googleusercontent thumbnails carry a size token like /s72-c/, /w400-h300/, =s72-c, etc.
@@ -4247,11 +3999,6 @@
           const hr = document.createElement('hr');
           hr.className = 'divider';
           container.appendChild(hr);
-        }
-        if(includeAds && (idx + 1) % 3 === 0){
-          const adOccurrence = Math.floor(idx / 3); // 0-based count of ad slots shown so far
-          const isRewardSlot = (adOccurrence + 1) % 5 === 0; // every 5th ad slot is the reward wheel
-          container.appendChild(isRewardSlot ? buildRewardWheelAd() : buildAdCard(adOccurrence));
         }
       }
       renderedCount = end;
