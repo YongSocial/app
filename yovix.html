@@ -1159,7 +1159,7 @@
       </div>
       <div class="mkt-name-col">
         <div class="mkt-name-row">Yovix <span class="mkt-badge">${verifiedTickSvg}</span></div>
-        <div class="mkt-age">Utility</div>
+        <div class="mkt-age"></div>
       </div>
       <div class="mkt-price-col" style="text-align:right;">
         <div class="mkt-price" style="color:var(--sub);font-size:13px;">Project</div>
@@ -2307,7 +2307,7 @@
     document.getElementById('adIcon').onerror = function(){ this.style.background = '#f28c28'; this.src=''; };
     document.getElementById('adName').textContent = t.name;
     document.getElementById('adBadge').innerHTML = verifiedTickSvg;
-    document.getElementById('adAge').textContent = 'Utility · Official project';
+    document.getElementById('adAge').textContent = '';
     // Subtabs -> single Overview tab (kept for style consistency)
     const subtabs = document.getElementById('adSubtabs');
     subtabs.innerHTML = '<div class="ad-subtab active" data-subtab="overview">Overview</div>';
@@ -2317,9 +2317,7 @@
       <div class="yovix-section" style="padding:18px 16px 8px;">
         <h3 style="margin:0 0 8px;font-size:16px;font-weight:700;color:var(--text);">About Yovix</h3>
         <p style="margin:0;font-size:14px;line-height:1.55;color:var(--sub);">
-          Yovix is a community-driven utility project on Solana powering the Yong Social ecosystem —
-          a social platform blending curated news, on-chain identity, and community rewards.
-          This page is Yovix's official information hub.
+          Yovix is the official community token of the Yong Social ecosystem. Follow governance updates, community votes, token utility, bounties, and ecosystem news as the community helps shape the future of Yong Social.
         </p>
       </div>
       <div class="yovix-section" style="padding:18px 16px 8px;display:flex;gap:10px;flex-wrap:wrap;">
