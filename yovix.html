@@ -1613,74 +1613,71 @@
       .replace(/=w\d+-h\d+(-p|-c)?(-rw)?$/, '=s1600');
   }
 
-  // ---- Category-driven feed configuration ----
-  const FEEDS_PER_SOURCE = 5;
-  const CATEGORY_ORDER = ['finance','crypto','technology','ai','gaming','entertainment','business','startups','cybersecurity','science'];
-  const CRYPTO_TAG_FILTER = /\b(crypto\w*|bitcoin|btc|ethereum|\beth\b|blockchain|token|coin|defi|nft|altcoin|web3|solana|\bsol\b|xrp|ripple|stablecoin|memecoin)\b/i;
-  const CATEGORY_CONFIG = {
-    finance: { label:'Finance', sources: [
-      { name:'Cointelegraph', icon:'CT', urls:['https://cointelegraph.com/rss'] },
-      { name:'Yahoo Finance', icon:'YF', urls:['https://finance.yahoo.com/news/rssindex'] },
-      { name:'Decrypt', icon:'DC', urls:['https://decrypt.co/feed'] },
-      { name:'CoinDesk', icon:'CD', urls:['https://www.coindesk.com/arc/outboundfeeds/rss/'] },
-      { name:'Yong Social', icon:'YS', urls:[FEED_URL, FEED_URL_ATOM] },
-    ]},
-    crypto: { label:'Crypto', tagFilter: CRYPTO_TAG_FILTER, sources: [
-      { name:'Cointelegraph', icon:'CT', urls:['https://cointelegraph.com/rss'] },
-      { name:'CoinDesk', icon:'CD', urls:['https://www.coindesk.com/arc/outboundfeeds/rss/'] },
-      { name:'Yong Social', icon:'YS', urls:[FEED_URL, FEED_URL_ATOM] },
-    ]},
-    technology: { label:'Technology', sources: [
-      { name:'The Verge', icon:'TV', urls:['https://www.theverge.com/rss/index.xml'] },
-      { name:'TechCrunch', icon:'TC', urls:['https://techcrunch.com/feed/'] },
-      { name:'Wired', icon:'WD', urls:['https://www.wired.com/feed/rss'] },
-      { name:'Ars Technica', icon:'AT', urls:['https://feeds.arstechnica.com/arstechnica/index'] },
-    ]},
-    ai: { label:'AI', sources: [
-      { name:'MIT Tech Review', icon:'MIT', urls:['https://www.technologyreview.com/topic/artificial-intelligence/feed'] },
-      { name:'VentureBeat AI', icon:'VB', urls:['https://venturebeat.com/category/ai/feed/'] },
-      { name:'The Verge AI', icon:'VA', urls:['https://www.theverge.com/rss/ai-artificial-intelligence/index.xml'] },
-      { name:'MarkTechPost', icon:'MTP', urls:['https://www.marktechpost.com/feed/'] },
-    ]},
-    gaming: { label:'Gaming', sources: [
-      { name:'IGN', icon:'IGN', urls:['https://feeds.ign.com/ign/games-all'] },
-      { name:'GameSpot', icon:'GS', urls:['https://www.gamespot.com/feeds/news/'] },
-      { name:'Polygon', icon:'PG', urls:['https://www.polygon.com/rss/index.xml'] },
-      { name:'PC Gamer', icon:'PCG', urls:['https://www.pcgamer.com/rss/'] },
-    ]},
-    entertainment: { label:'Entertainment', sources: [
-      { name:'BBC Entertainment', icon:'BBC', urls:['https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'] },
-      { name:'Hollywood Reporter', icon:'THR', urls:['https://www.hollywoodreporter.com/feed/'] },
-      { name:'Variety', icon:'VAR', urls:['https://variety.com/feed/'] },
-      { name:'Rolling Stone', icon:'RS', urls:['https://www.rollingstone.com/feed/'] },
-    ]},
-    business: { label:'Business', sources: [
-      { name:'BBC Business', icon:'BBC', urls:['https://feeds.bbci.co.uk/news/business/rss.xml'] },
-      { name:'Financial Times', icon:'FT', urls:['https://www.ft.com/?format=rss'] },
-      { name:'Forbes', icon:'FBS', urls:['https://www.forbes.com/business/feed/'] },
-      { name:'Business Insider', icon:'BI', urls:['https://www.businessinsider.com/rss'] },
-    ]},
-    startups: { label:'Startups', sources: [
-      { name:'TechCrunch Startups', icon:'TCS', urls:['https://techcrunch.com/category/startups/feed/'] },
-      { name:'Hacker News', icon:'HN', urls:['https://hnrss.org/newest?points=100'] },
-      { name:'The Next Web', icon:'TNW', urls:['https://thenextweb.com/feed'] },
-      { name:'Sifted', icon:'SF', urls:['https://sifted.eu/feed/'] },
-    ]},
-    cybersecurity: { label:'Cybersecurity', sources: [
-      { name:'Krebs on Security', icon:'KOS', urls:['https://krebsonsecurity.com/feed/'] },
-      { name:'The Hacker News', icon:'THN', urls:['https://feeds.feedburner.com/TheHackersNews'] },
-      { name:'Dark Reading', icon:'DR', urls:['https://www.darkreading.com/rss.xml'] },
-      { name:'BleepingComputer', icon:'BC', urls:['https://www.bleepingcomputer.com/feed/'] },
-    ]},
-    science: { label:'Science', sources: [
-      { name:'Science Daily', icon:'SD', urls:['https://www.sciencedaily.com/rss/all.xml'] },
-      { name:'NASA', icon:'NASA', urls:['https://www.nasa.gov/news-release/feed/'] },
-      { name:'Nature', icon:'NAT', urls:['https://www.nature.com/nature.rss'] },
-      { name:'New Scientist', icon:'NS', urls:['https://www.newscientist.com/feed/home/'] },
-    ]},
-  };
-  // Legacy alias for anywhere that still references the old flat list (search etc.)
-  const SOURCES = Object.values(CATEGORY_CONFIG).flatMap(c => c.sources);
+  // ---- Multi-source feed configuration ----
+  // Each source declares which category tab it feeds. A source can belong to
+  // multiple categories (e.g. Yong Social feeds both Finance and Crypto per the
+  // Crypto tab's tag-filter rule). Per-source post cap is enforced in
+  // fetchSourcePosts so each tab shows ~5 items per source, keeping counts
+  // predictable across the 10 category tabs.
+  const SOURCES = [
+    // ----- Finance (5 sources) -----
+    { name: 'Cointelegraph',        icon: 'CT', cats: ['finance','crypto'], urls: ['https://cointelegraph.com/rss'] },
+    { name: 'Yahoo Finance',        icon: 'YF', cats: ['finance','business'], urls: ['https://finance.yahoo.com/news/rssindex'] },
+    { name: 'Decrypt',              icon: 'DC', cats: ['finance','crypto'], urls: ['https://decrypt.co/feed'] },
+    { name: 'CoinDesk',             icon: 'CD', cats: ['finance','crypto'], urls: ['https://www.coindesk.com/arc/outboundfeeds/rss/'] },
+    { name: 'Yong Social',          icon: 'YS', cats: ['finance','crypto'], urls: [FEED_URL, FEED_URL_ATOM], cryptoTagFilter: true },
+
+    // ----- Technology (4 sources) -----
+    { name: 'TechCrunch',           icon: 'TC', cats: ['technology','startups'], urls: ['https://techcrunch.com/feed/'] },
+    { name: 'The Verge',            icon: 'TV', cats: ['technology'], urls: ['https://www.theverge.com/rss/index.xml'] },
+    { name: 'Ars Technica',         icon: 'AT', cats: ['technology'], urls: ['https://feeds.arstechnica.com/arstechnica/index'] },
+    { name: 'Wired',                icon: 'WR', cats: ['technology'], urls: ['https://www.wired.com/feed/rss'] },
+
+    // ----- AI (4 sources) -----
+    { name: 'MIT Tech Review AI',   icon: 'MT', cats: ['ai'], urls: ['https://www.technologyreview.com/topic/artificial-intelligence/feed'] },
+    { name: 'VentureBeat AI',       icon: 'VB', cats: ['ai'], urls: ['https://venturebeat.com/category/ai/feed/'] },
+    { name: 'TechCrunch AI',        icon: 'TA', cats: ['ai'], urls: ['https://techcrunch.com/category/artificial-intelligence/feed/'] },
+    { name: 'The Verge AI',         icon: 'VA', cats: ['ai'], urls: ['https://www.theverge.com/rss/ai-artificial-intelligence/index.xml'] },
+
+    // ----- Gaming (4 sources) -----
+    { name: 'IGN',                  icon: 'IG', cats: ['gaming'], urls: ['https://feeds.ign.com/ign/games-all'] },
+    { name: 'GameSpot',             icon: 'GS', cats: ['gaming'], urls: ['https://www.gamespot.com/feeds/news/'] },
+    { name: 'Polygon',              icon: 'PG', cats: ['gaming'], urls: ['https://www.polygon.com/rss/index.xml'] },
+    { name: 'Eurogamer',            icon: 'EG', cats: ['gaming'], urls: ['https://www.eurogamer.net/feed'] },
+
+    // ----- Entertainment (4 sources) -----
+    { name: 'BBC Entertainment',    icon: 'BE', cats: ['entertainment'], urls: ['https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'] },
+    { name: 'Variety',              icon: 'VR', cats: ['entertainment'], urls: ['https://variety.com/feed/'] },
+    { name: 'Hollywood Reporter',   icon: 'HR', cats: ['entertainment'], urls: ['https://www.hollywoodreporter.com/feed/'] },
+    { name: 'Rolling Stone',        icon: 'RS', cats: ['entertainment'], urls: ['https://www.rollingstone.com/feed/'] },
+
+    // ----- Business (4 sources) -----
+    { name: 'BBC Business',         icon: 'BB', cats: ['business'], urls: ['https://feeds.bbci.co.uk/news/business/rss.xml'] },
+    { name: 'CNBC Business',        icon: 'CN', cats: ['business'], urls: ['https://www.cnbc.com/id/10001147/device/rss/rss.html'] },
+    { name: 'Forbes',               icon: 'FB', cats: ['business'], urls: ['https://www.forbes.com/business/feed/'] },
+    { name: 'Business Insider',     icon: 'BI', cats: ['business'], urls: ['https://www.businessinsider.com/rss'] },
+
+    // ----- Startups (4 sources) -----
+    { name: 'TechCrunch Startups',  icon: 'TS', cats: ['startups'], urls: ['https://techcrunch.com/category/startups/feed/'] },
+    { name: 'Crunchbase News',      icon: 'CB', cats: ['startups'], urls: ['https://news.crunchbase.com/feed/'] },
+    { name: 'Sifted',               icon: 'SF', cats: ['startups'], urls: ['https://sifted.eu/feed'] },
+    { name: 'Y Combinator Blog',    icon: 'YC', cats: ['startups'], urls: ['https://www.ycombinator.com/blog/rss'] },
+
+    // ----- Cybersecurity (4 sources) -----
+    { name: 'The Hacker News',      icon: 'HN', cats: ['cybersecurity'], urls: ['https://feeds.feedburner.com/TheHackersNews'] },
+    { name: 'Krebs on Security',    icon: 'KS', cats: ['cybersecurity'], urls: ['https://krebsonsecurity.com/feed/'] },
+    { name: 'BleepingComputer',     icon: 'BC', cats: ['cybersecurity'], urls: ['https://www.bleepingcomputer.com/feed/'] },
+    { name: 'Dark Reading',         icon: 'DR', cats: ['cybersecurity'], urls: ['https://www.darkreading.com/rss.xml'] },
+
+    // ----- Science (4 sources) -----
+    { name: 'BBC Science',          icon: 'BS', cats: ['science'], urls: ['https://feeds.bbci.co.uk/news/science_and_environment/rss.xml'] },
+    { name: 'NASA Breaking News',   icon: 'NA', cats: ['science'], urls: ['https://www.nasa.gov/news-release/feed/'] },
+    { name: 'ScienceDaily',         icon: 'SD', cats: ['science'], urls: ['https://www.sciencedaily.com/rss/all.xml'] },
+    { name: 'New Scientist',        icon: 'NS', cats: ['science'], urls: ['https://www.newscientist.com/feed/home/'] },
+  ];
+
+  // Per-source post cap (kept small so each source gets equal airtime in a tab)
+  const PER_SOURCE_LIMIT = 5;
 
   const PROXIES = [
     { name: 'allorigins-raw', kind: 'text',         makeUrl: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
@@ -1733,29 +1730,21 @@
   }
 
   // ---- Category tagging ----
-  const SOURCE_DEFAULT_TAGS = {
-    'Yong Social': ['finance'],
-    'Cointelegraph': ['crypto'],
-    'CoinDesk': ['crypto'],
-    'Decrypt': ['crypto'],
-    'The Block': ['crypto'],
-    'Bitcoin Magazine': ['crypto'],
-    'Yahoo Finance': ['finance'],
-    'MarketWatch': ['finance'],
-    'CNBC Markets': ['finance']
-  };
-  const KNOWN_CATEGORIES = ['world','business','technology','crypto','finance','sports','entertainment','politics','health','science'];
+  // Derived from each source's declared `cats` array so adding a source in one
+  // place is enough — no parallel map to keep in sync.
+  const SOURCE_DEFAULT_TAGS = Object.fromEntries(SOURCES.map(s => [s.name, s.cats || []]));
+  const KNOWN_CATEGORIES = ['finance','crypto','technology','ai','gaming','entertainment','business','startups','cybersecurity','science'];
   const CATEGORY_KEYWORDS = {
-    business: /\b(business|econom\w*|trade|inflation|gdp|market)\b/i,
-    technology: /\b(tech\w*|artificial intelligence|\bai\b|software|smartphone|startup|gadget|app\b)\b/i,
-    crypto: /\b(crypto\w*|bitcoin|btc|ethereum|\beth\b|blockchain|token|coin|defi|nft|altcoin|web3)\b/i,
     finance: /\b(stock\w*|shares|dollar|forex|\bbank\w*|investor|ipo|earnings|financ\w*|wall street|federal reserve|\bfed\b)\b/i,
-    sports: /\b(football|soccer|\bnba\b|\bnfl\b|premier league|olympics|\bmatch\b|tournament|\bfifa\b|world cup|basketball|tennis)\b/i,
-    entertainment: /\b(movie|music|celebrity|album|\bfilm\b|hollywood|nollywood|actor|actress|singer)\b/i,
-    politics: /\b(election|president|senate|government|minister|\bpolicy\b|parliament|congress|governor|lawmaker)\b/i,
-    health: /\b(health|hospital|disease|vaccine|covid|medical|\bvirus\b|outbreak|\bdoctor\b)\b/i,
-    science: /\b(science|research|\bstudy\b|nasa|\bspace\b|discovery|scientist|climate)\b/i,
-    world: /\b(world|global|international|united nations|\bun\b)\b/i
+    crypto: /\b(crypto\w*|bitcoin|btc|ethereum|\beth\b|blockchain|token|coin|defi|nft|altcoin|web3|stablecoin)\b/i,
+    technology: /\b(tech\w*|software|smartphone|gadget|app\b|hardware|chip|semiconductor)\b/i,
+    ai: /\b(artificial intelligence|\bai\b|machine learning|\bml\b|\bllm\b|chatgpt|openai|anthropic|gemini|neural|generative)\b/i,
+    gaming: /\b(game|gaming|gamer|xbox|playstation|\bps5\b|nintendo|switch|steam|esports|rpg|fps)\b/i,
+    entertainment: /\b(movie|music|celebrity|album|\bfilm\b|hollywood|nollywood|actor|actress|singer|netflix|streaming|box office)\b/i,
+    business: /\b(business|econom\w*|trade|inflation|gdp|market|revenue|profit|merger|acquisition)\b/i,
+    startups: /\b(startup|series [a-e]\b|seed round|funding round|venture|\bvc\b|founder|y combinator|unicorn)\b/i,
+    cybersecurity: /\b(cyber|hack\w*|breach|ransomware|malware|phishing|vulnerabilit\w*|exploit|zero.?day|cve-\d)\b/i,
+    science: /\b(science|research|\bstudy\b|nasa|\bspace\b|discovery|scientist|climate|physics|biology)\b/i
   };
 
   function assignTags(title, sourceName, categoryLabels){
@@ -1822,14 +1811,25 @@
     });
   }
 
+  // Sort newest-first then cap so each source contributes an equal, current
+  // slice — otherwise a chatty feed (e.g. TechCrunch) would drown out quieter
+  // sources in the merged view.
+  function capBySource(posts){
+    return posts
+      .slice()
+      .sort((a, b) => (b.dateObj || 0) - (a.dateObj || 0))
+      .slice(0, PER_SOURCE_LIMIT);
+  }
+
   async function fetchSourcePosts(source){
     const xmlText = await fetchXmlForUrls(source.urls, source.name);
     if(xmlText){
       try{
         const posts = xmlToPosts(xmlText, source.name, source.icon);
         if(posts.length){
-          console.log(`[feed:${source.name}] parsed ${posts.length} posts`);
-          return posts;
+          const capped = capBySource(posts);
+          console.log(`[feed:${source.name}] parsed ${posts.length} posts (capped to ${capped.length})`);
+          return capped;
         }
       }catch(e){
         console.log(`[feed:${source.name}] parse failed:`, e.message);
@@ -1842,8 +1842,10 @@
       if(r2j.ok){
         const data = await r2j.json();
         if(data.status === 'ok' && Array.isArray(data.items) && data.items.length){
-          console.log(`[feed:${source.name}] rss2json returned ${data.items.length} (capped)`);
-          return jsonToPosts(data.items, source.name, source.icon);
+          const posts = jsonToPosts(data.items, source.name, source.icon);
+          const capped = capBySource(posts);
+          console.log(`[feed:${source.name}] rss2json returned ${data.items.length} (capped to ${capped.length})`);
+          return capped;
         }
       }
     }catch(e){
@@ -1966,98 +1968,92 @@
 
   let allPosts = [];
   let activeCategory = 'finance';
-  const categoryCache = {};
-  const FEED_CACHE_TTL_MS = 5 * 60 * 1000;
+  let lastFeedFetchTime = 0;
 
-  function applyCategoryFilter(catKey, sourcePosts){
-    const conf = CATEGORY_CONFIG[catKey];
-    let items = sourcePosts;
-    if(conf.tagFilter){
-      items = items.filter(p => conf.tagFilter.test((p.title || '') + ' ' + (p.sourceName || '')));
+  function renderCategory(catKey){
+    activeCategory = catKey;
+    const posts = allPosts.filter(p => (p.tags || []).includes(catKey));
+    if(!posts.length){
+      feedMain.innerHTML = `<div style="padding:24px 16px;color:var(--sub);">No posts tagged "${catKey}" right now.</div>`;
+      return;
     }
-    return items.slice(0, FEEDS_PER_SOURCE);
+    renderPosts(posts, feedMain, true, undefined, false);
   }
 
-  function renderCurrentCategory(){
-    const entry = categoryCache[activeCategory];
-    if(entry && entry.posts && entry.posts.length){
-      allPosts = entry.posts;
-      renderPosts(entry.posts, feedMain, true, undefined, false);
-    } else {
-      feedMain.innerHTML = `<div style="padding:24px 16px;color:var(--sub);">No posts for \"${activeCategory}\" right now.</div>`;
-    }
+  document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.tab');
+    if(!tab) return;
+    document.querySelectorAll('#categoryTabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderCategory(tab.dataset.cat);
+  });
+
+  const FEED_CACHE_TTL_MS = 5 * 60 * 1000; // 5 min, as requested
+
+  // Serialize just what we need — dateObj (a Date) becomes a plain ISO string automatically
+  // via JSON.stringify, and gets rebuilt into a real Date on the way back out.
+  function hydratePostDates(posts){
+    posts.forEach(p => { p.dateObj = new Date(p.dateObj || p.pubDate); });
+    return posts;
   }
 
-  async function loadCategory(catKey, force){
-    const conf = CATEGORY_CONFIG[catKey];
-    if(!conf) return;
-    const cached = categoryCache[catKey];
-    const isFresh = cached && (Date.now() - cached.ts) < FEED_CACHE_TTL_MS;
-    if(cached && cached.posts.length){
-      if(catKey === activeCategory) renderPosts(cached.posts, feedMain, true, undefined, false);
-      if(isFresh && !force) return;
-    } else {
-      const storedRaw = await storageGet('feed_cache_' + catKey);
-      if(storedRaw && Array.isArray(storedRaw.posts) && storedRaw.posts.length){
-        storedRaw.posts.forEach(p => { p.dateObj = new Date(p.dateObj || p.pubDate); });
-        categoryCache[catKey] = storedRaw;
-        if(catKey === activeCategory) renderPosts(storedRaw.posts, feedMain, true, undefined, false);
-        if((Date.now() - (storedRaw.ts || 0)) < FEED_CACHE_TTL_MS && !force) return;
-      } else if(catKey === activeCategory){
-        feedMain.innerHTML = brandSpinnerHtml();
+  async function loadFeed(force){
+    const isFirstLoad = allPosts.length === 0;
+
+    // On first load, try the persisted cache first so the feed is never empty on open —
+    // show it immediately regardless of age, then decide below whether to refresh quietly.
+    let cache = null;
+    if(isFirstLoad){
+      cache = await storageGet('feed_cache');
+      if(cache && Array.isArray(cache.posts) && cache.posts.length){
+        allPosts = hydratePostDates(cache.posts);
+        lastFeedFetchTime = cache.timestamp || 0;
+        renderCategory(activeCategory);
+        console.log(`[feed] restored ${allPosts.length} cached posts from storage (${Math.round((Date.now()-lastFeedFetchTime)/1000)}s old)`);
       }
     }
 
-    const results = await Promise.allSettled(conf.sources.map(fetchSourcePosts));
+    const isFresh = (Date.now() - lastFeedFetchTime) < FEED_CACHE_TTL_MS;
+
+    // Fresh enough (whether from this session's memory or the cache we just restored) —
+    // don't refetch. Cache being "expired" never means "show loading" — it just means the
+    // next refetch (below) happens quietly in the background while old posts stay visible.
+    if(!force && allPosts.length && isFresh){
+      console.log(`[feed] using cached posts (${Math.round((Date.now()-lastFeedFetchTime)/1000)}s old), skipping refetch`);
+      return;
+    }
+
+    // Only show the full loading state when we truly have nothing to show yet.
+    // Otherwise keep whatever's on screen (cached or previously fetched) and swap
+    // it out silently once fresh data arrives — the feed should never go blank again.
+    const results = await Promise.allSettled(SOURCES.map(fetchSourcePosts));
     let merged = [];
     results.forEach((r, i) => {
-      const src = conf.sources[i];
-      if(r.status === 'fulfilled' && r.value.length){
-        const picked = applyCategoryFilter(catKey, r.value);
-        console.log(`[feed:${catKey}:${src.name}] took ${picked.length}/${r.value.length} posts`);
-        merged = merged.concat(picked);
-      } else if(r.status !== 'fulfilled'){
-        console.log(`[feed:${catKey}:${src.name}] rejected:`, r.reason);
+      if(r.status === 'fulfilled'){
+        merged = merged.concat(r.value);
+      } else {
+        console.log(`[feed:${SOURCES[i].name}] promise rejected:`, r.reason);
       }
     });
 
     if(!merged.length){
-      if(catKey === activeCategory && !(cached && cached.posts.length)){
-        renderSectionError(feedMain, "We couldn't load this feed. Please check your connection.", () => loadCategory(catKey, true));
+      if(allPosts.length === 0){
+        renderSectionError(feedStatus, "We couldn't load your news feed. Please check your connection.", () => loadFeed(true));
+      } else {
+        console.log('[feed] refresh returned nothing — keeping the posts already on screen');
       }
       return;
     }
 
     merged.sort((a, b) => b.dateObj - a.dateObj);
-    categoryCache[catKey] = { posts: merged, ts: Date.now() };
-    if(catKey === activeCategory){
-      allPosts = merged;
-      renderPosts(merged, feedMain, true, undefined, false);
-    }
-    storageSet('feed_cache_' + catKey, categoryCache[catKey]);
-  }
-
-  function renderCategory(catKey){
-    activeCategory = catKey;
-    loadCategory(catKey);
-  }
-
-  async function loadFeed(force){
-    return loadCategory(activeCategory, force);
+    console.log(`[feed] merged total: ${merged.length} posts from ${results.filter(r=>r.status==='fulfilled' && r.value.length).length}/${SOURCES.length} sources`);
+    allPosts = merged;
+    lastFeedFetchTime = Date.now();
+    renderCategory(activeCategory);
+    storageSet('feed_cache', { posts: merged, timestamp: lastFeedFetchTime });
   }
 
   loadFeed();
-
-  // Category tab switching
-  document.getElementById('categoryTabs').addEventListener('click', (e) => {
-    const tab = e.target.closest('.tab[data-cat]');
-    if(!tab) return;
-    const cat = tab.dataset.cat;
-    if(cat === activeCategory) return;
-    document.querySelectorAll('#categoryTabs .tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    renderCategory(cat);
-  });
 
   // ---- Asset Detail screen ----
   const TICKER_KEYWORDS = {
