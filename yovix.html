@@ -2048,6 +2048,17 @@
 
   loadFeed();
 
+  // Category tab switching
+  document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.tab[data-cat]');
+    if(!tab) return;
+    const cat = tab.dataset.cat;
+    if(cat === activeCategory) return;
+    document.querySelectorAll('#categoryTabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderCategory(cat);
+  });
+
   // ---- Asset Detail screen ----
   const TICKER_KEYWORDS = {
     'cbBTC':['bitcoin','btc'], 'PUMP':['pump.fun','pump'], 'ZEC':['zcash'], 'TQQQx':['nasdaq','qqq'],
