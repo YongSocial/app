@@ -1,0 +1,70 @@
+Copyright (c) 2026 Yong Social. All Rights Reserved.
+
+PROPRIETARY AND CONFIDENTIAL — SOURCE AVAILABLE, NOT OPEN SOURCE
+
+This repository and all of its contents (including but not limited to source
+code, markup, scripts, assets, images, design, architecture, and
+documentation — the "Software") are made publicly viewable on GitHub for
+transparency, review, and evaluation purposes only. Public visibility does
+NOT constitute a grant of any license to use, copy, modify, merge, publish,
+distribute, sublicense, deploy, or sell the Software, in whole or in part.
+
+1. NO PERMISSIONS GRANTED
+   Except as expressly permitted in a separate signed written agreement with
+   Yong Social, no right, title, license, or interest in the Software is
+   granted to any person or entity. All rights not expressly granted are
+   reserved by Yong Social.
+
+2. PROHIBITED USES
+   Without the prior written permission of Yong Social, you may NOT:
+     a. copy, fork, clone, mirror, or reproduce the Software or any portion
+        of it, in source or compiled form;
+     b. use the Software, or any substantially similar recreation of it, to
+        build, operate, launch, or maintain any product, application, or
+        service, whether commercial or non-commercial;
+     c. imitate, clone, or create a derivative work that reproduces the
+        look, feel, structure, branding, or functionality of the Software;
+     d. remove, obscure, or alter any copyright, trademark, or proprietary
+        notice contained in the Software;
+     e. reverse engineer, decompile, or disassemble the Software beyond what
+        is necessary to view the publicly displayed source as-is;
+     f. use the Software in any manner intended to damage, disable,
+        overburden, interfere with, gain unauthorized access to, or
+        otherwise compromise Yong Social's systems, data, users, or
+        infrastructure.
+
+3. VIOLATIONS AND REMEDIES
+   Any unauthorized copying, use, imitation, distribution, or damage arising
+   from a breach of this License constitutes copyright infringement and/or
+   a violation of applicable computer misuse, trade secret, and unfair
+   competition laws. Yong Social reserves the right to pursue any and all
+   legal and equitable remedies available to it, including but not limited
+   to:
+     a. injunctive relief to stop continued infringement or misuse;
+     b. recovery of actual damages and any additional profits attributable
+        to the infringement or misuse;
+     c. where available under applicable law, statutory damages (which, for
+        willful copyright infringement in jurisdictions such as the United
+        States, can reach significant amounts per work infringed), plus
+        reasonable attorneys' fees and costs of enforcement;
+     d. termination of any access previously granted and referral to
+        relevant platform abuse teams (e.g., GitHub DMCA takedown) and law
+        enforcement or regulatory authorities where the conduct involves
+        fraud, unauthorized access, or damage to systems.
+   Continued unauthorized use after notice from Yong Social will be treated
+   as willful infringement.
+
+4. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+5. CONTACT / LICENSING INQUIRIES
+   Organizations or individuals seeking permission to use, license, or
+   collaborate on any part of this Software should contact Yong Social
+   directly to negotiate a separate written license agreement before any
+   use occurs.
+
+By viewing, downloading, cloning, or otherwise accessing this repository,
+you acknowledge that you have read and agree to be bound by the terms of
+this License.
