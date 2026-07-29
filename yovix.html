@@ -1913,6 +1913,23 @@
     return article;
   }
 
+  // Playlist video card inserted into the home feed after every 3rd article (so it
+  // lands as the 4th item, 8th item, 12th item, etc.)
+  function buildFeedPlaylistCard(){
+    const wrap = document.createElement('div');
+    wrap.className = 'story';
+    wrap.innerHTML = `
+      <div style="padding:0 16px;">
+        <div style="background:var(--card);border-radius:16px;overflow:hidden;">
+          <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000;">
+            <iframe src="https://www.youtube.com/embed/videoseries?list=PLQcws6vjMuC0" title="Featured playlist" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe>
+          </div>
+        </div>
+      </div>
+    `;
+    return wrap;
+  }
+
   // Renders posts in batches instead of all at once — the first screenful appears
   // immediately, and more load in only once the person actually scrolls near the
   // bottom (via IntersectionObserver). Images also carry loading="lazy" so photos
@@ -1949,10 +1966,17 @@
       const end = Math.min(posts.length, start + FEED_BATCH_SIZE);
       for(let idx = start; idx < end; idx++){
         container.appendChild(buildStoryArticle(posts[idx], ctaLabel, includeShare));
-        if(idx < posts.length - 1){
+        const isLastPost = (idx === posts.length - 1);
+        if(!isLastPost){
           const hr = document.createElement('hr');
           hr.className = 'divider';
           container.appendChild(hr);
+        }
+        if((idx + 1) % 3 === 0 && !isLastPost){
+          container.appendChild(buildFeedPlaylistCard());
+          const hr2 = document.createElement('hr');
+          hr2.className = 'divider';
+          container.appendChild(hr2);
         }
       }
       renderedCount = end;
