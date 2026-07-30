@@ -399,18 +399,11 @@
 
   let adCountdownRemaining = AD_COUNTDOWN_SECONDS;
   let adCountdownTimer = null;
-  let adSlideTimer = null;
-  let currentSlideIndex = 0;
-  // Order is reshuffled every time the ad bar is opened, so any advertiser
-  // (Changelly, Superteam Earn or Alison) can appear first.
-  let adOrder = HOME_ADS.slice();
+  // Only one advertiser is shown per open — picked at random, no slideshow.
+  let currentAd = HOME_ADS[0];
 
-  function shuffleAds(){
-    adOrder = HOME_ADS.slice();
-    for(let i = adOrder.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [adOrder[i], adOrder[j]] = [adOrder[j], adOrder[i]];
-    }
+  function pickRandomAd(){
+    currentAd = HOME_ADS[Math.floor(Math.random() * HOME_ADS.length)];
   }
 
   function playlistEmbedUrl(id){
@@ -418,8 +411,9 @@
   }
 
   function buildAdSlides(){
-    homeAdSlidesEl.innerHTML = adOrder.map((ad, i) => `
-      <div class="home-ad-slide${i === 0 ? ' active' : ''}" data-idx="${i}">
+    const ad = currentAd;
+    homeAdSlidesEl.innerHTML = `
+      <div class="home-ad-slide active" data-idx="0">
         <div class="home-ad-slide-video">
           <iframe
             src="${playlistEmbedUrl(ad.playlist)}"
@@ -435,28 +429,16 @@
         <div class="home-ad-desc">${ad.description}</div>
         <a href="${ad.url}" target="_top" rel="noopener" class="home-ad-cta">${ad.cta}</a>
       </div>
-    `).join('');
-    homeAdDotsEl.innerHTML = adOrder.map((_, i) =>
-      `<div class="home-ad-dot${i === 0 ? ' active' : ''}"></div>`
-    ).join('');
+    `;
+    if(homeAdDotsEl){
+      homeAdDotsEl.innerHTML = '';
+      homeAdDotsEl.style.display = 'none';
+    }
   }
 
-  function showSlide(idx){
-    currentSlideIndex = idx;
-    const slides = homeAdSlidesEl.querySelectorAll('.home-ad-slide');
-    const dots = homeAdDotsEl.querySelectorAll('.home-ad-dot');
-    slides.forEach((el, i) => el.classList.toggle('active', i === idx));
-    dots.forEach((el, i) => el.classList.toggle('active', i === idx));
-  }
-
-  function startAdSlideshow(){
-    clearInterval(adSlideTimer);
-    shuffleAds();
+  function showSingleAd(){
+    pickRandomAd();
     buildAdSlides();
-    showSlide(0);
-    adSlideTimer = setInterval(() => {
-      showSlide((currentSlideIndex + 1) % adOrder.length);
-    }, SLIDE_MS);
   }
 
   function startAdCountdown(){
@@ -476,7 +458,7 @@
   function openHomeAdBar(){
     homeAdBar.classList.add('open');
     startAdCountdown();
-    startAdSlideshow();
+    showSingleAd();
   }
 
   document.getElementById('homeAdToggleBtn').addEventListener('click', openHomeAdBar);
@@ -486,15 +468,14 @@
 
   document.getElementById('homeAdCloseBtn').addEventListener('click', () => {
     if(adCountdownRemaining > 0){
-      // Closing early sends them to the currently visible ad's offer.
-      const current = adOrder[currentSlideIndex] || adOrder[0];
-      window.open(current.url, '_top');
+      // Closing early sends them to the visible ad's offer.
+      window.open(currentAd.url, '_top');
       return;
     }
     closeHomeAdBar();
   });
 
-  // Tearing down the slides removes the YouTube iframes entirely, which stops
+  // Tearing down the slide removes the YouTube iframe entirely, which stops
   // any audio/video that was still playing after the ad bar is closed.
   function stopAdMedia(){
     homeAdSlidesEl.querySelectorAll('iframe').forEach((f) => {
@@ -503,12 +484,11 @@
       f.src = 'about:blank';
     });
     homeAdSlidesEl.innerHTML = '';
-    homeAdDotsEl.innerHTML = '';
+    if(homeAdDotsEl) homeAdDotsEl.innerHTML = '';
   }
 
   function closeHomeAdBar(){
     clearInterval(adCountdownTimer);
-    clearInterval(adSlideTimer);
     homeAdBar.classList.remove('open');
     stopAdMedia();
   }
