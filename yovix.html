@@ -414,7 +414,7 @@
   }
 
   function playlistEmbedUrl(id){
-    return 'https://www.youtube-nocookie.com/embed/videoseries?list=' + id + '&rel=0&modestbranding=1&playsinline=1';
+    return 'https://www.youtube-nocookie.com/embed/videoseries?list=' + id + '&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
   }
 
   function buildAdSlides(){
@@ -491,10 +491,27 @@
       window.open(current.url, '_top');
       return;
     }
+    closeHomeAdBar();
+  });
+
+  // Tearing down the slides removes the YouTube iframes entirely, which stops
+  // any audio/video that was still playing after the ad bar is closed.
+  function stopAdMedia(){
+    homeAdSlidesEl.querySelectorAll('iframe').forEach((f) => {
+      try{ f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":[]}', '*'); }catch(e){}
+      f.removeAttribute('src');
+      f.src = 'about:blank';
+    });
+    homeAdSlidesEl.innerHTML = '';
+    homeAdDotsEl.innerHTML = '';
+  }
+
+  function closeHomeAdBar(){
     clearInterval(adCountdownTimer);
     clearInterval(adSlideTimer);
     homeAdBar.classList.remove('open');
-  });
+    stopAdMedia();
+  }
 
   function goHome(){
     searchScreen.classList.add('hidden');
