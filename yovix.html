@@ -679,12 +679,6 @@
       coins.forEach(c => { byId[c.id] = c; });
 
       mktList.innerHTML = '';
-      // YOVIX pinned first under Utility
-      const yovixHeading = document.createElement('div');
-      yovixHeading.className = 'following-section-title';
-      yovixHeading.textContent = 'Utility';
-      mktList.appendChild(yovixHeading);
-      mktList.appendChild(buildYovixMarketRow());
       Object.entries(SOLANA_WATCHLIST).forEach(([category, tokens]) => {
         const present = tokens.filter(t => byId[t.id]);
         if(!present.length) return;
