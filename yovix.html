@@ -1481,7 +1481,12 @@ ${shuffled.slice(4).map(yovixGameCard).join("")}          </div>
   // lands as the 4th item, 8th item, 12th item, etc.)
   // Playlist videos per category. Categories not listed here show no playlist card.
   const CATEGORY_PLAYLISTS = {
-    finance:    ['PLc9Vd0k9ziZ0','PLb6oHAsoSi3M','PLfdN9uvtNS2Q','PLZH5FfdGV2Tk'],
+    finance:       ['PLfdN9uvtNS2Q','PLc9Vd0k9ziZ0','PLb6oHAsoSi3M','PLZH5FfdGV2Tk'],
+    entertainment: ['PLPm28IDayj4w','PLAnShIpXGjg0','PLdi_ROhb-hrk','PLfa4rRHRYquw','PLetYSCEqMERA'],
+    startups:      ['PLeLJ-qwFPQB4','PLG4LPMlSj10I','PLXC1fnFwGOZ0','PLCLBEmFsQC2o','PLA4514ldVTTk'],
+    cybersecurity: ['PLCIRsEf1Fmlk','PLbOHGzaVWTi0'],
+    opportunities: ['PLW8Bk6lR17A8','PLaIzezgkwyLA','PLbOHGzaVWTi0'],
+    science:       ['PLGEow8Pf6D1Y','PLBzwr3qAD3rc','PLGrbcrc1bxcI'],
     business:   ['PLHgj67GjWS3s','PLRGLKB0UpQbI','PLCHu96YofWAo','PLByMrkM8H7rk'],
     crypto:     ['PLIF1-TxGLN7g','PLKUXMnh4LOCg','PLIbDcXKSqLJ4','PLXA06Mt8esu0'],
     gaming:     ['PLIEhZS8_LNIM','PLRhUrv2btIgg','PLRriOZuBo3sg','PLTgCOQvZDPMk'],
@@ -1489,8 +1494,24 @@ ${shuffled.slice(4).map(yovixGameCard).join("")}          </div>
     technology: ['PLFxvWa80l8qc','PLHfg7nIrBtLY','PLUWv4-ePJFZM','PLKOhwqje26pM','PLB2Jw26qHCOI']
   };
 
+  // Playlists show in a random order (re-shuffled per category each page load)
+  const SHUFFLED_PLAYLISTS = {};
+  function getShuffledPlaylists(cat){
+    if(!SHUFFLED_PLAYLISTS[cat]){
+      const src = CATEGORY_PLAYLISTS[cat];
+      if(!src || !src.length) return null;
+      const arr = src.slice();
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+      SHUFFLED_PLAYLISTS[cat] = arr;
+    }
+    return SHUFFLED_PLAYLISTS[cat];
+  }
+
   function buildFeedPlaylistCard(slotIndex){
-    const list = CATEGORY_PLAYLISTS[activeCategory];
+    const list = getShuffledPlaylists(activeCategory);
     if(!list || !list.length) return null;
     const id = list[(slotIndex || 0) % list.length];
     const wrap = document.createElement('div');
