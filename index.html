@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
 <title>Yong Social App — News, Markets & Crypto in One App</title>
-<meta name="description" content="Download the official Yong Social app. A Google Discover-style news feed spanning crypto, business, tech and world news, plus live markets, trending tokens, Earn and Yovix — all in one place."/>
+<meta name="description" content="Yong Social is your daily home for what's happening — news, markets, videos, games and rewards, all in one fast, lightweight app."/>
 <meta name="keywords" content="Yong Social app, download Yong Social, crypto news app, markets app, Yong Social APK, Yong Social Android, Yovix, Yong Social Earn"/>
 <meta name="author" content="Yong Social"/>
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="Yong Social"/>
 <meta property="og:title" content="Yong Social App — News, Markets & Crypto in One App"/>
-<meta property="og:description" content="A Google Discover-style news feed spanning crypto, business, tech and world news, plus live markets and trending tokens — all in one app."/>
+<meta property="og:description" content="Yong Social is your daily home for what's happening — news, markets, videos, games and rewards, all in one fast, lightweight app."/>
 <meta property="og:url" content="https://app.yongsocial.com/"/>
 <meta property="og:image" content="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQEkm4yAWBBmMpwbpviOjvLebf_oKaaNTYNEVa04rftZHFd3_kHfX9rzZloXod_cxUHMKufKYNcZc-8IvxmryarA_WrDps7JWNK-Vp0lA5ejDOMjrH0JO_K6l1Ouhdi71jN5UvJwZVNXgwtOGaD95iwG3IZpQQgsLMj5ehA1tv30lDPecqUaOSYNWADwG4/s1254/ChatGPT%20Image%20Jun%2028,%202026,%2009_34_54%20PM_093530.jpg"/>
 <meta property="og:locale" content="en_US"/>
@@ -23,7 +23,7 @@
 <meta name="twitter:site" content="@yongsocial"/>
 <meta name="twitter:creator" content="@yongsocial"/>
 <meta name="twitter:title" content="Yong Social App — News, Markets & Crypto in One App"/>
-<meta name="twitter:description" content="A Google Discover-style news feed spanning crypto, business, tech and world news, plus live markets and trending tokens — all in one app."/>
+<meta name="twitter:description" content="Yong Social is your daily home for what's happening — news, markets, videos, games and rewards, all in one fast, lightweight app."/>
 
 <script type="application/ld+json">
 {
@@ -34,7 +34,7 @@
       "name": "Yong Social",
       "applicationCategory": "NewsApplication",
       "operatingSystem": "Android",
-      "description": "Yong Social is a Google Discover-style news feed spanning crypto, business, technology and world news, with live markets, trending tokens, Earn and Yovix built in.",
+      "description": "Yong Social is your daily home for what's happening — news, markets, videos, games and rewards, all in one fast, lightweight app.",
       "publisher": { "@type": "Organization", "name": "Yong Social", "url": "https://about.yongsocial.com/" },
       "downloadUrl": "https://github.com/YongSocial/app/releases/download/v1.0.0/yongsocial-v1.0.0.apk",
       "softwareVersion": "1.0.0"
@@ -181,7 +181,16 @@ section{padding:96px 24px}
 .dl-band-inner{display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap}
 .dl-band-text .section-title{margin-bottom:10px}
 .dl-band-buttons{display:flex;gap:12px;flex-wrap:wrap}
-.dl-band-buttons .dl-btn{background:var(--bg2)}
+.everyday{margin-top:48px;background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:32px}
+.everyday h4{font-family:var(--ff-display);font-size:20px;font-weight:800;color:var(--light);margin:0 0 20px}
+.everyday-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,1fr);gap:12px 32px}
+.everyday-list li{position:relative;padding-left:24px;font-size:15px;color:var(--muted);line-height:1.5}
+.everyday-list li:before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:50%;background:var(--amber)}
+.everyday-note{margin:24px 0 0;font-size:15px;color:var(--muted);line-height:1.65;border-top:1px solid var(--border);padding-top:20px}
+@media(max-width:720px){.everyday-list{grid-template-columns:1fr}.everyday{padding:24px}}
+.dl-band-buttons .dl-btn.soon{background:var(--bg2)}
+.dl-btn.primary,.dl-band-buttons .dl-btn.primary{background:var(--amber);border-color:var(--amber);box-shadow:0 8px 24px rgba(245,166,35,.22)}
+.dl-btn.primary svg path{stroke:#0a0c11}
 
 /* CONNECT */
 #connect{background:var(--bg2)}
@@ -249,7 +258,6 @@ footer{background:var(--bg3);border-top:1px solid var(--border);padding:48px 24p
   </a>
   <div class="nav-links" id="navLinks">
     <a href="#features">Features</a>
-    <a href="#latest">Latest</a>
     <a href="#connect">Connect</a>
     <a href="https://about.yongsocial.com/" target="_blank" rel="noopener">About Us</a>
     <a class="nav-cta" href="#download">Get the app</a>
@@ -265,7 +273,7 @@ footer{background:var(--bg3);border-top:1px solid var(--border);padding:48px 24p
     <div>
       <div class="hero-eyebrow reveal"><span></span> Now available for Android</div>
       <h1 class="reveal reveal-delay-1">News, markets, and <em>the digital economy</em> — in one app.</h1>
-      <p class="hero-sub reveal reveal-delay-2">Yong Social brings you a Google Discover-style feed across crypto, business, technology and world news, plus live markets, trending tokens, Yong Social Earn, and Yovix — built by the same team, all in one place.</p>
+      <p class="hero-sub reveal reveal-delay-2">Yong Social is your daily home for what's happening — news, markets, videos, games and rewards, all in one fast, lightweight app.</p>
 
       <div class="dl-row reveal reveal-delay-3">
         <a class="dl-btn primary" href="https://github.com/YongSocial/app/releases/download/v1.0.0/yongsocial-v1.0.0.apk" id="apkDownloadBtn">
@@ -331,31 +339,29 @@ footer{background:var(--bg3);border-top:1px solid var(--border);padding:48px 24p
     <div class="reveal">
       <span class="section-label">What's inside</span>
       <h2 class="section-title">Everything Yong Social builds,<br/>in your pocket.</h2>
-      <p class="section-sub">One app, three products — the news feed, the markets terminal, and the wider Yong Social network, kept in sync.</p>
+      <p class="section-sub">News, markets, tokens, games and rewards — one app for the whole day.</p>
     </div>
     <div class="feat-grid">
-      <div class="feat-card reveal"><div class="feat-icon">📰</div><h4>Discover-style feed</h4><p>Headlines from crypto, business, technology, world, sports and more, pulled from trusted sources and organized the way you actually read news.</p></div>
-      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">📈</div><h4>Live markets</h4><p>Track tokens, trending coins, and stocks with real-time prices, charts, and market pulse — no separate app required.</p></div>
-      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">💰</div><h4>Yong Social Earn</h4><p>Browse the latest from Yong Social Earn directly inside the app — opportunities and updates from across the network.</p></div>
-      <div class="feat-card reveal"><div class="feat-icon">🌀</div><h4>Yovix built in</h4><p>Yovix news and updates surface right alongside your feed — one account, one app, the whole Yong Social ecosystem.</p></div>
-      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">🔖</div><h4>Follow &amp; save</h4><p>Bookmark stories to read later, follow the topics you care about, and pick up right where you left off.</p></div>
-      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">🔍</div><h4>Search everything</h4><p>One search bar across every category and source — find a story, a token, or an update in seconds.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon">📰</div><h4>Discover what matters</h4><p>A personalized feed across technology, finance, business, AI, startups, cybersecurity, science, gaming, entertainment and opportunities. Fresh content every time you open the app, plus search to find any topic in seconds.</p></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">📈</div><h4>Live markets</h4><p>Track crypto prices, market cap and daily movers with a clean Market Pulse overview.</p></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">🪙</div><h4>Tokens &amp; trade</h4><p>Explore tokens, view project profiles, and follow the YOVIX community token at the heart of the Yong Social ecosystem.</p></div>
+      <div class="feat-card reveal"><div class="feat-icon">🎮</div><h4>Play &amp; earn</h4><p>Jump into casual games, spin the daily wheel, and keep your streak alive to collect rewards just for showing up.</p></div>
+      <div class="feat-card reveal reveal-delay-1"><div class="feat-icon">🔖</div><h4>Follow &amp; save</h4><p>Follow creators and sources you like, bookmark anything for later, and share posts in one tap.</p></div>
+      <div class="feat-card reveal reveal-delay-2"><div class="feat-icon">🔔</div><h4>Stay connected</h4><p>Notifications so you never miss a move, plus comments and chat with the community.</p></div>
     </div>
-  </div>
-</section>
-
-<!-- LATEST FROM THE NETWORK (live RSS) -->
-<section id="latest">
-  <div class="container">
-    <div class="reveal">
-      <span class="section-label">Straight from the source</span>
-      <h2 class="section-title">Latest from the Yong Social network</h2>
-      <p class="section-sub">Live from Yong Social, Yong Social Earn, and Yovix — the same feeds the app runs on.</p>
-    </div>
-    <div class="latest-grid" id="latestGrid">
-      <div class="rss-card"><div class="rss-skeleton"><div class="rss-spinner"></div>Loading latest from Yong Social…</div></div>
-      <div class="rss-card"><div class="rss-skeleton"><div class="rss-spinner"></div>Loading latest from Yong Social Earn…</div></div>
-      <div class="rss-card"><div class="rss-skeleton"><div class="rss-spinner"></div>Loading latest from Yovix…</div></div>
+    <div class="everyday reveal">
+      <h4>Built for every day</h4>
+      <ul class="everyday-list">
+        <li>Personalized feed with topic categories</li>
+        <li>Follow creators and sources you like</li>
+        <li>Save and bookmark anything for later</li>
+        <li>Share posts in one tap</li>
+        <li>Notifications so you never miss a move</li>
+        <li>Comment and chat with the community</li>
+        <li>Works great on phone, tablet and desktop</li>
+        <li>Light, fast and data-friendly</li>
+      </ul>
+      <p class="everyday-note">Yong Social keeps news, markets and fun in one place — so you spend less time app-hopping and more time on what's worth your attention.</p>
     </div>
   </div>
 </section>
@@ -417,7 +423,6 @@ footer{background:var(--bg3);border-top:1px solid var(--border);padding:48px 24p
         <div class="footer-col">
           <h5>App</h5>
           <a href="#features">Features</a>
-          <a href="#latest">Latest news</a>
           <a href="https://github.com/YongSocial/app/releases/download/v1.0.0/yongsocial-v1.0.0.apk">Download APK</a>
         </div>
         <div class="footer-col">
@@ -478,124 +483,6 @@ document.querySelectorAll('.dl-btn.soon').forEach(btn=>{
   });
 });
 
-// ---- Latest from the network (live RSS, same sources & fetch strategy as the app) ----
-const RSS_SOURCES = [
-  { key:'yongsocial', label:'Yong Social',      badge:'YS', urls:['https://yongsocial.com/feeds/posts/default?alt=rss&max-results=3'] },
-  { key:'earn',       label:'Yong Social Earn',  badge:'YE', urls:['https://earn.yongsocial.com/feeds/posts/default?alt=rss&max-results=3'] },
-  { key:'yovix',      label:'Yovix',             badge:'YV', urls:['https://yovix.yongsocial.com/feeds/posts/default?alt=rss&max-results=3'] }
-];
-const PROXIES = [
-  { name:'allorigins-raw', kind:'text',         makeUrl: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
-  { name:'allorigins-get', kind:'json-wrapped',  makeUrl: u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}` },
-  { name:'corsproxy',      kind:'text',         makeUrl: u => `https://corsproxy.io/?url=${encodeURIComponent(u)}` }
-];
-
-async function fetchXmlForUrls(urls, tag){
-  for(const url of urls){
-    try{
-      const res = await fetch(url);
-      if(res.ok) return await res.text();
-    }catch(e){ console.log(`[rss:${tag}] direct failed:`, e.message); }
-  }
-  for(const url of urls){
-    for(const proxy of PROXIES){
-      try{
-        const res = await fetch(proxy.makeUrl(url));
-        if(res.ok){
-          if(proxy.kind === 'json-wrapped'){
-            const wrapped = await res.json();
-            if(wrapped && wrapped.contents) return wrapped.contents;
-          } else {
-            return await res.text();
-          }
-        }
-      }catch(e){ console.log(`[rss:${tag}] proxy ${proxy.name} failed:`, e.message); }
-    }
-  }
-  return null;
-}
-
-function firstImageFrom(item){
-  const enclosure = item.querySelector('enclosure[url]');
-  if(enclosure) return enclosure.getAttribute('url');
-  const desc = item.querySelector('description')?.textContent || '';
-  const match = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return match ? match[1] : null;
-}
-
-function upscaleBloggerImage(url){
-  if(!url) return url;
-  return url
-    .replace(/\/s\d+(-c)?\//, '/s1600/')
-    .replace(/=s\d+(-c)?(-rw)?$/, '=s1600')
-    .replace(/\/w\d+-h\d+(-p|-c)?\//, '/s1600/')
-    .replace(/=w\d+-h\d+(-p|-c)?(-rw)?$/, '=s1600');
-}
-
-function timeAgo(dateStr){
-  const d = new Date(dateStr);
-  if(isNaN(d)) return '';
-  const mins = Math.floor((Date.now()-d.getTime())/60000);
-  if(mins < 60) return mins + (mins===1?' minute ago':' minutes ago');
-  const hrs = Math.floor(mins/60);
-  if(hrs < 24) return hrs + (hrs===1?' hour ago':' hours ago');
-  const days = Math.floor(hrs/24);
-  return days + (days===1?' day ago':' days ago');
-}
-
-function latestPostFromXml(xmlText){
-  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-  if(doc.querySelector('parsererror')) return null;
-  let entries = Array.from(doc.querySelectorAll('item'));
-  if(!entries.length) entries = Array.from(doc.querySelectorAll('entry'));
-  if(!entries.length) return null;
-  const item = entries[0];
-  const title = item.querySelector('title')?.textContent || 'Untitled';
-  let link = item.querySelector('link')?.textContent;
-  if(!link){
-    const altLink = item.querySelector('link[rel="alternate"]') || item.querySelector('link[href]');
-    link = altLink ? altLink.getAttribute('href') : '#';
-  }
-  const pubDate = item.querySelector('pubDate')?.textContent
-    || item.querySelector('published')?.textContent
-    || item.querySelector('updated')?.textContent;
-  const img = upscaleBloggerImage(firstImageFrom(item));
-  return { title, link, pubDate, img };
-}
-
-function renderRssCard(container, source, post){
-  if(!post){
-    container.innerHTML = `<div class="rss-skeleton" style="min-height:180px;">Couldn't load ${source.label} right now.</div>`;
-    return;
-  }
-  container.innerHTML = `
-    ${post.img ? `<img class="rss-card-img" src="${post.img}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
-    <div class="rss-card-body">
-      <div class="rss-source">
-        <span class="rss-source-badge">${source.label}</span>
-        <span class="rss-source-time">${post.pubDate ? timeAgo(post.pubDate) : ''}</span>
-      </div>
-      <div class="rss-title">${post.title}</div>
-      <a class="rss-link" href="${post.link}" target="_blank" rel="noopener">Read the full story →</a>
-    </div>
-  `;
-}
-
-async function loadLatestFromNetwork(){
-  const cards = Array.from(document.querySelectorAll('#latestGrid .rss-card'));
-  await Promise.all(RSS_SOURCES.map(async (source, i) => {
-    const container = cards[i];
-    try{
-      const xml = await fetchXmlForUrls(source.urls, source.key);
-      const post = xml ? latestPostFromXml(xml) : null;
-      renderRssCard(container, source, post);
-    }catch(e){
-      console.log(`[rss:${source.key}] failed:`, e.message);
-      renderRssCard(container, source, null);
-    }
-  }));
-}
-loadLatestFromNetwork();
 </script>
 </body>
 </html>
