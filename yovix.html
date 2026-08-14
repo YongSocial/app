@@ -1613,7 +1613,23 @@ ${shuffled.slice(4).map(yovixGameCard).join("")}          </div>
     document.querySelectorAll('#categoryTabs .tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     renderCategory(tab.dataset.cat);
+    // Remember this choice so the app opens back on it next time, instead of
+    // always defaulting to Finance — see restoreActiveCategory() below.
+    storageSet('active_category', tab.dataset.cat);
   });
+
+  // ---- Restore the user's last-viewed category tab on app open ----
+  // Falls back to the default ('finance') for first-time users, or if the
+  // saved value no longer matches a real tab (e.g. tabs changed later).
+  async function restoreActiveCategory(){
+    const saved = await storageGet('active_category');
+    if(typeof saved !== 'string') return;
+    const tab = document.querySelector(`#categoryTabs .tab[data-cat="${saved}"]`);
+    if(!tab) return; // unknown/stale category — keep the default
+    document.querySelectorAll('#categoryTabs .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeCategory = saved;
+  }
 
   const FEED_CACHE_TTL_MS = 5 * 60 * 1000; // 5 min, as requested
 
@@ -1680,7 +1696,7 @@ ${shuffled.slice(4).map(yovixGameCard).join("")}          </div>
     storageSet('feed_cache', { posts: merged, timestamp: lastFeedFetchTime });
   }
 
-  loadFeed();
+  restoreActiveCategory().then(loadFeed);
 
   // ---- Asset Detail screen ----
   const TICKER_KEYWORDS = {
