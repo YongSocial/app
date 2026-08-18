@@ -341,7 +341,7 @@ var CONFIG = {
   subscribeUrl: "https://yongsocial.com",             // newsletter / subscribe link
   // Header nav — replace href values with your real page URLs
   pages: [
-    { label: "YONG SOCIAL WATCH 📺", url: "go:ysvidoes" },
+    { label: "YONG SOCIAL WATCH 📺", url: "go:ysvidoes", exact: true },
     { label: "8 AM Finance",      url: "https://www.yongsocial.com/search?q=8+am+finance" },
     { label: "Let's Discuss Crypto", url: "https://www.yongsocial.com/search?q=let%27s+discuss+crypto" },
     { label: "Tech It Up",        url: "https://www.yongsocial.com/search?q=tech+it+up" },
@@ -664,6 +664,9 @@ function buildChrome(){
     }
     if (p.action === "soon"){
       return '<button class="navlink" type="button" data-nav-soon="' + esc(p.label) + '">' + esc(p.label) + '</button>';
+    }
+    if (p.exact){
+      return '<a href="' + esc(p.url) + '">Open Section</a>';
     }
     var ext = p.url.charAt(0) !== "#";
     return '<a href="' + esc(p.url) + '"' + (ext ? ' target="_blank" rel="noopener"' : ' class="active"') + '>' + esc(p.label) + '</a>';
