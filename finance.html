@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yong Social Finance | Markets, Investing &amp; Digital Assets</title>
+<meta name="description" content="Yong Social Finance delivers market news, investing insights, digital asset coverage, wealth-building strategies, and educational content on the future of finance.">
+<link rel="icon" href="https://www.yongsocial.com/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============ CONFIG-DRIVEN BRAND TOKENS ============ */
+:root{
+  --ink:#0f1115;
+  --muted:#6b7280;
+  --muted-2:#9aa1ad;
+  --line:#e7e9ee;
+  --bg:#ffffff;
+  --panel:#f7f8fa;
+  --footer-bg:#0f1115;
+  --footer-ink:#cfd3da;
+  --footer-line:#232733;
+  --radius:10px;
+  --maxw:1200px;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+a{color:inherit;}
+img{max-width:100%;display:block;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px;}
+
+/* ---------- Header ---------- */
+header.site-header{position:sticky;top:0;z-index:500;background:#fff;border-bottom:1px solid var(--line);}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;max-width:var(--maxw);margin:0 auto;}
+.brand{display:flex;flex-direction:column;text-decoration:none;}
+.brand-name{font-weight:800;font-size:20px;letter-spacing:.02em;color:var(--ink);}
+.brand-tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-top:2px;}
+.menu-toggle{display:none;background:none;border:0;cursor:pointer;padding:8px;}
+.menu-toggle svg{width:22px;height:22px;}
+nav.pages{border-top:1px solid var(--line);}
+nav.pages ul{list-style:none;display:flex;flex-wrap:wrap;gap:4px;margin:0;padding:0 16px;max-width:var(--maxw);margin:0 auto;}
+nav.pages a{display:inline-block;padding:12px 14px;font-size:13px;font-weight:600;letter-spacing:.02em;text-decoration:none;color:var(--ink);border-bottom:2px solid transparent;}
+nav.pages a:hover{border-bottom-color:var(--ink);}
+nav.categories{background:var(--panel);border-top:1px solid var(--line);}
+nav.categories ul{list-style:none;display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0 16px;max-width:var(--maxw);margin:0 auto;overflow-x:auto;}
+nav.categories button{background:none;border:0;cursor:pointer;padding:10px 14px;font:600 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-bottom:2px solid transparent;}
+nav.categories button:hover{color:var(--ink);}
+nav.categories button.active{color:var(--ink);border-bottom-color:var(--ink);}
+
+@media (max-width:760px){
+  .menu-toggle{display:inline-flex;}
+  nav.pages{display:none;}
+  nav.pages.open{display:block;}
+  nav.pages ul{flex-direction:column;padding:8px 16px;}
+}
+
+/* ---------- Featured ---------- */
+.featured{max-width:var(--maxw);margin:32px auto 8px;padding:0 16px;}
+.featured-card{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;text-decoration:none;color:inherit;}
+.featured-thumb{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:var(--radius);background:var(--panel);}
+.eyebrow{font:800 12px/1 inherit;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-bottom:10px;}
+.featured-title{font-size:30px;line-height:1.2;font-weight:800;margin:0 0 12px;}
+.featured-snippet{font-size:15px;line-height:1.6;color:var(--muted);margin:0 0 12px;}
+.featured-time{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);}
+@media (max-width:760px){.featured-card{grid-template-columns:1fr;}.featured-title{font-size:22px;}}
+
+/* ---------- Section shell (reused across Latest / Trending) ---------- */
+.ys-sec{max-width:var(--maxw);margin:44px auto;padding:0 16px;}
+.ys-sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:20px;}
+.ys-sec-head h2{margin:0;font-size:18px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink);}
+.ys-sec-sub{font-size:13px;color:var(--muted);}
+.ys-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;}
+.ys-card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;transition:box-shadow .18s,transform .18s;}
+.ys-card:hover{box-shadow:0 10px 26px rgba(15,17,21,.12);transform:translateY(-2px);}
+.ys-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--panel);}
+.ys-card-body{padding:14px 16px 18px;}
+.ys-card h3{margin:0 0 8px;font-size:16px;line-height:1.35;font-weight:700;}
+.ys-card p{margin:0;font-size:13px;line-height:1.5;color:var(--muted);}
+.ys-card time{display:block;margin-top:10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);}
+@media (max-width:900px){.ys-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:600px){.ys-grid{grid-template-columns:1fr;}}
+
+.load-more-wrap{display:flex;justify-content:center;margin-top:28px;}
+.load-more{padding:12px 26px;border-radius:999px;border:1px solid var(--ink);background:#fff;color:var(--ink);font:700 13px/1 inherit;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+.load-more:hover{background:var(--ink);color:#fff;}
+.load-more[disabled]{opacity:.5;cursor:default;}
+
+.skeleton{border-radius:var(--radius);background:linear-gradient(90deg,var(--panel) 25%,#eef0f4 37%,var(--panel) 63%);background-size:400% 100%;animation:sk 1.4s ease infinite;}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:0 0}}
+.skel-card{height:0;padding-bottom:78%;}
+.empty-msg{font-size:14px;color:var(--muted);padding:20px 0;}
+
+/* ---------- Footer (mirrors existing Blogger footer) ---------- */
+.ys-footer{background:var(--footer-bg);color:var(--footer-ink);padding:48px 20px 24px;margin-top:20px;}
+.ys-footer-grid{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;}
+.ys-footer h4{color:#fff;font-size:15px;font-weight:700;margin:0 0 14px;letter-spacing:.3px;}
+.ys-footer ul{list-style:none;padding:0;margin:0;}
+.ys-footer li{margin:0 0 8px;}
+.ys-footer a{color:var(--footer-ink);text-decoration:none;font-size:14px;transition:color .15s;}
+.ys-footer a:hover{color:#fff;}
+.ys-social{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-top:6px;}
+.ys-social a{display:inline-flex;align-items:center;gap:10px;color:var(--footer-ink);text-decoration:none;font-size:14px;transition:color .15s;min-width:0;}
+.ys-social a span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ys-social a:hover{color:#fff;}
+.ys-social a:hover .ys-social-icon{background:#2a2f3a;}
+.ys-social-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#1a1d24;color:#fff;flex-shrink:0;}
+.ys-social svg{width:15px;height:15px;fill:currentColor;}
+.ys-bottom{max-width:var(--maxw);margin:32px auto 0;padding-top:18px;border-top:1px solid var(--footer-line);font-size:12px;color:#8a8f99;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+@media (max-width:720px){.ys-footer-grid{grid-template-columns:1fr;gap:28px;}.ys-social{grid-template-columns:repeat(2,minmax(0,1fr));max-width:320px;}}
+@media (max-width:380px){.ys-social{grid-template-columns:1fr;max-width:100%;}}
+</style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <div class="header-top">
+    <a class="brand" href="https://www.yongsocial.com/">
+      <span class="brand-name">YONG SOCIAL FINANCE</span>
+      <span class="brand-tag">Markets · Investing · Digital Assets</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <nav class="pages" id="pagesNav">
+    <ul id="pagesList"><!-- populated from PAGE_LINKS config --></ul>
+  </nav>
+  <nav class="categories">
+    <ul id="categoryList"><!-- populated from CATEGORIES config --></ul>
+  </nav>
+</header>
+
+<!-- ================= FEATURED ================= -->
+<section class="featured" id="featuredSection" hidden>
+  <div class="eyebrow">Featured</div>
+  <a class="featured-card" id="featuredCard" href="#"></a>
+</section>
+
+<!-- ================= LATEST ================= -->
+<section class="ys-sec">
+  <div class="ys-sec-head">
+    <h2 id="feedHeading">Latest</h2>
+    <span class="ys-sec-sub" id="feedSub">Fresh from Yong Social Finance</span>
+  </div>
+  <div class="ys-grid" id="postsGrid"></div>
+  <p class="empty-msg" id="emptyMsg" hidden>No posts found. The feed may be temporarily unavailable — please check back shortly.</p>
+  <div class="load-more-wrap" id="loadMoreWrap" hidden>
+    <button class="load-more" id="loadMoreBtn">Load more</button>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="ys-footer">
+  <div class="ys-footer-grid">
+    <div>
+      <h4>News</h4>
+      <ul id="footerNews"><!-- populated from CATEGORIES config --></ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul id="footerAbout"><!-- populated from FOOTER_ABOUT_LINKS config --></ul>
+    </div>
+    <div>
+      <h4>Follow Us</h4>
+      <div class="ys-social" id="footerSocial"><!-- populated from SOCIAL_LINKS config --></div>
+    </div>
+  </div>
+  <div class="ys-bottom">
+    <span>&copy; <span id="year"></span> Yong Social Finance. All rights reserved.</span>
+    <span>Powered by Yong Social</span>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   CONFIG — this is the only section you should need to edit.
+   Swap in your real page URLs / footer links / social links here.
+   ===================================================================== */
+const BLOG_ORIGIN = "https://www.yongsocial.com"; // your Blogger domain (used to build feed URLs)
+
+const PAGE_LINKS = [
+  { title: "Home", href: "https://www.yongsocial.com/" },
+  { title: "About Us", href: "https://www.yongsocial.com/p/about-us.html" },
+  { title: "Editorial Policy", href: "https://www.yongsocial.com/p/editorial-policy.html" },
+  { title: "ADs Disclosure", href: "https://www.yongsocial.com/p/ads-disclosure.html" },
+  { title: "Financial Risk Disclaimer", href: "https://www.yongsocial.com/p/financial-risk-disclaimer.html" }
+];
+
+// Each category can optionally filter the main grid by Blogger label.
+const CATEGORIES = [
+  { title: "Latest News", label: "" },
+  { title: "Markets", label: "Markets" },
+  { title: "Bitcoin", label: "Bitcoin" },
+  { title: "Ethereum", label: "Ethereum" },
+  { title: "Altcoins", label: "Altcoins" },
+  { title: "Blockchain", label: "Blockchain" },
+  { title: "Regulation", label: "Regulation" }
+];
+
+const FOOTER_ABOUT_LINKS = [
+  { title: "About Yong Social", href: "https://www.yongsocial.com/p/about-us.html" },
+  { title: "About Company", href: "https://about.yongsocial.com/", external: true },
+  { title: "Contact Us", href: "https://www.yongsocial.com/p/contact-us.html" },
+  { title: "Privacy Policy", href: "https://www.yongsocial.com/p/privacy-policy.html" }
+];
+
+const SOCIAL_LINKS = [
+  { title: "X (Twitter)", href: "https://x.com/YongSocial", icon: "M18.244 2H21l-6.51 7.44L22 22h-6.844l-4.79-6.26L4.8 22H2l6.96-7.953L2 2h6.91l4.33 5.77L18.244 2Zm-1.2 18h1.66L7.04 4H5.28l11.764 16Z" },
+  { title: "TikTok", href: "https://vm.tiktok.com/ZS96Y8PsHJF3p-41Vpm/", icon: "M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06Z" },
+  { title: "YouTube", href: "https://youtube.com/@yongsocial?si=XH01YmxWuzKXISkJ", icon: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" },
+  { title: "Telegram", href: "https://t.me/yongsocial", icon: "M23.91 3.79 20.3 20.84c-.25 1.21-.98 1.5-2 .94l-5.5-4.07-2.66 2.57c-.3.3-.55.56-1.12.56l.4-5.7 10.38-9.4c.45-.4-.1-.62-.7-.22L7.28 13.6l-5.53-1.73c-1.2-.38-1.23-1.2.25-1.77L22.46 2.5c1-.36 1.87.24 1.45 1.29Z" }
+];
+
+const PAGE_SIZE = 9; // posts per "page" for the Load More button
+
+/* =====================================================================
+   RENDER STATIC CHROME FROM CONFIG
+   ===================================================================== */
+document.getElementById("year").textContent = new Date().getFullYear();
+
+document.getElementById("pagesList").innerHTML = PAGE_LINKS.map(p =>
+  `<li><a href="${escapeHtml(p.href)}">${escapeHtml(p.title)}</a></li>`
+).join("");
+
+document.getElementById("footerNews").innerHTML = CATEGORIES.map(c => {
+  const href = c.label ? `${BLOG_ORIGIN}/search/label/${encodeURIComponent(c.label)}` : `${BLOG_ORIGIN}/search?max-results=20`;
+  return `<li><a href="${href}">${escapeHtml(c.title)}</a></li>`;
+}).join("");
+
+document.getElementById("footerAbout").innerHTML = FOOTER_ABOUT_LINKS.map(l =>
+  `<li><a href="${escapeHtml(l.href)}"${l.external ? ' target="_blank" rel="noopener"' : ""}>${escapeHtml(l.title)}</a></li>`
+).join("");
+
+document.getElementById("footerSocial").innerHTML = SOCIAL_LINKS.map(s => `
+  <a href="${escapeHtml(s.href)}" target="_blank" rel="noopener" aria-label="Yong Social on ${escapeHtml(s.title)}">
+    <span class="ys-social-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="${s.icon}"/></svg></span>
+    <span>${escapeHtml(s.title)}</span>
+  </a>`).join("");
+
+const catListEl = document.getElementById("categoryList");
+catListEl.innerHTML = CATEGORIES.map((c, i) =>
+  `<li><button data-idx="${i}" class="${i === 0 ? "active" : ""}">${escapeHtml(c.title)}</button></li>`
+).join("");
+
+document.getElementById("menuToggle").addEventListener("click", () => {
+  document.getElementById("pagesNav").classList.toggle("open");
+});
+
+/* =====================================================================
+   JSONP LOADER — works even if this file is hosted on a different
+   domain than your Blogger blog, since Blogger's JSON feed doesn't
+   send CORS headers but does support the classic JSONP callback.
+   ===================================================================== */
+let jsonpCounter = 0;
+function fetchFeedJSONP(label, startIndex, maxResults) {
+  return new Promise((resolve, reject) => {
+    const cbName = "ysCb" + (jsonpCounter++);
+    const path = label ? `/feeds/posts/default/-/${encodeURIComponent(label)}` : "/feeds/posts/default";
+    const url = `${BLOG_ORIGIN}${path}?alt=json-in-script&start-index=${startIndex}&max-results=${maxResults}&callback=${cbName}`;
+
+    const timeout = setTimeout(() => { cleanup(); reject(new Error("Feed request timed out")); }, 12000);
+    function cleanup() {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cbName] = (data) => { cleanup(); resolve(data); };
+
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = () => { cleanup(); reject(new Error("Feed request failed")); };
+    document.body.appendChild(script);
+  });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str || "";
+  return d.innerHTML;
+}
+function stripHtml(html) {
+  const d = document.createElement("div");
+  d.innerHTML = html || "";
+  return (d.textContent || "").replace(/\s+/g, " ").trim();
+}
+function bestThumb(entry) {
+  if (entry.media$thumbnail && entry.media$thumbnail.url) {
+    return entry.media$thumbnail.url.replace(/\/s72-c\//, "/w700-h394-p-k-no-nu/");
+  }
+  const m = /<img[^>]+src=["']([^"']+)["']/i.exec(entry.content ? entry.content.$t : "");
+  return m ? m[1] : "";
+}
+function postLink(entry) {
+  const alt = (entry.link || []).find(l => l.rel === "alternate");
+  return alt ? alt.href : "#";
+}
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  } catch (e) { return ""; }
+}
+
+function renderCard(entry) {
+  const thumb = bestThumb(entry);
+  const snippet = stripHtml(entry.content ? entry.content.$t : "").slice(0, 120);
+  return `
+  <a class="ys-card" href="${postLink(entry)}">
+    ${thumb ? `<img class="ys-thumb" loading="lazy" alt="${escapeHtml(entry.title.$t)}" src="${thumb}">` : ""}
+    <div class="ys-card-body">
+      <h3>${escapeHtml(entry.title.$t)}</h3>
+      <p>${escapeHtml(snippet)}&hellip;</p>
+      <time>${formatDate(entry.published.$t)}</time>
+    </div>
+  </a>`;
+}
+
+function renderFeatured(entry) {
+  const section = document.getElementById("featuredSection");
+  const card = document.getElementById("featuredCard");
+  if (!entry) { section.hidden = true; return; }
+  const thumb = bestThumb(entry);
+  const snippet = stripHtml(entry.content ? entry.content.$t : "").slice(0, 180);
+  card.href = postLink(entry);
+  card.innerHTML = `
+    ${thumb ? `<img class="featured-thumb" src="${thumb}" alt="${escapeHtml(entry.title.$t)}">` : ""}
+    <div>
+      <h1 class="featured-title">${escapeHtml(entry.title.$t)}</h1>
+      <p class="featured-snippet">${escapeHtml(snippet)}&hellip;</p>
+      <span class="featured-time">${formatDate(entry.published.$t)}</span>
+    </div>`;
+  section.hidden = false;
+}
+
+/* =====================================================================
+   STATE + LOAD LOGIC
+   ===================================================================== */
+let currentLabel = "";
+let nextStart = 1;
+let usedFeatured = false;
+
+const grid = document.getElementById("postsGrid");
+const loadMoreBtn = document.getElementById("loadMoreBtn");
+const loadMoreWrap = document.getElementById("loadMoreWrap");
+const emptyMsg = document.getElementById("emptyMsg");
+const feedHeading = document.getElementById("feedHeading");
+const feedSub = document.getElementById("feedSub");
+
+function showSkeletons(n) {
+  grid.innerHTML = Array.from({ length: n }).map(() =>
+    `<div class="ys-card"><div class="skeleton skel-card"></div><div class="ys-card-body"><div class="skeleton" style="height:16px;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:80%;"></div></div></div>`
+  ).join("");
+}
+
+async function loadCategory(idx) {
+  const cat = CATEGORIES[idx];
+  currentLabel = cat.label;
+  nextStart = 1;
+  usedFeatured = false;
+  feedHeading.textContent = cat.label ? cat.title : "Latest";
+  feedSub.textContent = cat.label ? `Latest in ${cat.title}` : "Fresh from Yong Social Finance";
+  emptyMsg.hidden = true;
+  loadMoreWrap.hidden = true;
+  showSkeletons(6);
+  renderFeatured(null);
+
+  [...catListEl.querySelectorAll("button")].forEach((b, i) => b.classList.toggle("active", i === idx));
+
+  await loadMore(true);
+}
+
+async function loadMore(isFirstLoad) {
+  loadMoreBtn.disabled = true;
+  loadMoreBtn.textContent = "Loading…";
+  try {
+    const fetchCount = isFirstLoad ? PAGE_SIZE + 1 : PAGE_SIZE; // +1 to pull a hero post on first load
+    const data = await fetchFeedJSONP(currentLabel, nextStart, fetchCount);
+    const entries = (data && data.feed && data.feed.entry) ? data.feed.entry : [];
+
+    if (isFirstLoad) grid.innerHTML = "";
+
+    if (!entries.length) {
+      if (isFirstLoad) emptyMsg.hidden = false;
+      loadMoreWrap.hidden = true;
+      return;
+    }
+
+    let toRender = entries;
+    if (isFirstLoad && !currentLabel && !usedFeatured) {
+      // Use the newest post as the hero, rest as grid
+      renderFeatured(entries[0]);
+      usedFeatured = true;
+      toRender = entries.slice(1);
+    }
+
+    grid.insertAdjacentHTML("beforeend", toRender.map(renderCard).join(""));
+    nextStart += entries.length;
+
+    // Blogger's JSON feed doesn't return a hard total, so we infer "more"
+    // from whether this batch was full.
+    loadMoreWrap.hidden = entries.length < fetchCount;
+  } catch (err) {
+    if (isFirstLoad) {
+      emptyMsg.textContent = "Couldn't load posts right now. Please refresh, or visit yongsocial.com directly.";
+      emptyMsg.hidden = false;
+    }
+    loadMoreWrap.hidden = true;
+    console.error(err);
+  } finally {
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.textContent = "Load more";
+  }
+}
+
+catListEl.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-idx]");
+  if (!btn) return;
+  loadCategory(Number(btn.dataset.idx));
+});
+loadMoreBtn.addEventListener("click", () => loadMore(false));
+
+// Initial load
+loadCategory(0);
+</script>
+</body>
+</html>
