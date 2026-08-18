@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yong Social Finance | Markets, Investing &amp; Digital Assets</title>
+<meta name="description" content="Yong Social Finance delivers market news, investing insights, digital asset coverage, wealth-building strategies, and educational content on the future of finance." />
+<meta name="author" content="Yong Social Publisher" />
+<meta name="keywords" content="finance news, cryptocurrency, bitcoin, ethereum, investing, stock market, personal finance, wealth building, passive income, market analysis, digital assets, blockchain, fintech, global economy" />
+<link rel="canonical" href="https://yongsocial.com/" />
+<meta property="og:site_name" content="Yong Social Finance" />
+<meta property="og:title" content="Yong Social Finance | Markets, Investing &amp; Digital Assets" />
+<meta property="og:description" content="Markets, investing, digital assets, wealth building, and the future of finance." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://yongsocial.com/" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Yong Social Finance","url":"https://yongsocial.com/","description":"Markets, investing, digital assets, wealth building, and the future of finance."}
+</script>
+<style>
+/* ============================================================
+   CONFIG NOTE: edit the CONFIG object in the JS at the bottom
+   to change the blog URL, nav pages and footer links.
+   ============================================================ */
+:root{
+  --bg:#0f1115; --surface:#171a21; --surface-2:#1f2430; --line:#2a2f3a;
+  --text:#e9edf4; --muted:#9298a3; --brand:#2196f3; --brand-2:#2563eb;
+  --accent:#f58220; --radius:14px; --max:1180px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --font-head:'Sora',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
+
+/* Header */
+.topbar{background:linear-gradient(90deg,var(--brand-2),var(--brand));font-size:13px;color:#fff}
+.topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 20px;flex-wrap:wrap}
+.site-header{position:sticky;top:0;z-index:40;background:rgba(15,17,21,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:18px;padding:14px 20px}
+.logo{font-family:var(--font-head);font-weight:800;font-size:20px;letter-spacing:-.4px;display:flex;align-items:center;gap:10px}
+.logo .dot{width:12px;height:12px;border-radius:4px;background:var(--accent)}
+.logo span.y{color:var(--brand)}
+nav.main{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+nav.main a,.navbtn{font-size:14px;font-weight:500;color:var(--muted);padding:8px 12px;border-radius:10px;transition:.2s;cursor:pointer;background:none;border:0;font-family:inherit}
+nav.main a:hover,.navbtn:hover{color:#fff;background:var(--surface-2)}
+nav.main a.active{color:#fff;background:var(--surface-2)}
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.search input{background:none;border:0;color:var(--text);outline:none;font-family:inherit;font-size:14px;width:150px}
+.burger{display:none}
+
+/* Hero */
+.hero{padding:44px 0 10px}
+.hero h1{font-family:var(--font-head);font-size:clamp(28px,4.4vw,46px);line-height:1.1;margin:0 0 12px;letter-spacing:-1px}
+.hero p{color:var(--muted);max-width:640px;margin:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.chip{font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);cursor:pointer;background:var(--surface);transition:.2s}
+.chip:hover,.chip.active{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.12)}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 320px;gap:34px;padding:34px 0 60px}
+.section-title{font-family:var(--font-head);font-size:15px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:0 0 16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:"";height:1px;flex:1;background:var(--line)}
+
+/* Featured */
+.feature{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);margin-bottom:26px}
+.feature .thumb{aspect-ratio:16/8;background:var(--surface-2);overflow:hidden}
+.feature .thumb img{width:100%;height:100%;object-fit:cover;transition:.5s}
+.feature:hover .thumb img{transform:scale(1.04)}
+.feature .body{padding:20px}
+.feature h2{font-family:var(--font-head);font-size:clamp(20px,2.6vw,28px);margin:6px 0 8px;line-height:1.25}
+
+/* Cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:.25s}
+.card:hover{transform:translateY(-4px);border-color:#39404f;box-shadow:var(--shadow)}
+.card .thumb{aspect-ratio:16/9;background:var(--surface-2);overflow:hidden}
+.card .thumb img{width:100%;height:100%;object-fit:cover}
+.card .body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h3{font-family:var(--font-head);font-size:17px;margin:0;line-height:1.35}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.tag{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);background:rgba(33,150,243,.12);padding:4px 9px;border-radius:999px}
+.readmore{margin-top:auto;font-size:13px;font-weight:600;color:var(--brand)}
+.readmore::after{content:" \2197"}
+
+/* Sidebar */
+aside .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+aside h4{font-family:var(--font-head);font-size:14px;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 14px;color:var(--muted)}
+.mini{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.mini:last-child{border:0}
+.mini img{width:64px;height:52px;object-fit:cover;border-radius:8px;background:var(--surface-2);flex:0 0 64px}
+.mini strong{font-size:14px;font-weight:600;font-family:var(--font-head);line-height:1.3;display:block}
+.mini span{font-size:12px;color:var(--muted)}
+.labels{display:flex;flex-wrap:wrap;gap:8px}
+.cta{background:linear-gradient(135deg,var(--brand-2),var(--brand));border:0;color:#fff}
+.cta h4{color:rgba(255,255,255,.85)}
+.cta p{font-size:14px;margin:0 0 14px;color:rgba(255,255,255,.9)}
+.btn{display:inline-block;background:#fff;color:#10131a;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+
+/* Pager */
+.pager{display:flex;justify-content:center;gap:12px;margin:30px 0 0}
+.pager button{font-family:inherit;font-size:14px;font-weight:600;padding:11px 20px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer}
+.pager button:disabled{opacity:.4;cursor:not-allowed}
+.pager button:not(:disabled):hover{border-color:var(--brand);color:var(--brand)}
+
+/* States */
+.skel{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 37%,var(--surface) 63%);background-size:400% 100%;animation:sh 1.3s infinite;border-radius:var(--radius);height:280px}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.notice{border:1px dashed var(--line);border-radius:var(--radius);padding:24px;color:var(--muted);text-align:center}
+.notice a{color:var(--brand);font-weight:600}
+
+/* Footer */
+footer{border-top:1px solid var(--line);background:#0c0e12;padding:44px 0 26px;font-size:14px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}
+footer h5{font-family:var(--font-head);font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:0 0 12px}
+footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--brand)}
+.social{display:flex;gap:10px;margin-top:14px}
+.social a{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.social a:hover{border-color:var(--brand);color:var(--brand)}
+.legal{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;color:var(--muted);flex-wrap:wrap;font-size:13px}
+.totop{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:none;z-index:50}
+.totop.show{display:block}
+
+@media(max-width:960px){
+  .layout{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .burger{display:inline-flex}
+  nav.main{position:fixed;inset:60px 0 auto 0;background:var(--surface);border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:12px;display:none}
+  nav.main.open{display:flex}
+  .search input{width:110px}
+  .fgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap">
+  <span>Markets &middot; Investing &middot; Digital Assets &middot; Wealth</span>
+  <span id="today"></span>
+</div></div>
+
+<header class="site-header"><div class="wrap hrow">
+  <a class="logo" href="#top"><i class="dot"></i><span><span class="y">Yong</span> Social Finance</span></a>
+  <button class="navbtn burger" id="burger" aria-label="Menu">&#9776;</button>
+  <nav class="main" id="nav"></nav>
+  <form class="search" id="searchForm" role="search">
+    <span>&#128269;</span>
+    <input id="q" type="search" placeholder="Search posts&hellip;" aria-label="Search posts" />
+  </form>
+</div></header>
+
+<main id="top">
+  <section class="hero"><div class="wrap">
+    <h1>Markets, investing &amp; the future of money.</h1>
+    <p>Daily coverage of global markets, digital assets, and practical wealth-building — straight from the Yong Social Finance newsroom.</p>
+    <div class="chips" id="chips"></div>
+  </div></section>
+
+  <div class="wrap layout">
+    <div>
+      <div id="featureSlot"></div>
+      <h2 class="section-title" id="listTitle">Latest posts</h2>
+      <div class="grid" id="posts">
+        <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+      </div>
+      <div class="pager">
+        <button id="prev" disabled>&larr; Newer</button>
+        <button id="next" disabled>Older &rarr;</button>
+      </div>
+    </div>
+
+    <aside>
+      <div class="box cta">
+        <h4>Newsletter</h4>
+        <p>Get market briefings and investing ideas in your inbox.</p>
+        <a class="btn" id="subscribeLink" href="#">Subscribe free</a>
+      </div>
+      <div class="box">
+        <h4>Trending now</h4>
+        <div id="trending"><span style="color:var(--muted);font-size:14px">Loading&hellip;</span></div>
+      </div>
+      <div class="box">
+        <h4>Topics</h4>
+        <div class="labels" id="labels"></div>
+      </div>
+      <div class="box">
+        <h4>Read on Blogger</h4>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 14px">Every article opens on the original Yong Social Finance blog.</p>
+        <a class="btn ghost" id="visitBlog" href="#">Visit the blog &#8599;</a>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div>
+      <a class="logo" href="#top"><i class="dot"></i><span><span class="y">Yong</span> Social Finance</span></a>
+      <p style="color:var(--muted);margin:12px 0 0;max-width:320px">Market news, investing insights, digital asset coverage and educational content on the future of finance.</p>
+      <div class="social" id="social"></div>
+    </div>
+    <div><h5>Pages</h5><ul id="fPages"></ul></div>
+    <div><h5>Topics</h5><ul id="fTopics"></ul></div>
+    <div><h5>Legal</h5><ul id="fLegal"></ul></div>
+  </div>
+  <div class="legal">
+    <span>&copy; <span id="year"></span> Yong Social Finance. All rights reserved.</span>
+    <span>Powered by the Yong Social Finance blog feed.</span>
+  </div>
+</div></footer>
+
+<button class="totop" id="totop" aria-label="Back to top">&uarr;</button>
+
+<script>
+/* =========================================================================
+   1. CONFIG — EDIT THIS BLOCK ONLY
+   ========================================================================= */
+var CONFIG = {
+  blogUrl: "https://yongsocial.com",   // your Blogger blog root (no trailing slash)
+  postsPerPage: 9,
+  openPostsOnBlogger: true,            // posts open on the original Blogger URL
+  subscribeUrl: "https://yongsocial.com",             // newsletter / subscribe link
+  // Header nav — replace href values with your real page URLs
+  pages: [
+    { label: "Home",     url: "#top" },
+    { label: "Markets",  url: "https://yongsocial.com/search/label/Markets" },
+    { label: "Crypto",   url: "https://yongsocial.com/search/label/Crypto" },
+    { label: "Investing",url: "https://yongsocial.com/search/label/Investing" },
+    { label: "About",    url: "https://yongsocial.com/p/about.html" },
+    { label: "Contact",  url: "https://yongsocial.com/p/contact.html" }
+  ],
+  footerPages: [
+    { label: "Home",    url: "https://yongsocial.com" },
+    { label: "About",   url: "https://yongsocial.com/p/about.html" },
+    { label: "Contact", url: "https://yongsocial.com/p/contact.html" },
+    { label: "Sitemap", url: "https://yongsocial.com/sitemap.xml" }
+  ],
+  footerLegal: [
+    { label: "Privacy Policy",  url: "https://yongsocial.com/p/privacy-policy.html" },
+    { label: "Terms of Service",url: "https://yongsocial.com/p/terms.html" },
+    { label: "Disclaimer",      url: "https://yongsocial.com/p/disclaimer.html" }
+  ],
+  socials: [
+    { label: "X",  url: "https://x.com/" },
+    { label: "FB", url: "https://facebook.com/" },
+    { label: "IN", url: "https://linkedin.com/" },
+    { label: "YT", url: "https://youtube.com/" }
+  ]
+};
+
+/* =========================================================================
+   2. FEED LAYER — Blogger JSON feed via JSONP (works from any host)
+   ========================================================================= */
+var firstLoad = true;
+var state = { start: 1, label: null, query: null, total: null };
+
+function jsonp(url){
+  return new Promise(function(resolve, reject){
+    var cb = "ysf_cb_" + Math.random().toString(36).slice(2);
+    var s = document.createElement("script");
+    var t = setTimeout(function(){ cleanup(); reject(new Error("timeout")); }, 15000);
+    function cleanup(){ clearTimeout(t); delete window[cb]; if(s.parentNode) s.parentNode.removeChild(s); }
+    window[cb] = function(data){ cleanup(); resolve(data); };
+    s.onerror = function(){ cleanup(); reject(new Error("network")); };
+    s.src = url + (url.indexOf("?") > -1 ? "&" : "?") + "alt=json-in-script&callback=" + cb;
+    document.body.appendChild(s);
+  });
+}
+
+function feedUrl(){
+  var base = CONFIG.blogUrl + "/feeds/posts/default";
+  var params = ["max-results=" + CONFIG.postsPerPage, "start-index=" + state.start];
+  if (state.label) base += "/-/" + encodeURIComponent(state.label);
+  if (state.query) params.push("q=" + encodeURIComponent(state.query));
+  return base + "?" + params.join("&");
+}
+
+function authorName(entry){
+  var n = entry.author && entry.author[0] && entry.author[0].name && entry.author[0].name.$t;
+  if (!n || /^(unknown|anonymous)$/i.test(n)) return "Yong Social Finance";
+  return n;
+}
+
+function pick(entry){
+  var link = "", i;
+  for (i = 0; i < (entry.link || []).length; i++) if (entry.link[i].rel === "alternate") link = entry.link[i].href;
+  var html = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || "";
+  var tmp = document.createElement("div"); tmp.innerHTML = html;
+  var img = tmp.querySelector("img");
+  var thumb = img ? img.getAttribute("src") : (entry.media$thumbnail ? entry.media$thumbnail.url.replace(/\/s72-c/, "/w800") : "");
+  var text = (tmp.textContent || "").replace(/\s+/g, " ").trim();
+  return {
+    title: (entry.title && entry.title.$t) || "Untitled",
+    url: link,
+    thumb: thumb,
+    snippet: text.slice(0, 150) + (text.length > 150 ? "\u2026" : ""),
+    date: entry.published ? new Date(entry.published.$t) : null,
+    author: authorName(entry),
+    labels: (entry.category || []).map(function(c){ return c.term; })
+  };
+}
+
+/* =========================================================================
+   3. RENDERING
+   ========================================================================= */
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" })[c]; }); }
+function fmt(d){ return d ? d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" }) : ""; }
+function ph(t){ return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="800" height="450" fill="#1f2430"/><text x="50%" y="50%" fill="#4d5566" font-family="sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">' + esc(t).slice(0,22) + '</text></svg>'); }
+function attrs(p){ return 'href="' + esc(p.url) + '"' + (CONFIG.openPostsOnBlogger ? ' target="_blank" rel="noopener"' : ''); }
+
+function cardHtml(p){
+  return '<article class="card"><a class="thumb" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="' + esc(p.title) + '" onerror="this.src=\'' + ph(p.title) + '\'"></a>'
+    + '<div class="body">' + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
+    + '<h3><a ' + attrs(p) + '>' + esc(p.title) + '</a></h3>'
+    + '<p>' + esc(p.snippet) + '</p>'
+    + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span></div>'
+    + '<a class="readmore" ' + attrs(p) + '>Read on the blog</a></div></article>';
+}
+
+function featureHtml(p){
+  return '<article class="feature"><a class="thumb" ' + attrs(p) + '><img src="' + esc(p.thumb || ph(p.title)) + '" alt="' + esc(p.title) + '" onerror="this.src=\'' + ph(p.title) + '\'"></a>'
+    + '<div class="body">' + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
+    + '<h2><a ' + attrs(p) + '>' + esc(p.title) + '</a></h2>'
+    + '<p style="color:var(--muted);margin:0 0 12px">' + esc(p.snippet) + '</p>'
+    + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span></div></div></article>';
+}
+
+function miniHtml(p){
+  return '<a class="mini" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="" onerror="this.src=\'' + ph(p.title) + '\'">'
+    + '<span><strong>' + esc(p.title) + '</strong><span>' + fmt(p.date) + '</span></span></a>';
+}
+
+function render(posts, isFirstPage){
+  var slot = document.getElementById("featureSlot");
+  var list = posts.slice();
+  if (isFirstPage && list.length) { slot.innerHTML = featureHtml(list.shift()); } else { slot.innerHTML = ""; }
+  document.getElementById("posts").innerHTML = list.length
+    ? list.map(cardHtml).join("")
+    : '<div class="notice">No posts found. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Browse the blog</a></div>';
+}
+
+function setLoading(){
+  document.getElementById("posts").innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+}
+
+function load(){
+  setLoading();
+  jsonp(feedUrl()).then(function(data){
+    var f = data.feed || {};
+    state.total = f.openSearch$totalResults ? parseInt(f.openSearch$totalResults.$t, 10) : null;
+    var posts = (f.entry || []).map(pick);
+    render(posts, state.start === 1 && !state.query);
+    document.getElementById("prev").disabled = state.start <= 1;
+    document.getElementById("next").disabled = posts.length < CONFIG.postsPerPage;
+    document.getElementById("listTitle").textContent =
+      state.query ? 'Results for "' + state.query + '"' : (state.label ? state.label : "Latest posts");
+    if (!firstLoad) window.scrollTo({ top: document.querySelector(".layout").offsetTop - 80, behavior: "smooth" });
+    firstLoad = false;
+  }).catch(function(){
+    document.getElementById("featureSlot").innerHTML = "";
+    document.getElementById("posts").innerHTML = '<div class="notice">Couldn\'t load the feed right now. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Open the blog directly</a></div>';
+  });
+}
+
+function loadSidebar(){
+  jsonp(CONFIG.blogUrl + "/feeds/posts/default?max-results=25").then(function(data){
+    var posts = ((data.feed || {}).entry || []).map(pick);
+    document.getElementById("trending").innerHTML = posts.slice(0, 5).map(miniHtml).join("");
+    var seen = {}, labels = [];
+    posts.forEach(function(p){ p.labels.forEach(function(l){ if(!seen[l]){ seen[l]=1; labels.push(l); } }); });
+    labels = labels.slice(0, 14);
+    document.getElementById("labels").innerHTML = labels.map(function(l){
+      return '<button class="chip" data-label="' + esc(l) + '">' + esc(l) + '</button>';
+    }).join("") || '<span style="color:var(--muted);font-size:14px">No topics yet</span>';
+    document.getElementById("chips").innerHTML = '<button class="chip active" data-label="">All</button>'
+      + labels.slice(0, 8).map(function(l){ return '<button class="chip" data-label="' + esc(l) + '">' + esc(l) + '</button>'; }).join("");
+    document.getElementById("fTopics").innerHTML = labels.slice(0, 6).map(function(l){
+      return '<li><a href="' + esc(CONFIG.blogUrl) + '/search/label/' + encodeURIComponent(l) + '" target="_blank" rel="noopener">' + esc(l) + '</a></li>';
+    }).join("");
+  }).catch(function(){
+    document.getElementById("trending").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
+  });
+}
+
+/* =========================================================================
+   4. CHROME + EVENTS
+   ========================================================================= */
+function li(items){ return items.map(function(x){ return '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.label) + '</a></li>'; }).join(""); }
+
+function buildChrome(){
+  document.getElementById("nav").innerHTML = CONFIG.pages.map(function(p, i){
+    var ext = p.url.charAt(0) !== "#";
+    return '<a href="' + esc(p.url) + '"' + (ext ? ' target="_blank" rel="noopener"' : ' class="active"') + '>' + esc(p.label) + '</a>';
+  }).join("");
+  document.getElementById("fPages").innerHTML = li(CONFIG.footerPages);
+  document.getElementById("fLegal").innerHTML = li(CONFIG.footerLegal);
+  document.getElementById("social").innerHTML = CONFIG.socials.map(function(s){
+    return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" aria-label="' + esc(s.label) + '">' + esc(s.label) + '</a>';
+  }).join("");
+  document.getElementById("subscribeLink").href = CONFIG.subscribeUrl;
+  document.getElementById("visitBlog").href = CONFIG.blogUrl;
+  document.getElementById("year").textContent = new Date().getFullYear();
+  document.getElementById("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+}
+
+document.addEventListener("click", function(e){
+  var chip = e.target.closest("[data-label]");
+  if (chip){
+    state.label = chip.getAttribute("data-label") || null;
+    state.query = null; state.start = 1;
+    document.querySelectorAll("#chips .chip").forEach(function(c){
+      c.classList.toggle("active", (c.getAttribute("data-label") || "") === (state.label || ""));
+    });
+    load();
+  }
+});
+
+document.getElementById("searchForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  state.query = document.getElementById("q").value.trim() || null;
+  state.label = null; state.start = 1;
+  load();
+});
+document.getElementById("next").onclick = function(){ state.start += CONFIG.postsPerPage; load(); };
+document.getElementById("prev").onclick = function(){ state.start = Math.max(1, state.start - CONFIG.postsPerPage); load(); };
+document.getElementById("burger").onclick = function(){ document.getElementById("nav").classList.toggle("open"); };
+var totop = document.getElementById("totop");
+totop.onclick = function(){ window.scrollTo({ top:0, behavior:"smooth" }); };
+window.addEventListener("scroll", function(){ totop.classList.toggle("show", window.scrollY > 600); });
+
+buildChrome();
+load();
+loadSidebar();
+</script>
+</body>
+</html>
