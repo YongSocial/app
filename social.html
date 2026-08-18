@@ -185,8 +185,9 @@ footer ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;
 footer a{color:var(--muted)}
 footer a:hover{color:var(--brand)}
 .social{display:flex;gap:10px;margin-top:14px}
-.social a{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.social a{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted);transition:.2s}
 .social a:hover{border-color:var(--brand);color:var(--brand)}
+.social a svg{width:18px;height:18px;fill:currentColor}
 .legal{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;color:var(--muted);flex-wrap:wrap;font-size:13px}
 .totop{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;display:none;z-index:50}
 .totop.show{display:block}
@@ -359,10 +360,10 @@ var CONFIG = {
     { label: "Terms of Service",url: "https://app.yongsocial.com/terms-of service" }
   ],
   socials: [
-    { label: "X",  url: "https://x.com/" },
-    { label: "FB", url: "https://facebook.com/" },
-    { label: "IN", url: "https://linkedin.com/" },
-    { label: "YT", url: "https://youtube.com/" }
+    { label: "Yong Social on X", icon: "x", url: "https://x.com/yongsocial" },
+    { label: "Yong Social on YouTube", icon: "youtube", url: "https://www.youtube.com/@yongsocial" },
+    { label: "Yong Social on TikTok", icon: "tiktok", url: "https://www.tiktok.com/@yong_social" },
+    { label: "Yong Social on Telegram", icon: "telegram", url: "https://t.me/yongsocial" }
   ]
 };
 
@@ -462,6 +463,13 @@ function bookmarkBtn(p){
     + (saved ? "Remove bookmark" : "Save to bookmarks") + '">' + bmIcon(saved)
     + '<span>' + (saved ? "Saved" : "Save") + '</span></button>';
 }
+
+var SOCIAL_ICONS = {
+  x: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+  youtube: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+  tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82c-.86-.85-1.34-2-1.34-3.32h-3.36v14.06c0 1.66-1.36 3-3.02 3a3.02 3.02 0 0 1-3.02-3 3.02 3.02 0 0 1 3.02-3.01c.3 0 .59.04.86.13V10.3a6.4 6.4 0 0 0-.86-.06 6.4 6.4 0 0 0-6.4 6.4 6.4 6.4 0 0 0 6.4 6.4 6.4 6.4 0 0 0 6.4-6.4V9.15a9.13 9.13 0 0 0 5.34 1.71V7.5a5.7 5.7 0 0 1-3.02-1.68z"/></svg>',
+  telegram: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.05 2.94a1.6 1.6 0 0 0-1.64-.27L2.12 9.9c-1.16.45-1.15 2.08.01 2.52l4.6 1.73 1.78 5.72c.22.72 1.14.93 1.66.38l2.6-2.75 4.83 3.56c.86.63 2.1.16 2.32-.89l3.14-14.85a1.6 1.6 0 0 0-.51-1.38zM9.5 14.7l-1.05-3.38 9.5-6-7.6 7.55.02.02-.87 1.81zm.98 3.99-1.02-3.27.02-.01 1 3.28z"/></svg>'
+};
 
 function shareBtn(p){ return '<button class="share-btn" data-share-url="' + esc(p.url) + '" data-share-title="' + esc(p.title) + '" type="button" aria-label="Share this article">&#10148; Share</button>'; }
 
@@ -675,7 +683,8 @@ function buildChrome(){
   document.getElementById("fPages").innerHTML = li(CONFIG.footerPages);
   document.getElementById("fLegal").innerHTML = li(CONFIG.footerLegal);
   document.getElementById("social").innerHTML = CONFIG.socials.map(function(s){
-    return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" aria-label="' + esc(s.label) + '">' + esc(s.label) + '</a>';
+    var icon = SOCIAL_ICONS[s.icon] || esc(s.label);
+    return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" aria-label="' + esc(s.label) + '" title="' + esc(s.label) + '">' + icon + '</a>';
   }).join("");
   document.getElementById("subscribeLink").href = CONFIG.subscribeUrl;
   document.getElementById("visitBlog").href = CONFIG.blogUrl;
