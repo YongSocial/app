@@ -60,6 +60,11 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .hero{padding:44px 0 10px}
 .hero h1{font-family:var(--font-head);font-size:clamp(28px,4.4vw,46px);line-height:1.1;margin:0 0 12px;letter-spacing:-1px}
 .hero p{color:var(--muted);max-width:640px;margin:0}
+.hero-search{display:flex;gap:10px;margin-top:22px;max-width:520px}
+.hero-search input{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--text);font-size:15px;outline:none;font-family:inherit}
+.hero-search input:focus{border-color:var(--brand)}
+.hero-search button{background:linear-gradient(90deg,var(--brand-2),var(--brand));border:0;color:#fff;font-weight:700;padding:12px 22px;border-radius:12px;cursor:pointer;font-size:15px}
+.hero-search button:hover{opacity:.92}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
 .chip{font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);cursor:pointer;background:var(--surface);transition:.2s}
 .chip:hover,.chip.active{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.12)}
@@ -88,8 +93,26 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .card p{margin:0;color:var(--muted);font-size:14px}
 .meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .tag{font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--brand);background:rgba(33,150,243,.12);padding:4px 9px;border-radius:999px}
-.readmore{margin-top:auto;font-size:13px;font-weight:600;color:var(--brand)}
+.readmore{font-size:13px;font-weight:600;color:var(--brand)}
 .readmore::after{content:" \2197"}
+.card-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line)}
+
+/* Share */
+.share-btn{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.share-btn:hover{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.18)}
+.feature .share-btn{margin-left:auto}
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:100;display:none;place-items:center;padding:20px}
+.share-modal.show{display:grid}
+.share-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);width:100%;max-width:340px;padding:22px;box-shadow:var(--shadow);position:relative}
+.share-box h4{margin:0 0 16px;font-family:var(--font-head);font-size:16px}
+.share-options{display:flex;flex-direction:column;gap:10px}
+.share-opt{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.2s;text-align:left;font-family:inherit}
+.share-opt:hover{border-color:var(--brand);background:rgba(33,150,243,.12)}
+.share-opt svg{width:20px;height:20px;flex:0 0 20px}
+.share-close{position:absolute;top:10px;right:10px;background:none;border:0;color:var(--muted);font-size:26px;cursor:pointer;line-height:1;padding:4px 8px}
+.share-close:hover{color:#fff}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface-2);color:#fff;padding:10px 18px;border-radius:10px;border:1px solid var(--line);font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:110}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* Sidebar */
 aside .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:20px}
@@ -142,6 +165,8 @@ footer a:hover{color:var(--brand)}
   nav.main.open{display:flex}
   .search input{width:110px}
   .fgrid{grid-template-columns:1fr}
+  .hero-search{flex-direction:column}
+  .hero-search button{width:100%}
 }
 </style>
 </head>
@@ -166,6 +191,10 @@ footer a:hover{color:var(--brand)}
   <section class="hero"><div class="wrap">
     <h1>Markets, investing &amp; the future of money.</h1>
     <p>Daily coverage of global markets, digital assets, and practical wealth-building — straight from the Yong Social Finance newsroom.</p>
+    <form class="hero-search" id="heroSearchForm" role="search">
+      <input id="hq" type="search" placeholder="Search articles, topics, markets&hellip;" aria-label="Search posts" />
+      <button type="submit">Search</button>
+    </form>
     <div class="chips" id="chips"></div>
   </div></section>
 
@@ -223,6 +252,28 @@ footer a:hover{color:var(--brand)}
 </div></footer>
 
 <button class="totop" id="totop" aria-label="Back to top">&uarr;</button>
+
+<div class="share-modal" id="shareModal" aria-hidden="true">
+  <div class="share-box" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <button class="share-close" id="shareClose" aria-label="Close">&times;</button>
+    <h4 id="shareTitle">Share this article</h4>
+    <div class="share-options">
+      <button class="share-opt" data-to="x" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Share on X
+      </button>
+      <button class="share-opt" data-to="whatsapp" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.434-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.883-9.885 9.883m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Share on WhatsApp
+      </button>
+      <button class="share-opt" data-to="copy" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        Copy link
+      </button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">Link copied to clipboard</div>
 
 <script>
 /* =========================================================================
@@ -320,6 +371,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({ "&":
 function fmt(d){ return d ? d.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" }) : ""; }
 function ph(t){ return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="800" height="450" fill="#1f2430"/><text x="50%" y="50%" fill="#4d5566" font-family="sans-serif" font-size="34" text-anchor="middle" dominant-baseline="middle">' + esc(t).slice(0,22) + '</text></svg>'); }
 function attrs(p){ return 'href="' + esc(p.url) + '"' + (CONFIG.openPostsOnBlogger ? ' target="_blank" rel="noopener"' : ''); }
+function shareBtn(p){ return '<button class="share-btn" data-share-url="' + esc(p.url) + '" data-share-title="' + esc(p.title) + '" type="button" aria-label="Share this article">&#10148; Share</button>'; }
 
 function cardHtml(p){
   return '<article class="card"><a class="thumb" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="' + esc(p.title) + '" onerror="this.src=\'' + ph(p.title) + '\'"></a>'
@@ -327,7 +379,7 @@ function cardHtml(p){
     + '<h3><a ' + attrs(p) + '>' + esc(p.title) + '</a></h3>'
     + '<p>' + esc(p.snippet) + '</p>'
     + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span></div>'
-    + '<a class="readmore" ' + attrs(p) + '>Read on the blog</a></div></article>';
+    + '<div class="card-actions"><a class="readmore" ' + attrs(p) + '>Read on the blog</a>' + shareBtn(p) + '</div></div></article>';
 }
 
 function featureHtml(p){
@@ -335,7 +387,7 @@ function featureHtml(p){
     + '<div class="body">' + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
     + '<h2><a ' + attrs(p) + '>' + esc(p.title) + '</a></h2>'
     + '<p style="color:var(--muted);margin:0 0 12px">' + esc(p.snippet) + '</p>'
-    + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span></div></div></article>';
+    + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span>' + shareBtn(p) + '</div></div></article>';
 }
 
 function miniHtml(p){
@@ -396,7 +448,59 @@ function loadSidebar(){
 }
 
 /* =========================================================================
-   4. CHROME + EVENTS
+   4. SHARE
+   ========================================================================= */
+var currentShare = { url: "", title: "" };
+var shareModal = document.getElementById("shareModal");
+var toast = document.getElementById("toast");
+
+function openShare(url, title){
+  currentShare.url = url;
+  currentShare.title = title;
+  shareModal.classList.add("show");
+  shareModal.setAttribute("aria-hidden", "false");
+}
+
+function closeShare(){
+  shareModal.classList.remove("show");
+  shareModal.setAttribute("aria-hidden", "true");
+}
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(function(){ toast.classList.remove("show"); }, 2000);
+}
+
+shareModal.addEventListener("click", function(e){ if (e.target === shareModal) closeShare(); });
+document.getElementById("shareClose").addEventListener("click", closeShare);
+
+document.querySelectorAll(".share-opt").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var u = encodeURIComponent(currentShare.url);
+    var t = encodeURIComponent(currentShare.title);
+    var to = this.getAttribute("data-to");
+    if (to === "x") window.open("https://twitter.com/intent/tweet?text=" + t + "&url=" + u, "_blank", "noopener,width=550,height=420");
+    if (to === "whatsapp") window.open("https://api.whatsapp.com/send?text=" + t + "%20" + u, "_blank", "noopener");
+    if (to === "copy"){
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(currentShare.url).then(function(){ showToast("Link copied to clipboard"); });
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = currentShare.url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("Link copied to clipboard");
+      }
+    }
+    closeShare();
+  });
+});
+
+/* =========================================================================
+   5. CHROME + EVENTS
    ========================================================================= */
 function li(items){ return items.map(function(x){ return '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.label) + '</a></li>'; }).join(""); }
 
@@ -416,24 +520,46 @@ function buildChrome(){
   document.getElementById("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
 }
 
+function runSearch(value){
+  var v = value.trim();
+  state.query = v || null;
+  state.label = null; state.start = 1;
+  load();
+  document.getElementById("nav").classList.remove("open");
+}
+
 document.addEventListener("click", function(e){
   var chip = e.target.closest("[data-label]");
   if (chip){
     state.label = chip.getAttribute("data-label") || null;
     state.query = null; state.start = 1;
+    document.getElementById("q").value = "";
+    document.getElementById("hq").value = "";
     document.querySelectorAll("#chips .chip").forEach(function(c){
       c.classList.toggle("active", (c.getAttribute("data-label") || "") === (state.label || ""));
     });
     load();
   }
+  var share = e.target.closest("[data-share-url]");
+  if (share){
+    e.preventDefault();
+    e.stopPropagation();
+    openShare(share.getAttribute("data-share-url"), share.getAttribute("data-share-title"));
+  }
 });
 
 document.getElementById("searchForm").addEventListener("submit", function(e){
   e.preventDefault();
-  state.query = document.getElementById("q").value.trim() || null;
-  state.label = null; state.start = 1;
-  load();
+  document.getElementById("hq").value = document.getElementById("q").value;
+  runSearch(document.getElementById("q").value);
 });
+
+document.getElementById("heroSearchForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  document.getElementById("q").value = document.getElementById("hq").value;
+  runSearch(document.getElementById("hq").value);
+});
+
 document.getElementById("next").onclick = function(){ state.start += CONFIG.postsPerPage; load(); };
 document.getElementById("prev").onclick = function(){ state.start = Math.max(1, state.start - CONFIG.postsPerPage); load(); };
 document.getElementById("burger").onclick = function(){ document.getElementById("nav").classList.toggle("open"); };
