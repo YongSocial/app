@@ -81,6 +81,8 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .feature .thumb{aspect-ratio:16/8;background:var(--surface-2);overflow:hidden}
 .feature .thumb img{width:100%;height:100%;object-fit:cover;transition:.5s}
 .feature:hover .thumb img{transform:scale(1.04)}
+.feature .tv-embed{aspect-ratio:16/8;background:#000;overflow:hidden}
+.feature .tv-embed iframe{width:100%;height:100%;border:0;display:block}
 .feature .body{padding:20px}
 .feature h2{font-family:var(--font-head);font-size:clamp(20px,2.6vw,28px);margin:6px 0 8px;line-height:1.25}
 
@@ -257,8 +259,8 @@ footer a:hover{color:var(--brand)}
         <a class="btn" id="subscribeLink" href="#">Follow Us</a>
       </div>
       <div class="box">
-        <h4>Trending now</h4>
-        <div id="trending"><span style="color:var(--muted);font-size:14px">Loading&hellip;</span></div>
+        <h4>Sponsored</h4>
+        <div id="sponsored"><span style="color:var(--muted);font-size:14px">Loading&hellip;</span></div>
       </div>
       <div class="box">
         <h4>Topics</h4>
@@ -492,6 +494,16 @@ function featureHtml(p){
     + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span>' + shareBtn(p) + bookmarkBtn(p) + '</div></div></article>';
 }
 
+function tvFeatureHtml(){
+  return '<article class="feature">'
+    + '<div class="tv-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLDiOImJNWDpw" title="Yong Social TV" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>'
+    + '<div class="body"><span class="tag">Yong Social TV</span>'
+    + '<h2>Yong Social TV</h2>'
+    + '<p style="color:var(--muted);margin:0 0 12px">Films, documentaries, series and original productions exploring money, power, business and the world around them.</p>'
+    + '<p style="color:var(--muted);margin:0">Watch fictional and real-world content covering finance, business, economics, crime, technology, AI, wealth and entrepreneurship.</p>'
+    + '</div></article>';
+}
+
 function miniHtml(p){
   return '<a class="mini" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="" onerror="this.src=\'' + ph(p.title) + '\'">'
     + '<span><strong>' + esc(p.title) + '</strong><span>' + fmt(p.date) + '</span></span></a>';
@@ -499,10 +511,9 @@ function miniHtml(p){
 
 function render(posts, isFirstPage){
   var slot = document.getElementById("featureSlot");
-  var list = posts.slice();
-  if (isFirstPage && list.length) { slot.innerHTML = featureHtml(list.shift()); } else { slot.innerHTML = ""; }
-  document.getElementById("posts").innerHTML = list.length
-    ? list.map(cardHtml).join("")
+  slot.innerHTML = isFirstPage ? tvFeatureHtml() : "";
+  document.getElementById("posts").innerHTML = posts.length
+    ? posts.map(cardHtml).join("")
     : '<div class="notice">No posts found. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Browse the blog</a></div>';
 }
 
@@ -524,15 +535,44 @@ function load(){
     if (!firstLoad) window.scrollTo({ top: document.querySelector(".layout").offsetTop - 80, behavior: "smooth" });
     firstLoad = false;
   }).catch(function(){
-    document.getElementById("featureSlot").innerHTML = "";
+    document.getElementById("featureSlot").innerHTML = (state.start === 1 && !state.query) ? tvFeatureHtml() : "";
     document.getElementById("posts").innerHTML = '<div class="notice">Couldn\'t load the feed right now. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Open the blog directly</a></div>';
+  });
+}
+
+function shuffle(arr){
+  var a = arr.slice(), i, j, t;
+  for (i = a.length - 1; i > 0; i--){
+    j = Math.floor(Math.random() * (i + 1));
+    t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function loadSponsored(){
+  var base = CONFIG.blogUrl + "/feeds/posts/default";
+  Promise.all([
+    jsonp(base + "/-/" + encodeURIComponent("Sponsored") + "?max-results=20").catch(function(){ return {}; }),
+    jsonp(base + "/-/" + encodeURIComponent("Featured") + "?max-results=20").catch(function(){ return {}; })
+  ]).then(function(results){
+    var seen = {}, posts = [];
+    results.forEach(function(data){
+      ((data.feed || {}).entry || []).map(pick).forEach(function(p){
+        if (!seen[p.url]) { seen[p.url] = 1; posts.push(p); }
+      });
+    });
+    var picked = shuffle(posts).slice(0, 4);
+    document.getElementById("sponsored").innerHTML = picked.length
+      ? picked.map(miniHtml).join("")
+      : '<span style="color:var(--muted);font-size:14px">No sponsored posts yet.</span>';
+  }).catch(function(){
+    document.getElementById("sponsored").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
   });
 }
 
 function loadSidebar(){
   jsonp(CONFIG.blogUrl + "/feeds/posts/default?max-results=25").then(function(data){
     var posts = ((data.feed || {}).entry || []).map(pick);
-    document.getElementById("trending").innerHTML = posts.slice(0, 5).map(miniHtml).join("");
     var seen = {}, labels = [];
     posts.forEach(function(p){ p.labels.forEach(function(l){ if(!seen[l]){ seen[l]=1; labels.push(l); } }); });
     labels = labels.slice(0, 14);
@@ -545,7 +585,7 @@ function loadSidebar(){
       return '<li><a href="' + esc(CONFIG.blogUrl) + '/search/label/' + encodeURIComponent(l) + '" target="_blank" rel="noopener">' + esc(l) + '</a></li>';
     }).join("");
   }).catch(function(){
-    document.getElementById("trending").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
+    document.getElementById("labels").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
   });
 }
 
@@ -768,6 +808,7 @@ window.addEventListener("scroll", function(){ totop.classList.toggle("show", win
 buildChrome();
 load();
 loadSidebar();
+loadSponsored();
 </script>
 </body>
 </html>
