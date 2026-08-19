@@ -54,6 +54,8 @@ nav.main a:hover,.navbtn:hover{color:#fff;background:var(--surface-2)}
 nav.main a.active{color:#fff;background:var(--surface-2)}
 .search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
 .search input{background:none;border:0;color:var(--text);outline:none;font-family:inherit;font-size:14px;width:150px}
+.empower-btn{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;transition:.2s}
+.empower-btn:hover{border-color:var(--brand);background:rgba(33,150,243,.12);color:#fff}
 .burger{display:none}
 
 /* Hero */
@@ -218,10 +220,10 @@ footer a:hover{color:var(--brand)}
   <a class="logo" href="#top"><i class="dot"></i><span><span class="y">Yong</span> Social Finance</span></a>
   <button class="navbtn burger" id="burger" aria-label="Menu">&#9776;</button>
   <nav class="main" id="nav"></nav>
-  <form class="search" id="searchForm" role="search">
-    <span>&#128269;</span>
-    <input id="q" type="search" placeholder="Search posts&hellip;" aria-label="Search posts" />
-  </form>
+  <a class="search empower-btn" href="https://alison.com/?utm_source=alison_user&amp;utm_medium=affiliate&amp;utm_campaign=43172863" target="_blank" rel="noopener">
+    <span>&#127891;</span>
+    <span>Empower Yourself</span>
+  </a>
 </div></header>
 
 <main id="top">
@@ -705,7 +707,6 @@ document.addEventListener("click", function(e){
   if (chip){
     state.label = chip.getAttribute("data-label") || null;
     state.query = null; state.start = 1;
-    document.getElementById("q").value = "";
     document.getElementById("hq").value = "";
     document.querySelectorAll("#chips .chip").forEach(function(c){
       c.classList.toggle("active", (c.getAttribute("data-label") || "") === (state.label || ""));
@@ -752,15 +753,8 @@ document.addEventListener("click", function(e){
   }
 });
 
-document.getElementById("searchForm").addEventListener("submit", function(e){
-  e.preventDefault();
-  document.getElementById("hq").value = document.getElementById("q").value;
-  runSearch(document.getElementById("q").value);
-});
-
 document.getElementById("heroSearchForm").addEventListener("submit", function(e){
   e.preventDefault();
-  document.getElementById("q").value = document.getElementById("hq").value;
   runSearch(document.getElementById("hq").value);
 });
 
