@@ -81,10 +81,25 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .feature .thumb{aspect-ratio:16/8;background:var(--surface-2);overflow:hidden}
 .feature .thumb img{width:100%;height:100%;object-fit:cover;transition:.5s}
 .feature:hover .thumb img{transform:scale(1.04)}
-.feature .tv-embed{aspect-ratio:16/8;background:#000;overflow:hidden}
-.feature .tv-embed iframe{width:100%;height:100%;border:0;display:block}
 .feature .body{padding:20px}
 .feature h2{font-family:var(--font-head);font-size:clamp(20px,2.6vw,28px);margin:6px 0 8px;line-height:1.25}
+
+/* Yong Social TV */
+.tv{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),var(--surface));box-shadow:var(--shadow);margin-bottom:26px}
+.tv .tv-head{padding:20px 20px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tv .tv-badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:linear-gradient(90deg,#e11d48,#f58220);padding:5px 11px;border-radius:999px}
+.tv .tv-badge svg{width:14px;height:14px;fill:currentColor}
+.tv h2{font-family:var(--font-head);font-size:clamp(20px,2.6vw,28px);margin:0;line-height:1.2;letter-spacing:-.5px;width:100%}
+.tv .tv-sub{color:var(--muted);font-size:15px;margin:0;padding:0 20px 16px;max-width:760px}
+.tv .tv-frame{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.tv .tv-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tv .tv-fallback{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:24px;color:var(--muted);font-size:14px}
+.tv .tv-fallback.show{display:grid}
+.tv .tv-foot{padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tv .tv-foot p{margin:0;color:var(--muted);font-size:13.5px;flex:1;min-width:220px}
+.tv .tv-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--brand-2),var(--brand));color:#fff;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px}
+.tv .tv-cta svg{width:16px;height:16px;fill:currentColor}
+.spon-empty{color:var(--muted);font-size:14px}
 
 /* Cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
@@ -241,6 +256,25 @@ footer a:hover{color:var(--brand)}
 
   <div class="wrap layout">
     <div>
+      <section class="tv" id="ystv" aria-labelledby="ystvTitle">
+        <div class="tv-head">
+          <span class="tv-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 16.5 16 12l-6-4.5v9zM20 4H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5v2h6v-2h5a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>Yong Social TV</span>
+          <h2 id="ystvTitle">Films, documentaries, series and original productions</h2>
+        </div>
+        <p class="tv-sub">Exploring money, power, business and the world around them.</p>
+        <div class="tv-frame">
+          <iframe id="ystvFrame" title="Yong Social TV playlist" src="about:blank"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+          <div class="tv-fallback" id="ystvFallback">
+            <span>Video player unavailable here. <a href="#" id="ystvFallbackLink" target="_blank" rel="noopener" style="color:var(--brand);font-weight:600">Watch the playlist on YouTube &#8599;</a></span>
+          </div>
+        </div>
+        <div class="tv-foot">
+          <p>Watch fictional and real-world content covering finance, business, economics, crime, technology, AI, wealth and entrepreneurship.</p>
+          
+        </div>
+      </section>
       <div id="featureSlot"></div>
       <h2 class="section-title" id="listTitle">Latest posts</h2>
       <div class="grid" id="posts">
@@ -340,6 +374,15 @@ footer a:hover{color:var(--brand)}
    1. CONFIG — EDIT THIS BLOCK ONLY
    ========================================================================= */
 var CONFIG = {
+  /* --- Yong Social TV ---------------------------------------------------
+     Paste EITHER the full playlist URL or just the playlist ID below.
+     A wrong/private/empty playlist is what makes YouTube show
+     "configuration error", so the player validates the ID first and falls
+     back to a direct YouTube link instead of an error screen. ---------- */
+  tvPlaylist: "https://youtube.com/playlist?list=PLDiOImJNWDpw",
+  tvChannelUrl: "https://www.youtube.com/@yongsocial/playlists",
+  sponsoredLabels: ["Sponsored", "Featured"],
+  sponsoredCount: 4,
   blogUrl: "https://yongsocial.com",   // your Blogger blog root (no trailing slash)
   postsPerPage: 9,
   openPostsOnBlogger: true,            // posts open on the original Blogger URL
@@ -494,16 +537,6 @@ function featureHtml(p){
     + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span>' + shareBtn(p) + bookmarkBtn(p) + '</div></div></article>';
 }
 
-function tvFeatureHtml(){
-  return '<article class="feature">'
-    + '<div class="tv-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLDiOImJNWDpw" title="Yong Social TV" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>'
-    + '<div class="body"><span class="tag">Yong Social TV</span>'
-    + '<h2>Yong Social TV</h2>'
-    + '<p style="color:var(--muted);margin:0 0 12px">Films, documentaries, series and original productions exploring money, power, business and the world around them.</p>'
-    + '<p style="color:var(--muted);margin:0">Watch fictional and real-world content covering finance, business, economics, crime, technology, AI, wealth and entrepreneurship.</p>'
-    + '</div></article>';
-}
-
 function miniHtml(p){
   return '<a class="mini" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="" onerror="this.src=\'' + ph(p.title) + '\'">'
     + '<span><strong>' + esc(p.title) + '</strong><span>' + fmt(p.date) + '</span></span></a>';
@@ -511,9 +544,13 @@ function miniHtml(p){
 
 function render(posts, isFirstPage){
   var slot = document.getElementById("featureSlot");
-  slot.innerHTML = isFirstPage ? tvFeatureHtml() : "";
-  document.getElementById("posts").innerHTML = posts.length
-    ? posts.map(cardHtml).join("")
+  var list = posts.slice();
+  /* The Yong Social TV panel now occupies the top slot on the first page,
+     so no post is promoted to a feature card any more. */
+  slot.innerHTML = "";
+  document.getElementById("ystv").style.display = isFirstPage ? "" : "none";
+  document.getElementById("posts").innerHTML = list.length
+    ? list.map(cardHtml).join("")
     : '<div class="notice">No posts found. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Browse the blog</a></div>';
 }
 
@@ -535,38 +572,8 @@ function load(){
     if (!firstLoad) window.scrollTo({ top: document.querySelector(".layout").offsetTop - 80, behavior: "smooth" });
     firstLoad = false;
   }).catch(function(){
-    document.getElementById("featureSlot").innerHTML = (state.start === 1 && !state.query) ? tvFeatureHtml() : "";
+    document.getElementById("featureSlot").innerHTML = "";
     document.getElementById("posts").innerHTML = '<div class="notice">Couldn\'t load the feed right now. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Open the blog directly</a></div>';
-  });
-}
-
-function shuffle(arr){
-  var a = arr.slice(), i, j, t;
-  for (i = a.length - 1; i > 0; i--){
-    j = Math.floor(Math.random() * (i + 1));
-    t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-  return a;
-}
-
-function loadSponsored(){
-  var base = CONFIG.blogUrl + "/feeds/posts/default";
-  Promise.all([
-    jsonp(base + "/-/" + encodeURIComponent("Sponsored") + "?max-results=20").catch(function(){ return {}; }),
-    jsonp(base + "/-/" + encodeURIComponent("Featured") + "?max-results=20").catch(function(){ return {}; })
-  ]).then(function(results){
-    var seen = {}, posts = [];
-    results.forEach(function(data){
-      ((data.feed || {}).entry || []).map(pick).forEach(function(p){
-        if (!seen[p.url]) { seen[p.url] = 1; posts.push(p); }
-      });
-    });
-    var picked = shuffle(posts).slice(0, 4);
-    document.getElementById("sponsored").innerHTML = picked.length
-      ? picked.map(miniHtml).join("")
-      : '<span style="color:var(--muted);font-size:14px">No sponsored posts yet.</span>';
-  }).catch(function(){
-    document.getElementById("sponsored").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
   });
 }
 
@@ -584,9 +591,67 @@ function loadSidebar(){
     document.getElementById("fTopics").innerHTML = labels.slice(0, 6).map(function(l){
       return '<li><a href="' + esc(CONFIG.blogUrl) + '/search/label/' + encodeURIComponent(l) + '" target="_blank" rel="noopener">' + esc(l) + '</a></li>';
     }).join("");
-  }).catch(function(){
-    document.getElementById("labels").innerHTML = '<span style="color:var(--muted);font-size:14px">Feed unavailable.</span>';
+  }).catch(function(){});
+}
+
+/* ---- Sponsored / Featured posts (random selection) ---------------------- */
+function shuffle(a){
+  for (var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function loadSponsored(){
+  var box = document.getElementById("sponsored");
+  var reqs = CONFIG.sponsoredLabels.map(function(label){
+    return jsonp(CONFIG.blogUrl + "/feeds/posts/default/-/" + encodeURIComponent(label) + "?max-results=50")
+      .then(function(d){ return ((d.feed || {}).entry || []).map(pick); })
+      .catch(function(){ return []; });
   });
+  Promise.all(reqs).then(function(groups){
+    var seen = {}, pool = [];
+    groups.forEach(function(g){
+      g.forEach(function(p){ if (p.url && !seen[p.url]) { seen[p.url] = 1; pool.push(p); } });
+    });
+    if (!pool.length){
+      box.innerHTML = '<span class="spon-empty">No sponsored posts right now.</span>';
+      return;
+    }
+    box.innerHTML = shuffle(pool).slice(0, CONFIG.sponsoredCount).map(miniHtml).join("");
+  }).catch(function(){
+    box.innerHTML = '<span class="spon-empty">Feed unavailable.</span>';
+  });
+}
+
+/* ---- Yong Social TV player --------------------------------------------- */
+function playlistId(input){
+  if (!input) return "";
+  var v = String(input).trim();
+  var m = v.match(/[?&]list=([^&#\s]+)/);
+  if (m) v = m[1];
+  v = v.split("&")[0].split("#")[0];
+  /* Valid YouTube playlist IDs start with PL/UU/OL/FL/RD/LL and are long. */
+  return /^[A-Za-z0-9_-]{2,}$/.test(v) ? v : "";
+}
+
+function initTV(){
+  var id = playlistId(CONFIG.tvPlaylist);
+  var frame = document.getElementById("ystvFrame");
+  var fallback = document.getElementById("ystvFallback");
+  var fbLink = document.getElementById("ystvFallbackLink");
+  var watchUrl = id ? "https://www.youtube.com/playlist?list=" + id : CONFIG.tvChannelUrl;
+  fbLink.href = watchUrl;
+  if (!id){
+    /* Avoid rendering YouTube's "configuration error" screen for an
+       invalid / incomplete playlist ID — show a clean fallback instead. */
+    frame.remove();
+    fallback.classList.add("show");
+    return;
+  }
+  var origin = location.protocol === "http:" || location.protocol === "https:" ? "&origin=" + encodeURIComponent(location.origin) : "";
+  frame.src = "https://www.youtube.com/embed/videoseries?list=" + encodeURIComponent(id)
+    + "&rel=0&modestbranding=1&playsinline=1&color=white" + origin;
 }
 
 /* =========================================================================
@@ -806,6 +871,7 @@ totop.onclick = function(){ window.scrollTo({ top:0, behavior:"smooth" }); };
 window.addEventListener("scroll", function(){ totop.classList.toggle("show", window.scrollY > 600); });
 
 buildChrome();
+initTV();
 load();
 loadSidebar();
 loadSponsored();
