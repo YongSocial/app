@@ -288,9 +288,9 @@ footer a:hover{color:var(--brand)}
 
     <aside>
       <div class="box cta">
-        <h4>More On X</h4>
-        <p>Get market briefings and more updates from the Yong Social official X account.</p>
-        <a class="btn" id="subscribeLink" href="#">Follow Us</a>
+        <h4>YongQuest</h4>
+        <p>Submit your completed quest here. Provide the required proof or details to show that you completed the quest successfully.</p>
+        <a class="btn" id="subscribeLink" href="go:submitquest">Submit Quest</a>
       </div>
       <div class="box">
         <h4>Sponsored</h4>
@@ -403,8 +403,7 @@ var CONFIG = {
     { label: "Sitemap", url: "https://yongsocial.com/sitemap.xml" }
   ],
   footerLegal: [
-    { label: "Privacy Policy",  url: "https://app.yongsocial.com/privacy-policy" },
-    { label: "Terms of Service",url: "https://app.yongsocial.com/terms-of service" }
+    { label: "Privacy Policy",  url: "https://app.yongsocial.com/privacy-policy" }
   ],
   socials: [
     { label: "Yong Social on X", icon: "x", url: "https://x.com/yongsocial" },
@@ -793,7 +792,6 @@ function buildChrome(){
     var icon = SOCIAL_ICONS[s.icon] || esc(s.label);
     return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener" aria-label="' + esc(s.label) + '" title="' + esc(s.label) + '">' + icon + '</a>';
   }).join("");
-  document.getElementById("subscribeLink").href = CONFIG.subscribeUrl;
   document.getElementById("visitBlog").href = CONFIG.blogUrl;
   document.getElementById("year").textContent = new Date().getFullYear();
   document.getElementById("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
