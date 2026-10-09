@@ -74,7 +74,7 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .chip:hover,.chip.active{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.12)}
 
 /* Layout */
-.layout{display:grid;grid-template-columns:1fr 320px;gap:34px;padding:34px 0 60px}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:34px;padding:34px 20px 60px}
 .section-title{font-family:var(--font-head);font-size:15px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:0 0 16px;display:flex;align-items:center;gap:10px}
 .section-title::after{content:"";height:1px;flex:1;background:var(--line)}
 
@@ -893,6 +893,19 @@ function authorName(entry){
   return n;
 }
 
+/* Card excerpt: end on a full sentence when one fits, otherwise on a whole word (never mid-phrase like "and, ..."). */
+function snip(text){
+  var MAX = 260, MIN = 120;
+  if (text.length <= MAX) return text;
+  var cut = text.slice(0, MAX), i, best = -1;
+  for (i = cut.length - 1; i >= MIN; i--){
+    if (/[.!?]/.test(cut.charAt(i)) && (i === cut.length - 1 || /\s/.test(cut.charAt(i + 1)))){ best = i; break; }
+  }
+  if (best > -1) return cut.slice(0, best + 1);
+  cut = cut.slice(0, cut.lastIndexOf(" ") > MIN ? cut.lastIndexOf(" ") : MAX);
+  return cut.replace(/[\s,;:\-\u2013\u2014(]+$/, "") + "\u2026";
+}
+
 function pick(entry){
   var link = "", i;
   for (i = 0; i < (entry.link || []).length; i++) if (entry.link[i].rel === "alternate") link = entry.link[i].href;
@@ -905,7 +918,7 @@ function pick(entry){
     title: (entry.title && entry.title.$t) || "Untitled",
     url: link,
     thumb: thumb,
-    snippet: text.slice(0, 150) + (text.length > 150 ? "\u2026" : ""),
+    snippet: snip(text),
     date: entry.published ? new Date(entry.published.$t) : null,
     author: authorName(entry),
     labels: (entry.category || []).map(function(c){ return c.term; }),
