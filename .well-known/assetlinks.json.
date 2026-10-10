@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.yongsocial.app",
+      "sha256_cert_fingerprints": [
+        "A9:C6:21:8C:85:43:13:AB:51:EF:CD:E7:10:D8:FB:BF:EB:AD:05:0D:DA:67:5E:CD:CA:03:C0:EB:E7:13:FA:A4"
+      ]
+    }
+  }
+]
