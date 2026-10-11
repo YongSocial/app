@@ -564,14 +564,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .hm-watch .tx b{display:block;font-family:var(--font-head);font-size:16px;line-height:1.35}
 .hm-watch .tx small{display:block;margin-top:5px;font-size:13px;color:var(--muted)}
 .hm-intro{color:var(--muted);font-size:14.5px;margin:16px 0 14px}
-.hm-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.hm-vid{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
-.hm-vid button.th{position:relative;display:grid;place-items:center;aspect-ratio:16/9;border:0;padding:0;background:#000;cursor:pointer;overflow:hidden}
-.hm-vid button.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
-.hm-vid button.th i{position:relative;font-size:46px;color:#fff;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
-.hm-vid .tx{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
-.hm-vid strong{font-family:var(--font-head);font-size:14.5px;line-height:1.35;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.hm-vid .tx a{font-size:12.5px;font-weight:600;color:var(--brand)}
 .hm-follow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .hm-follow a{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--text)}
 .hm-follow a:hover{border-color:var(--brand)}
@@ -595,6 +587,14 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .vc-card strong{display:block;font-family:var(--font-head);font-size:15px;line-height:1.3}
 .vc-card small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.4}
 .vc-note{margin:16px 2px 0;font-size:12px;color:var(--muted);line-height:1.5}
+.vc-ad{display:block;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--surface-2),var(--surface));padding:14px 16px 16px;color:var(--text)}
+.vc-ad-tag{display:inline-block;margin-bottom:10px;font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.vc-ad-row{display:flex;align-items:center;gap:14px}
+.vc-ad-row img{flex:none;width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--surface-2)}
+.vc-ad-tx{min-width:0}
+.vc-ad-tx strong{display:block;font-family:var(--font-head);font-size:17px;line-height:1.3}
+.vc-ad-tx small{display:block;margin-top:4px;color:var(--muted);font-size:13.5px;line-height:1.45}
+.vc-ad-btn{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:var(--brand);color:#fff;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px}
 #hmPane-videos .tv{margin:16px 0 0}
 .hm-hero{padding:18px 0 0}
 .hm-hero .hero-search{flex-direction:row;margin-top:0;max-width:none}
@@ -786,14 +786,8 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
       <div class="vc-grid" id="vcGrid"></div>
       <p class="vc-note">Videos play from each channel&rsquo;s official YouTube page. Channel names and logos belong to their owners, and Yong Social is not affiliated with them.</p>
     </div>
-    <div class="hm-sec">
-      <div class="hm-sec-h"><h2>From our articles</h2></div>
-      <div id="hmVidGrid"></div>
-    </div>
-    <div class="hm-sec">
-      <div class="hm-sec-h"><h2>Follow us</h2></div>
-      <div class="hm-follow" id="hmFollow"></div>
-    </div>
+    <div class="hm-sec" id="vcAdSec" hidden><div id="vcAd"></div></div>
+  </div>
   </div></section>
 </main>
 
@@ -1002,6 +996,17 @@ var CONFIG = {
      list = the playlist ID (the text after "list=" in the playlist link), cat = one of videoCategories,
      img = optional logo file in the repo (a letter circle shows until the file exists). */
   videoCategories: ["Markets", "Crypto", "Business", "Personal Finance", "Documentaries"],
+  /* Ad card at the bottom of the Videos tab. Set enabled:false to hide it.
+     Replace the text, link (must start with https://) and optional image with your advertiser's. */
+  adCard: {
+    enabled: true,
+    label: "Advertisement",
+    title: "Advertise with Yong Social",
+    text: "Reach readers who follow markets, crypto and investing.",
+    button: "Get in touch",
+    url: "https://www.yongsocial.com/p/contact-us.html",
+    img: ""
+  },
   videoChannels: [
     { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
       blurb: "Market news, interviews and business headlines." },
@@ -3479,55 +3484,14 @@ hmEl("hmPane-today").addEventListener("click", function(e){
 hmEl("hmPane-today").addEventListener("error", onImgErr, true);
 
 /* ---- Recent posts feed (shared by Today and Videos) ---- */
-function hmExtractVideos(posts){
-  var seen = {}, out = [];
-  posts.forEach(function(p){
-    var re = new RegExp(HM_YT.source, "g"), m;
-    while ((m = re.exec(p.html || ""))){
-      if (!seen[m[1]]){ seen[m[1]] = 1; out.push({ id: m[1], title: p.title, post: p }); }
-    }
-  });
-  return out;
-}
 function hmRecentReady(posts){
   hm.recent = posts.filter(function(p){ return p.url; });
   hm.recentFail = false;
-  hm.videos = hmExtractVideos(hm.recent);
-  if (hm.vidsBuilt) hmRenderVideos();
 }
 function hmRecentFail(){
   hm.recentFail = true;
-  if (hm.vidsBuilt) hmRenderVideos();
 }
 
-/* ---- Videos ---- */
-function hmPlay(id){
-  var frame = hmEl("ystvFrame");
-  if (!frame){ window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(id), "_blank", "noopener"); return; }
-  var origin = location.protocol === "http:" || location.protocol === "https:" ? "&origin=" + encodeURIComponent(location.origin) : "";
-  frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(id) + "?autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white" + origin;
-  vc.sel = null;
-  vcNow("From our articles", "Yong Social", "https://www.youtube.com/watch?v=" + encodeURIComponent(id));
-  vcRender();
-  hmEl("ystv").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-function hmRenderVideos(){
-  var box = hmEl("hmVidGrid");
-  if (!hm.recent){
-    box.innerHTML = hm.recentFail ? hmNotice("Couldn&rsquo;t load videos right now.", 'data-hm-retry="stories"')
-      : '<div class="dv-skel sq" style="height:200px"></div>';
-    return;
-  }
-  if (!hm.videos.length){
-    box.innerHTML = hmNotice("Videos from our articles will show up here. Meanwhile, the full playlist is above.");
-    return;
-  }
-  box.innerHTML = '<div class="hm-vgrid">' + hm.videos.slice(0, 12).map(function(v){
-    return '<div class="hm-vid"><button class="th" type="button" data-vid="' + esc(v.id) + '" aria-label="Play ' + esc(v.title) + '">'
-      + '<img loading="lazy" src="https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg" alt=""><i class="ph-fill ph-play-circle" aria-hidden="true"></i></button>'
-      + '<div class="tx"><strong>' + esc(v.title) + '</strong><a ' + attrs(v.post) + '>Read the article</a></div></div>';
-  }).join("") + '</div>';
-}
 /* ---- Video channels (one YouTube playlist per channel) ---- */
 var vc = { cat: "All", sel: "yongsocial" };
 function vcInitials(name){
@@ -3536,7 +3500,7 @@ function vcInitials(name){
 }
 function vcList(){
   var own = playlistId(CONFIG.tvPlaylist);
-  var first = own ? [{ id: "yongsocial", name: "Yong Social Watch", cat: "Documentaries", list: own, img: "", blurb: "Films, documentaries and original series." }] : [];
+  var first = own ? [{ id: "yongsocial", name: "Yong Social Watch", cat: "Documentaries", list: own, img: "/ysf.png", blurb: "Films, documentaries and original series." }] : [];
   return first.concat(CONFIG.videoChannels || []);
 }
 function vcFind(id){
@@ -3590,16 +3554,19 @@ hmEl("vcGrid").addEventListener("click", function(e){
 });
 hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
+function vcAdRender(){
+  var a = CONFIG.adCard, sec = hmEl("vcAdSec");
+  if (!a || !a.enabled || !/^https:\/\//.test(a.url || "")){ sec.hidden = true; return; }
+  hmEl("vcAd").innerHTML = '<a class="vc-ad" href="' + esc(a.url) + '" target="_blank" rel="sponsored noopener noreferrer">'
+    + '<span class="vc-ad-tag">' + esc(a.label || "Advertisement") + '</span>'
+    + '<span class="vc-ad-row">' + (a.img ? '<img loading="lazy" src="' + esc(a.img) + '" alt="">' : "")
+    + '<span class="vc-ad-tx"><strong>' + esc(a.title || "") + '</strong>' + (a.text ? '<small>' + esc(a.text) + '</small>' : "") + '</span></span>'
+    + '<span class="vc-ad-btn">' + esc(a.button || "Learn more") + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>';
+  sec.hidden = false;
+}
 function hmBuildVideos(){
   vcRender();
-  if (!hm.vidsBuilt){
-    hm.vidsBuilt = true;
-    var soc = (CONFIG.socials || []).filter(function(s){ return SOCIAL_ICONS[s.icon]; });
-    hmEl("hmFollow").innerHTML = soc.map(function(s){
-      return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + SOCIAL_ICONS[s.icon] + esc(s.label.replace(/^Yong Social on /, "")) + '</a>';
-    }).join("");
-  }
-  hmRenderVideos();
+  vcAdRender();
 }
 
 /* ---- The Other Side: everything beyond crypto ---- */
@@ -3653,11 +3620,9 @@ homeView.addEventListener("click", function(e){
   if (retry){
     var what = retry.getAttribute("data-hm-retry");
     if (what === "other"){ hm.otherBuilt = false; hmBuildOther(); }
-    else { hm.recentFail = false; hmRenderVideos(); loadSidebar(); }
+    else { hm.recentFail = false; loadSidebar(); }
     return;
   }
-  var vid = e.target.closest("[data-vid]");
-  if (vid){ hmPlay(vid.getAttribute("data-vid")); return; }
 });
 todayEnter();
 
