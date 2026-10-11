@@ -1087,11 +1087,13 @@ var CONFIG = {
   ],
   openPostsOnBlogger: true,            // posts open on the original Blogger URL
   openPostsInApp: true,                // true = articles open in the in-app reader; false = open on Blogger
-  /* Home > The Other Side: sections beyond crypto. "q" is a blog search; use tag: "Label" instead to match a Blogger label. */
+  /* Home > The Other Side: sections beyond crypto.
+     tag = the exact Blogger label to pull posts from (spelling must match the label in Blogger).
+     q   = optional backup search, used only while no posts carry that label yet. */
   otherSide: [
-    { label: "8 AM Finance",      q: "8 am finance",     icon: "ph-sun-horizon" },
-    { label: "Tech It Up",        q: "tech it up",       icon: "ph-cpu" },
-    { label: "Stocks & markets",  q: "stock market",     icon: "ph-chart-line-up" }
+    { label: "8 AM Finance",      tag: "8 AM Finance",  q: "8 am finance",  icon: "ph-sun-horizon" },
+    { label: "Tech It Up",        tag: "Tech It Up",    q: "tech it up",    icon: "ph-cpu" },
+    { label: "Stocks & markets",  tag: "Stocks",        q: "stock market",  icon: "ph-chart-line-up" }
   ],
   subscribeUrl: "https://x.com/yongsocial",             // newsletter / subscribe link (now X follow link)
   // Header nav — replace href values with your real page URLs
@@ -3572,23 +3574,55 @@ function hmBuildVideos(){
 }
 
 /* ---- The Other Side: everything beyond crypto ---- */
+/* All of the blog's label names (fetched once), used to match a configured label ignoring capital letters. */
+function hmLabels(){
+  if (!hm.labelsP){
+    hm.labelsP = jsonp(CONFIG.blogUrl + "/feeds/posts/summary?max-results=0")
+      .then(function(d){ return ((d.feed || {}).category || []).map(function(c){ return c.term; }); })
+      .catch(function(){ hm.labelsP = null; return []; });
+  }
+  return hm.labelsP;
+}
+function hmExactLabel(tag){
+  var want = String(tag).replace(/\s+/g, " ").trim().toLowerCase();
+  return hmLabels().then(function(all){
+    var i;
+    for (i = 0; i < all.length; i++) if (String(all[i]).replace(/\s+/g, " ").trim().toLowerCase() === want) return all[i];
+    return tag;
+  });
+}
 function hmBuildOther(){
   if (hm.otherBuilt) return;
   hm.otherBuilt = true;
-  var secs = CONFIG.otherSide || [], failed = false;
+  var secs = CONFIG.otherSide || [];
   hmEl("hmOtherList").innerHTML = secs.map(function(s, i){
     return '<section class="hm-sec" id="hmOs' + i + '"><div class="hm-sec-h"><h2>' + esc(s.label) + '</h2>'
-      + '<button class="hm-more" type="button" data-hm-q="' + esc(s.q || s.label) + '">See all</button></div>'
+      + '<button class="hm-more" type="button" data-hm-q="' + esc(s.q || s.tag || s.label) + '">See all</button></div>'
       + '<div class="hm-osbody"><div class="dv-skel sq" style="height:210px"></div></div></section>';
   }).join("");
+  function feedUrl(s, tag){
+    return CONFIG.blogUrl + "/feeds/posts/summary" + (tag ? "/-/" + encodeURIComponent(tag) : "")
+      + "?max-results=4" + (!tag && s.q ? "&q=" + encodeURIComponent(s.q) : "");
+  }
+  function getPosts(url){
+    return jsonp(url).then(function(d){ return ((d.feed || {}).entry || []).map(pick).filter(function(p){ return p.url; }); });
+  }
   secs.forEach(function(s, i){
-    var url = CONFIG.blogUrl + "/feeds/posts/summary" + (s.tag ? "/-/" + encodeURIComponent(s.tag) : "")
-      + "?max-results=4" + (!s.tag && s.q ? "&q=" + encodeURIComponent(s.q) : "");
-    jsonp(url).then(function(d){
-      var posts = ((d.feed || {}).entry || []).map(pick).filter(function(p){ return p.url; });
+    /* Capital letters don't matter: we look up the label's exact spelling in the blog's own label list. */
+    (s.tag ? hmExactLabel(s.tag) : Promise.resolve(null)).then(function(tag){
+      return getPosts(feedUrl(s, tag)).then(function(posts){
+        if (!posts.length && tag && s.q) return getPosts(feedUrl(s, null)).then(function(p2){ return { posts: p2, tag: null }; });
+        return { posts: posts, tag: tag };
+      });
+    }).then(function(r){
       var sec = hmEl("hmOs" + i);
-      if (!posts.length){ sec.hidden = true; return; }
-      sec.querySelector(".hm-osbody").innerHTML = '<div class="hm-list">' + posts.map(hmRow).join("") + '</div>';
+      if (!r.posts.length){ sec.hidden = true; return; }
+      if (r.tag){   /* "See all" then filters the News tab by this label, same as tapping its topic chip */
+        var btn = sec.querySelector(".hm-more");
+        btn.removeAttribute("data-hm-q");
+        btn.setAttribute("data-label", r.tag);
+      }
+      sec.querySelector(".hm-osbody").innerHTML = '<div class="hm-list">' + r.posts.map(hmRow).join("") + '</div>';
     }).catch(function(){
       hm.otherBuilt = false;   /* retry next time the tab opens */
       hmEl("hmOs" + i).querySelector(".hm-osbody").innerHTML = hmNotice("Couldn&rsquo;t load this section.", 'data-hm-retry="other"');
