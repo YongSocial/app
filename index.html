@@ -577,6 +577,24 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .hm-follow a:hover{border-color:var(--brand)}
 .hm-follow svg{width:16px;height:16px}
 #ystv{scroll-margin-top:calc(var(--hdr,60px) + 90px)}
+.vc-now{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.vc-now strong{display:block;font-family:var(--font-head);font-size:16px;line-height:1.3}
+.vc-now span{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
+.vc-now a{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--brand)}
+.vc-chips{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:2px 20px 14px;scrollbar-width:none}
+.vc-chips::-webkit-scrollbar{display:none}
+.vc-chip{flex:none;background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 14px;font:600 13.5px var(--font-body);cursor:pointer;white-space:nowrap}
+.vc-chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vc-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--text);cursor:pointer;font:inherit;min-width:0;-webkit-tap-highlight-color:transparent}
+.vc-card.on{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+.vc-ava,.vc-ava img,.vc-ava .p-ini{width:48px;height:48px;border-radius:12px}
+.vc-ava img{object-fit:cover;background:var(--surface-2);display:block}
+.vc-ava .p-ini{display:grid;place-items:center;font-size:15px;font-weight:700;color:#fff;font-family:var(--font-head)}
+.vc-cat{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+.vc-card strong{display:block;font-family:var(--font-head);font-size:15px;line-height:1.3}
+.vc-card small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.4}
+.vc-note{margin:16px 2px 0;font-size:12px;color:var(--muted);line-height:1.5}
 #hmPane-videos .tv{margin:16px 0 0}
 .hm-hero{padding:18px 0 0}
 .hm-hero .hero-search{flex-direction:row;margin-top:0;max-width:none}
@@ -748,25 +766,26 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 
   <!-- VIDEOS -->
   <section id="hmPane-videos" role="tabpanel" hidden><div class="hm-wrap">
-<section class="tv" id="ystv" aria-labelledby="ystvTitle">
-        <div class="tv-head">
-          <span class="tv-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 16.5 16 12l-6-4.5v9zM20 4H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5v2h6v-2h5a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>Yong Social Watch</span>
-          <h2 id="ystvTitle">Films, documentaries, series and original productions</h2>
-        </div>
-        <p class="tv-sub">Curated market analysis, crypto coverage and ideas from across the financial world.</p>
+<section class="tv" id="ystv" aria-label="Video player">
         <div class="tv-frame">
-          <iframe id="ystvFrame" title="Yong Social Watch playlist" src="about:blank"
+          <iframe id="ystvFrame" title="Video player" src="about:blank"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
           <div class="tv-fallback" id="ystvFallback">
             <span>Video player unavailable here. <a href="#" id="ystvFallbackLink" target="_blank" rel="noopener" style="color:var(--brand);font-weight:600">Watch the playlist on YouTube &#8599;</a></span>
           </div>
         </div>
-        <div class="tv-foot">
-          <p>Watch selected videos covering markets, crypto, AI, investing and the future of finance.</p>
-          
+        <div class="vc-now">
+          <div><strong id="vcNowName">Yong Social Watch</strong><span id="vcNowCat">Documentaries</span></div>
+          <a id="vcNowLink" href="https://www.youtube.com/@yongsocial/playlists" target="_blank" rel="noopener">Open on YouTube <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
         </div>
       </section>
+    <div class="hm-sec">
+      <div class="hm-sec-h"><h2>Channels</h2></div>
+      <div class="vc-chips" id="vcChips" role="tablist" aria-label="Video categories"></div>
+      <div class="vc-grid" id="vcGrid"></div>
+      <p class="vc-note">Videos play from each channel&rsquo;s official YouTube page. Channel names and logos belong to their owners, and Yong Social is not affiliated with them.</p>
+    </div>
     <div class="hm-sec">
       <div class="hm-sec-h"><h2>From our articles</h2></div>
       <div id="hmVidGrid"></div>
@@ -979,6 +998,24 @@ var CONFIG = {
      back to a direct YouTube link instead of an error screen. ---------- */
   tvPlaylist: "https://youtube.com/playlist?list=PLDiOImJNWDpw",
   tvChannelUrl: "https://www.youtube.com/@yongsocial/playlists",
+  /* Videos tab: one YouTube playlist per channel (add more any time).
+     list = the playlist ID (the text after "list=" in the playlist link), cat = one of videoCategories,
+     img = optional logo file in the repo (a letter circle shows until the file exists). */
+  videoCategories: ["Markets", "Crypto", "Business", "Personal Finance", "Documentaries"],
+  videoChannels: [
+    { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
+      blurb: "Market news, interviews and business headlines." },
+    { id: "coindesk", name: "CoinDesk", cat: "Crypto", list: "PLZwz_t-qThhc", img: "/coindesk.jpg",
+      blurb: "Crypto news, markets and interviews." },
+    { id: "businessinsider", name: "Business Insider", cat: "Business", list: "PLXxTw91OSyA4", img: "/businessinsider.jpg",
+      blurb: "Business, money and tech explained." },
+    { id: "humphreyyang", name: "Humphrey Yang", cat: "Personal Finance", list: "PLX5-E4bGdi5s", img: "/humphreyyang.jpg",
+      blurb: "Money and investing, explained simply." },
+    { id: "moneyguyshow", name: "The Money Guy Show", cat: "Personal Finance", list: "PLC-DCrQ0784U", img: "/moneyguyshow.jpg",
+      blurb: "Personal finance and building wealth." },
+    { id: "bloombergoriginals", name: "Bloomberg Originals", cat: "Documentaries", list: "PLPfHtfzdV4t0", img: "/bloombergoriginals.jpg",
+      blurb: "Documentaries and original series." }
+  ],
   sponsoredLabels: ["Sponsored", "Featured"],
   sponsoredCount: 4,
   blogUrl: "https://yongsocial.com",   // your Blogger blog root (no trailing slash)
@@ -3469,6 +3506,9 @@ function hmPlay(id){
   if (!frame){ window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(id), "_blank", "noopener"); return; }
   var origin = location.protocol === "http:" || location.protocol === "https:" ? "&origin=" + encodeURIComponent(location.origin) : "";
   frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(id) + "?autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white" + origin;
+  vc.sel = null;
+  vcNow("From our articles", "Yong Social", "https://www.youtube.com/watch?v=" + encodeURIComponent(id));
+  vcRender();
   hmEl("ystv").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 function hmRenderVideos(){
@@ -3488,7 +3528,70 @@ function hmRenderVideos(){
       + '<div class="tx"><strong>' + esc(v.title) + '</strong><a ' + attrs(v.post) + '>Read the article</a></div></div>';
   }).join("") + '</div>';
 }
+/* ---- Video channels (one YouTube playlist per channel) ---- */
+var vc = { cat: "All", sel: "yongsocial" };
+function vcInitials(name){
+  var w = String(name).replace(/^the\s+/i, "").split(/\s+/).filter(Boolean);
+  return w.length > 1 ? w[0].charAt(0) + w[1].charAt(0) : String(name).replace(/^the\s+/i, "").slice(0, 2);
+}
+function vcList(){
+  var own = playlistId(CONFIG.tvPlaylist);
+  var first = own ? [{ id: "yongsocial", name: "Yong Social Watch", cat: "Documentaries", list: own, img: "", blurb: "Films, documentaries and original series." }] : [];
+  return first.concat(CONFIG.videoChannels || []);
+}
+function vcFind(id){
+  var l = vcList(), i;
+  for (i = 0; i < l.length; i++) if (l[i].id === id) return l[i];
+  return null;
+}
+function vcNow(name, cat, url){
+  hmEl("vcNowName").textContent = name;
+  hmEl("vcNowCat").textContent = cat;
+  hmEl("vcNowLink").href = url;
+}
+function vcRender(){
+  var cats = ["All"].concat(CONFIG.videoCategories || []);
+  hmEl("vcChips").innerHTML = cats.map(function(c){
+    var on = c === vc.cat;
+    return '<button class="vc-chip' + (on ? " on" : "") + '" type="button" role="tab" aria-selected="' + on + '" data-vccat="' + esc(c) + '">' + esc(c) + '</button>';
+  }).join("");
+  var list = vcList().filter(function(c){ return vc.cat === "All" || c.cat === vc.cat; });
+  hmEl("vcGrid").innerHTML = list.length ? list.map(function(c){
+    var ini = vcInitials(c.name);
+    var ava = c.img ? '<img loading="lazy" src="' + esc(c.img) + '" alt="" data-fallback="' + esc(ini) + '">'
+      : '<span class="p-ini" style="background:' + avatarColor(ini) + '">' + esc(ini) + '</span>';
+    return '<button class="vc-card' + (c.id === vc.sel ? " on" : "") + '" type="button" data-vc="' + esc(c.id) + '" aria-label="Play ' + esc(c.name) + '">'
+      + '<span class="vc-ava">' + ava + '</span>'
+      + '<span><span class="vc-cat">' + esc(c.cat) + '</span><strong>' + esc(c.name) + '</strong>' + (c.blurb ? '<small>' + esc(c.blurb) + '</small>' : "") + '</span></button>';
+  }).join("") : '<div style="grid-column:1/-1">' + hmNotice("No channels in this category yet.") + '</div>';
+  var cur = vcFind(vc.sel);
+  if (cur) vcNow(cur.name, cur.cat, "https://www.youtube.com/playlist?list=" + encodeURIComponent(cur.list));
+}
+function vcSelect(id){
+  var c = vcFind(id);
+  if (!c) return;
+  var url = "https://www.youtube.com/playlist?list=" + encodeURIComponent(c.list), frame = hmEl("ystvFrame");
+  if (!frame){ window.open(url, "_blank", "noopener"); return; }
+  vc.sel = id;
+  var origin = location.protocol === "http:" || location.protocol === "https:" ? "&origin=" + encodeURIComponent(location.origin) : "";
+  frame.src = "https://www.youtube.com/embed/videoseries?list=" + encodeURIComponent(c.list) + "&autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white" + origin;
+  vcRender();
+  hmEl("ystv").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+hmEl("vcChips").addEventListener("click", function(e){
+  var b = e.target.closest("[data-vccat]");
+  if (!b) return;
+  vc.cat = b.getAttribute("data-vccat");
+  vcRender();
+});
+hmEl("vcGrid").addEventListener("click", function(e){
+  var b = e.target.closest("[data-vc]");
+  if (b) vcSelect(b.getAttribute("data-vc"));
+});
+hmEl("vcGrid").addEventListener("error", onImgErr, true);
+
 function hmBuildVideos(){
+  vcRender();
   if (!hm.vidsBuilt){
     hm.vidsBuilt = true;
     var soc = (CONFIG.socials || []).filter(function(s){ return SOCIAL_ICONS[s.icon]; });
