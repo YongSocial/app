@@ -1012,6 +1012,8 @@ var CONFIG = {
       blurb: "Market news, interviews and business headlines." },
     { id: "coindesk", name: "CoinDesk", cat: "Crypto", list: "PLZwz_t-qThhc", img: "/coindesk.jpg",
       blurb: "Crypto news, markets and interviews." },
+    { id: "altcoindaily", name: "Altcoin Daily", cat: "Crypto", list: "PLK1rU-WGUgBg", img: "/altcoindaily.jpg",
+      blurb: "Daily altcoin and crypto market news." },
     { id: "businessinsider", name: "Business Insider", cat: "Business", list: "PLXxTw91OSyA4", img: "/businessinsider.jpg",
       blurb: "Business, money and tech explained." },
     { id: "humphreyyang", name: "Humphrey Yang", cat: "Personal Finance", list: "PLX5-E4bGdi5s", img: "/humphreyyang.jpg",
@@ -3500,7 +3502,7 @@ function vcInitials(name){
 }
 function vcList(){
   var own = playlistId(CONFIG.tvPlaylist);
-  var first = own ? [{ id: "yongsocial", name: "Yong Social Watch", cat: "Documentaries", list: own, img: "/ysf.png", blurb: "Films, documentaries and original series." }] : [];
+  var first = own ? [{ id: "yongsocial", name: "Yong Social Watch", cat: "Documentaries", list: own, img: "/ysf.jpg", blurb: "Films, documentaries and original series." }] : [];
   return first.concat(CONFIG.videoChannels || []);
 }
 function vcFind(id){
