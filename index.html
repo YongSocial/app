@@ -587,6 +587,31 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .vc-card strong{display:block;font-family:var(--font-head);font-size:15px;line-height:1.3}
 .vc-card small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.4}
 .vc-note{margin:16px 2px 0;font-size:12px;color:var(--muted);line-height:1.5}
+.ac-label{margin:26px 4px 10px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.ac-group{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ac-row{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:14px 16px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ac-row:last-child{border-bottom:0}
+.ac-row:active{background:var(--surface-2)}
+.ac-ico{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--surface-2);color:var(--brand);font-size:20px}
+.ac-t{flex:1;min-width:0;font-weight:600;font-size:15.5px}
+.ac-t small{display:block;margin-top:2px;font-weight:400;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.ac-val{font-size:14.5px;color:var(--muted);white-space:nowrap}
+.ac-go{flex:none;color:var(--brand);font-size:16px}
+.ac-news{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding:20px 18px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(135deg,var(--surface),var(--surface-2));color:var(--text)}
+.ac-news strong{display:block;font-family:var(--font-head);font-size:18px;line-height:1.3}
+.ac-news p{margin:8px 0 14px;font-size:14px;line-height:1.5;color:var(--muted)}
+.ac-link{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--brand);font-size:14.5px}
+.ac-news svg{flex:none;width:104px;height:104px}
+.ac-foot{margin:36px 0 10px;text-align:center;color:var(--muted);font-size:12.5px}
+.ac-foot img{display:block;width:46px;height:46px;border-radius:11px;margin:0 auto 12px}
+.ac-foot p{margin:4px 0}
+.ct-search{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:11px 14px;font:inherit;font-size:15px;outline:none;margin-bottom:10px}
+.ct-auto{display:block;width:100%;box-sizing:border-box;text-align:left;background:none;border:1px dashed var(--line);border-radius:12px;color:var(--brand);font:600 14px var(--font-body);padding:10px 14px;margin-bottom:10px;cursor:pointer}
+.ct-list{max-height:48vh;overflow-y:auto;margin:0 -8px;padding:0 8px}
+.ct-row{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:11px 8px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);font:inherit;font-size:15px;text-align:left;cursor:pointer}
+.ct-row .fl{font-size:22px;width:28px;text-align:center}
+.ct-row.on{color:var(--brand);font-weight:700}
+.ct-row .ck{margin-left:auto}
 .vc-ad{display:block;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--surface-2),var(--surface));padding:14px 16px 16px;color:var(--text)}
 .vc-ad-tag{display:inline-block;margin-bottom:10px;font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
 .vc-ad-row{display:flex;align-items:center;gap:14px}
@@ -911,6 +936,69 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   </article>
 </section>
 
+<section class="discover" id="accountView" hidden aria-label="Profile">
+  <div class="wrap dv-wrap">
+    <header class="dv-head">
+      <h1>Profile</h1>
+      <p>Your settings and helpful links.</p>
+    </header>
+
+    <div class="ac-label">Resources</div>
+    <div class="ac-group">
+      <a class="ac-row" id="acPrivacy" href="#" target="_blank" rel="noopener">
+        <span class="ac-ico"><i class="ph ph-shield-check" aria-hidden="true"></i></span>
+        <span class="ac-t">Privacy Policy</span><i class="ph ph-caret-right ac-go" aria-hidden="true"></i>
+      </a>
+      <a class="ac-row" id="acTerms" href="#" target="_blank" rel="noopener">
+        <span class="ac-ico"><i class="ph ph-file-text" aria-hidden="true"></i></span>
+        <span class="ac-t">Terms of Use</span><i class="ph ph-caret-right ac-go" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <a class="ac-news" id="acNews" href="#" target="_blank" rel="noopener">
+      <div>
+        <strong>Stay up to date with Yong Social Finance</strong>
+        <p>Follow us on X for market updates, new articles and announcements.</p>
+        <span class="ac-link">View Updates <i class="ph ph-caret-double-right" aria-hidden="true"></i></span>
+      </div>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="22" cy="34" r="9" fill="#F58220" stroke="#10131A" stroke-width="3"/><circle cx="22" cy="34" r="3.5" fill="#FFD166"/>
+        <circle cx="100" cy="92" r="8" fill="#F58220" stroke="#10131A" stroke-width="3"/><circle cx="100" cy="92" r="3" fill="#FFD166"/>
+        <g transform="rotate(38 60 60)">
+          <path d="M52 94 Q60 120 68 94 Z" fill="#F58220"/><path d="M55 94 Q60 110 65 94 Z" fill="#FFD166"/>
+          <path d="M47 70 L33 92 L51 85 Z" fill="#6D5BF0"/><path d="M73 70 L87 92 L69 85 Z" fill="#6D5BF0"/>
+          <path d="M60 12 C75 27 77 53 72 94 L48 94 C43 53 45 27 60 12 Z" fill="#F4F6FB"/>
+          <path d="M60 12 C75 27 77 53 72 94 L60 94 Z" fill="#DDE3F0"/>
+          <path d="M60 12 C67 19 70 26 71 33 L49 33 C50 26 53 19 60 12 Z" fill="#2196F3"/>
+          <circle cx="60" cy="54" r="9.5" fill="#2196F3" stroke="#10131A" stroke-width="3"/><circle cx="57" cy="51" r="3" fill="#BFE3FF"/>
+        </g>
+      </svg>
+    </a>
+
+    <div class="ac-group" style="margin-top:22px">
+      <button class="ac-row" id="acCountry" type="button">
+        <span class="ac-ico"><i class="ph ph-globe-hemisphere-west" aria-hidden="true"></i></span>
+        <span class="ac-t">Country<small id="acCountrySub">Detected from your device</small></span>
+        <span class="ac-val" id="acCountryVal">&mdash;</span><i class="ph ph-caret-right ac-go" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="ac-label">Contact us</div>
+    <div class="ac-group">
+      <a class="ac-row" id="acMail" href="#">
+        <span class="ac-ico"><i class="ph ph-envelope-simple" aria-hidden="true"></i></span>
+        <span class="ac-t">Email us<small id="acMailText"></small></span><i class="ph ph-caret-right ac-go" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <footer class="ac-foot">
+      <img id="acLogo" alt="Yong Social Finance">
+      <p>App version <span id="acVer"></span></p>
+      <p id="acCopy"></p>
+    </footer>
+  </div>
+</section>
+
 <section class="tradepage" id="tradeView" hidden aria-label="Compare exchanges">
   <div class="wrap cp-wrap">
     <div class="tr-sticky">
@@ -975,6 +1063,16 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
     <h4 id="soonTitle">Coming soon&hellip;</h4>
     <p id="soonText">This feature is still in development. We&rsquo;re putting the final touches together &mdash; check back shortly.</p>
     <button class="modal-btn" id="soonOk" type="button">Got it</button>
+  </div>
+</div>
+
+<div class="modal" id="countryModal" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="ctTitle">
+    <button class="modal-close" id="ctClose" aria-label="Close">&times;</button>
+    <h4 id="ctTitle">Choose your country</h4>
+    <input class="ct-search" id="ctSearch" type="search" placeholder="Search countries" autocomplete="off" aria-label="Search countries" />
+    <button class="ct-auto" id="ctAuto" type="button" hidden>Use my device&rsquo;s setting instead</button>
+    <div class="ct-list" id="ctList"></div>
   </div>
 </div>
 
@@ -1046,6 +1144,13 @@ var CONFIG = {
   /* Optional: a free CoinGecko "Demo" key (coingecko.com/en/api). Leave empty to use the keyless public API.
      Only add it if exchange prices keep failing to load. Note: a key placed here is visible to anyone who views the page. */
   coingeckoKey: "",
+  /* Profile page */
+  appVersion: "1.0.0",                                  // shown in the Profile footer; change it when you release an update
+  privacyUrl: "https://app.yongsocial.com/privacy-policy",
+  termsUrl: "https://app.yongsocial.com/terms-of-use",
+  updatesUrl: "https://x.com/yongsocial",
+  contactEmail: "yongsocial@outlook.com",
+  copyright: "\u00a9 2026 YongSocialCo. All rights reserved.",
   tvHeadH: 50,   // px height of the TradingView quote table header row (tune with ?tvdebug=1)
   tvRowH: 35.7,  // px height of each quote row (measured on a phone screenshot)
   tvNameW: 211,  // px width of the left Symbol column that our tap layer covers
@@ -1582,6 +1687,7 @@ var pricesView = document.getElementById("pricesView");
 var homeView = document.getElementById("top");
 var discoverView = document.getElementById("discoverView");
 var eventsView = document.getElementById("eventsView");
+var accountView = document.getElementById("accountView");
 var pList = document.getElementById("pList");
 
 function watchAll(){
@@ -1752,7 +1858,7 @@ function openChart(sym, name, fromUrl){
   name = name || symName(sym);
   if (chartView.hidden){ chartState.y = window.scrollY; chartState.from = currentView(); }
   chartState.sym = sym;
-  pricesView.hidden = true; homeView.hidden = true; discoverView.hidden = true; eventsView.hidden = true; tradeView.hidden = true; chartView.hidden = false;
+  pricesView.hidden = true; homeView.hidden = true; discoverView.hidden = true; eventsView.hidden = true; accountView.hidden = true; tradeView.hidden = true; chartView.hidden = false;
   syncLive();
   tickSync();
   document.getElementById("cpName").textContent = name;
@@ -2772,11 +2878,121 @@ function renderPrices(){
 function startPricesTimer(){}
 function stopPricesTimer(){}
 
+/* =========================================================================
+   PROFILE: country (from the device), links, footer
+   ========================================================================= */
+var AC_TZ = "AD:Europe/Andorra;AE:Asia/Dubai;AF:Asia/Kabul;AG:America/Antigua;AI:America/Anguilla;AL:Europe/Tirane;AM:Asia/Yerevan;AO:Africa/Luanda;AQ:Antarctica/Casey,Antarctica/Davis,Antarctica/DumontDUrville,Antarctica/Mawson,Antarctica/McMurdo,Antarctica/Palmer,Antarctica/Rothera,Antarctica/South_Pole,Antarctica/Syowa,Antarctica/Troll,Antarctica/Vostok;AR:America/Argentina/Buenos_Aires,America/Argentina/Catamarca,America/Argentina/ComodRivadavia,America/Argentina/Cordoba,America/Argentina/Jujuy,America/Argentina/La_Rioja,America/Argentina/Mendoza,America/Argentina/Rio_Gallegos,America/Argentina/Salta,America/Argentina/San_Juan,America/Argentina/San_Luis,America/Argentina/Tucuman,America/Argentina/Ushuaia,America/Buenos_Aires,America/Catamarca,America/Cordoba,America/Jujuy,America/Mendoza,America/Rosario;AS:Pacific/Pago_Pago,Pacific/Samoa,US/Samoa;AT:Europe/Vienna;AU:Antarctica/Macquarie,Australia/ACT,Australia/Adelaide,Australia/Brisbane,Australia/Broken_Hill,Australia/Canberra,Australia/Currie,Australia/Darwin,Australia/Eucla,Australia/Hobart,Australia/LHI,Australia/Lindeman,Australia/Lord_Howe,Australia/Melbourne,Australia/NSW,Australia/North,Australia/Perth,Australia/Queensland,Australia/South,Australia/Sydney,Australia/Tasmania,Australia/Victoria,Australia/West,Australia/Yancowinna;AW:America/Aruba;AX:Europe/Mariehamn;AZ:Asia/Baku;BA:Europe/Sarajevo;BB:America/Barbados;BD:Asia/Dacca,Asia/Dhaka;BE:Europe/Brussels;BF:Africa/Ouagadougou;BG:Europe/Sofia;BH:Asia/Bahrain;BI:Africa/Bujumbura;BJ:Africa/Porto-Novo;BL:America/St_Barthelemy;BM:Atlantic/Bermuda;BN:Asia/Brunei;BO:America/La_Paz;BQ:America/Kralendijk;BR:America/Araguaina,America/Bahia,America/Belem,America/Boa_Vista,America/Campo_Grande,America/Cuiaba,America/Eirunepe,America/Fortaleza,America/Maceio,America/Manaus,America/Noronha,America/Porto_Acre,America/Porto_Velho,America/Recife,America/Rio_Branco,America/Santarem,America/Sao_Paulo,Brazil/Acre,Brazil/DeNoronha,Brazil/East,Brazil/West;BS:America/Nassau;BT:Asia/Thimbu,Asia/Thimphu;BW:Africa/Gaborone;BY:Europe/Minsk;BZ:America/Belize;CA:America/Atikokan,America/Blanc-Sablon,America/Cambridge_Bay,America/Coral_Harbour,America/Creston,America/Dawson,America/Dawson_Creek,America/Edmonton,America/Fort_Nelson,America/Glace_Bay,America/Goose_Bay,America/Halifax,America/Inuvik,America/Iqaluit,America/Moncton,America/Montreal,America/Nipigon,America/Pangnirtung,America/Rainy_River,America/Rankin_Inlet,America/Regina,America/Resolute,America/St_Johns,America/Swift_Current,America/Thunder_Bay,America/Toronto,America/Vancouver,America/Whitehorse,America/Winnipeg,America/Yellowknife,Canada/Atlantic,Canada/Central,Canada/Eastern,Canada/Mountain,Canada/Newfoundland,Canada/Pacific,Canada/Saskatchewan,Canada/Yukon;CC:Indian/Cocos;CD:Africa/Kinshasa,Africa/Lubumbashi;CF:Africa/Bangui;CG:Africa/Brazzaville;CH:Europe/Zurich;CI:Africa/Abidjan;CK:Pacific/Rarotonga;CL:America/Coyhaique,America/Punta_Arenas,America/Santiago,Chile/Continental,Chile/EasterIsland,Pacific/Easter;CM:Africa/Douala;CN:Asia/Chongqing,Asia/Chungking,Asia/Harbin,Asia/Kashgar,Asia/Shanghai,Asia/Urumqi,PRC;CO:America/Bogota;CR:America/Costa_Rica;CU:America/Havana,Cuba;CV:Atlantic/Cape_Verde;CW:America/Curacao;CX:Indian/Christmas;CY:Asia/Famagusta,Asia/Nicosia,Europe/Nicosia;CZ:Europe/Prague;DE:Europe/Berlin,Europe/Busingen;DJ:Africa/Djibouti;DK:Europe/Copenhagen;DM:America/Dominica;DO:America/Santo_Domingo;DZ:Africa/Algiers;EC:America/Guayaquil,Pacific/Galapagos;EE:Europe/Tallinn;EG:Africa/Cairo,Egypt;EH:Africa/El_Aaiun;ER:Africa/Asmara,Africa/Asmera;ES:Africa/Ceuta,Atlantic/Canary,Europe/Madrid;ET:Africa/Addis_Ababa;FI:Europe/Helsinki;FJ:Pacific/Fiji;FK:Atlantic/Stanley;FM:Pacific/Chuuk,Pacific/Kosrae,Pacific/Pohnpei,Pacific/Ponape,Pacific/Truk,Pacific/Yap;FO:Atlantic/Faeroe,Atlantic/Faroe;FR:Europe/Paris;GA:Africa/Libreville;GB:Europe/Belfast,Europe/London,GB,GB-Eire;GD:America/Grenada;GE:Asia/Tbilisi;GF:America/Cayenne;GG:Europe/Guernsey;GH:Africa/Accra;GI:Europe/Gibraltar;GL:America/Danmarkshavn,America/Godthab,America/Nuuk,America/Scoresbysund,America/Thule;GM:Africa/Banjul;GN:Africa/Conakry;GP:America/Guadeloupe;GQ:Africa/Malabo;GR:Europe/Athens;GS:Atlantic/South_Georgia;GT:America/Guatemala;GU:Pacific/Guam;GW:Africa/Bissau;GY:America/Guyana;HK:Asia/Hong_Kong,Hongkong;HN:America/Tegucigalpa;HR:Europe/Zagreb;HT:America/Port-au-Prince;HU:Europe/Budapest;ID:Asia/Jakarta,Asia/Jayapura,Asia/Makassar,Asia/Pontianak,Asia/Ujung_Pandang;IE:Eire,Europe/Dublin;IL:Asia/Jerusalem,Asia/Tel_Aviv,Israel;IM:Europe/Isle_of_Man;IN:Asia/Calcutta,Asia/Kolkata;IO:Indian/Chagos;IQ:Asia/Baghdad;IR:Asia/Tehran,Iran;IS:Atlantic/Reykjavik,Iceland;IT:Europe/Rome;JE:Europe/Jersey;JM:America/Jamaica,Jamaica;JO:Asia/Amman;JP:Asia/Tokyo,Japan;KE:Africa/Nairobi;KG:Asia/Bishkek;KH:Asia/Phnom_Penh;KI:Pacific/Enderbury,Pacific/Kanton,Pacific/Kiritimati,Pacific/Tarawa;KM:Indian/Comoro;KN:America/St_Kitts;KP:Asia/Pyongyang;KR:Asia/Seoul,ROK;KW:Asia/Kuwait;KY:America/Cayman;KZ:Asia/Almaty,Asia/Aqtau,Asia/Aqtobe,Asia/Atyrau,Asia/Oral,Asia/Qostanay,Asia/Qyzylorda;LA:Asia/Vientiane;LB:Asia/Beirut;LC:America/St_Lucia;LI:Europe/Vaduz;LK:Asia/Colombo;LR:Africa/Monrovia;LS:Africa/Maseru;LT:Europe/Vilnius;LU:Europe/Luxembourg;LV:Europe/Riga;LY:Africa/Tripoli,Libya;MA:Africa/Casablanca;MC:Europe/Monaco;MD:Europe/Chisinau,Europe/Tiraspol;ME:Europe/Podgorica;MF:America/Marigot;MG:Indian/Antananarivo;MH:Kwajalein,Pacific/Kwajalein,Pacific/Majuro;MK:Europe/Skopje;ML:Africa/Bamako,Africa/Timbuktu;MM:Asia/Rangoon,Asia/Yangon;MN:Asia/Choibalsan,Asia/Hovd,Asia/Ulaanbaatar,Asia/Ulan_Bator;MO:Asia/Macao,Asia/Macau;MP:Pacific/Saipan;MQ:America/Martinique;MR:Africa/Nouakchott;MS:America/Montserrat;MT:Europe/Malta;MU:Indian/Mauritius;MV:Indian/Maldives;MW:Africa/Blantyre;MX:America/Bahia_Banderas,America/Cancun,America/Chihuahua,America/Ciudad_Juarez,America/Ensenada,America/Hermosillo,America/Matamoros,America/Mazatlan,America/Merida,America/Mexico_City,America/Monterrey,America/Ojinaga,America/Santa_Isabel,America/Tijuana,Mexico/BajaNorte,Mexico/BajaSur,Mexico/General;MY:Asia/Kuala_Lumpur,Asia/Kuching;MZ:Africa/Maputo;NA:Africa/Windhoek;NC:Pacific/Noumea;NE:Africa/Niamey;NF:Pacific/Norfolk;NG:Africa/Lagos;NI:America/Managua;NL:Europe/Amsterdam;NO:Atlantic/Jan_Mayen,Europe/Oslo;NP:Asia/Kathmandu,Asia/Katmandu;NR:Pacific/Nauru;NU:Pacific/Niue;NZ:NZ,NZ-CHAT,Pacific/Auckland,Pacific/Chatham;OM:Asia/Muscat;PA:America/Panama;PE:America/Lima;PF:Pacific/Gambier,Pacific/Marquesas,Pacific/Tahiti;PG:Pacific/Bougainville,Pacific/Port_Moresby;PH:Asia/Manila;PK:Asia/Karachi;PL:Europe/Warsaw,Poland;PM:America/Miquelon;PN:Pacific/Pitcairn;PR:America/Puerto_Rico;PS:Asia/Gaza,Asia/Hebron;PT:Atlantic/Azores,Atlantic/Madeira,Europe/Lisbon,Portugal;PW:Pacific/Palau;PY:America/Asuncion;QA:Asia/Qatar;RE:Indian/Reunion;RO:Europe/Bucharest;RS:Europe/Belgrade;RU:Asia/Anadyr,Asia/Barnaul,Asia/Chita,Asia/Irkutsk,Asia/Kamchatka,Asia/Khandyga,Asia/Krasnoyarsk,Asia/Magadan,Asia/Novokuznetsk,Asia/Novosibirsk,Asia/Omsk,Asia/Sakhalin,Asia/Srednekolymsk,Asia/Tomsk,Asia/Ust-Nera,Asia/Vladivostok,Asia/Yakutsk,Asia/Yekaterinburg,Europe/Astrakhan,Europe/Kaliningrad,Europe/Kirov,Europe/Moscow,Europe/Samara,Europe/Saratov,Europe/Ulyanovsk,Europe/Volgograd,W-SU;RW:Africa/Kigali;SA:Asia/Riyadh;SB:Pacific/Guadalcanal;SC:Indian/Mahe;SD:Africa/Khartoum;SE:Europe/Stockholm;SG:Asia/Singapore,Singapore;SH:Atlantic/St_Helena;SI:Europe/Ljubljana;SJ:Arctic/Longyearbyen;SK:Europe/Bratislava;SL:Africa/Freetown;SM:Europe/San_Marino;SN:Africa/Dakar;SO:Africa/Mogadishu;SR:America/Paramaribo;SS:Africa/Juba;ST:Africa/Sao_Tome;SV:America/El_Salvador;SX:America/Lower_Princes;SY:Asia/Damascus;SZ:Africa/Mbabane;TC:America/Grand_Turk;TD:Africa/Ndjamena;TF:Indian/Kerguelen;TG:Africa/Lome;TH:Asia/Bangkok;TJ:Asia/Dushanbe;TK:Pacific/Fakaofo;TL:Asia/Dili;TM:Asia/Ashgabat,Asia/Ashkhabad;TN:Africa/Tunis;TO:Pacific/Tongatapu;TR:Asia/Istanbul,Europe/Istanbul,Turkey;TT:America/Port_of_Spain;TV:Pacific/Funafuti;TW:Asia/Taipei,ROC;TZ:Africa/Dar_es_Salaam;UA:Europe/Kiev,Europe/Kyiv,Europe/Simferopol,Europe/Uzhgorod,Europe/Zaporozhye;UG:Africa/Kampala;UM:Pacific/Midway,Pacific/Wake;US:America/Adak,America/Anchorage,America/Atka,America/Boise,America/Chicago,America/Denver,America/Detroit,America/Fort_Wayne,America/Indiana/Indianapolis,America/Indiana/Knox,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Tell_City,America/Indiana/Vevay,America/Indiana/Vincennes,America/Indiana/Winamac,America/Indianapolis,America/Juneau,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Knox_IN,America/Los_Angeles,America/Louisville,America/Menominee,America/Metlakatla,America/New_York,America/Nome,America/North_Dakota/Beulah,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/Phoenix,America/Shiprock,America/Sitka,America/Yakutat,Navajo,Pacific/Honolulu,Pacific/Johnston,US/Alaska,US/Aleutian,US/Arizona,US/Central,US/East-Indiana,US/Eastern,US/Hawaii,US/Indiana-Starke,US/Michigan,US/Mountain,US/Pacific;UY:America/Montevideo;UZ:Asia/Samarkand,Asia/Tashkent;VA:Europe/Vatican;VC:America/St_Vincent;VE:America/Caracas;VG:America/Tortola;VI:America/St_Thomas,America/Virgin;VN:Asia/Ho_Chi_Minh,Asia/Saigon;VU:Pacific/Efate;WF:Pacific/Wallis;WS:Pacific/Apia;YE:Asia/Aden;YT:Indian/Mayotte;ZA:Africa/Johannesburg;ZM:Africa/Lusaka;ZW:Africa/Harare";
+var AC_CODES = "AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW".split(" ");
+var AC_KEY = "ysf_country_v1";
+var acTzMap = null, acDN = null;
+
+function acMap(){
+  if (acTzMap) return acTzMap;
+  acTzMap = {};
+  AC_TZ.split(";").forEach(function(g){
+    var p = g.split(":");
+    p[1].split(",").forEach(function(z){ acTzMap[z] = p[0]; });
+  });
+  return acTzMap;
+}
+function acName(cc){
+  try {
+    if (!acDN) acDN = new Intl.DisplayNames(["en"], { type: "region" });
+    return acDN.of(cc) || cc;
+  } catch (err) { return cc; }
+}
+function acFlag(cc){
+  return String.fromCodePoint.apply(null, cc.split("").map(function(c){ return 127397 + c.charCodeAt(0); }));
+}
+/* Best guess from the phone's time zone, then its language region. Nothing is sent anywhere. */
+function acDetect(){
+  var tz = "";
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (err) {}
+  if (acMap()[tz]) return { code: acMap()[tz], via: "time zone" };
+  var langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""], i, m;
+  for (i = 0; i < langs.length; i++){
+    m = /^[A-Za-z]{2,3}-(?:[A-Za-z]{4}-)?([A-Za-z]{2})$/.exec(langs[i] || "");
+    if (m && AC_CODES.indexOf(m[1].toUpperCase()) > -1) return { code: m[1].toUpperCase(), via: "language" };
+  }
+  return null;
+}
+function acSaved(){
+  try {
+    var c = JSON.parse(localStorage.getItem(AC_KEY) || "null");
+    return c && AC_CODES.indexOf(c.code) > -1 ? c.code : null;
+  } catch (err) { return null; }
+}
+/* The country the rest of the app should use (for example to pick local stock exchanges). null = unknown. */
+function userCountry(){
+  var saved = acSaved();
+  if (saved) return saved;
+  var d = acDetect();
+  return d ? d.code : null;
+}
+function acRender(){
+  var saved = acSaved(), d = saved ? null : acDetect(), cc = saved || (d && d.code);
+  document.getElementById("acCountryVal").textContent = cc ? acFlag(cc) + "  " + acName(cc) : "Choose";
+  document.getElementById("acCountrySub").textContent = saved ? "Set by you" : (d ? "Detected from your device " + d.via : "We couldn\u2019t detect it. Tap to choose.");
+  var set = function(id, href){ document.getElementById(id).setAttribute("href", href); };
+  set("acPrivacy", CONFIG.privacyUrl);
+  set("acTerms", CONFIG.termsUrl);
+  set("acNews", CONFIG.updatesUrl);
+  set("acMail", "mailto:" + CONFIG.contactEmail);
+  document.getElementById("acMailText").textContent = CONFIG.contactEmail;
+  var logo = document.querySelector(".logo-img");
+  if (logo) document.getElementById("acLogo").src = logo.src;
+  document.getElementById("acVer").textContent = CONFIG.appVersion;
+  document.getElementById("acCopy").textContent = CONFIG.copyright;
+}
+
+var countryModal = document.getElementById("countryModal");
+function acList(){
+  var q = document.getElementById("ctSearch").value.trim().toLowerCase(), cur = userCountry();
+  var rows = AC_CODES.map(function(c){ return { code: c, name: acName(c) }; })
+    .filter(function(r){ return !q || r.name.toLowerCase().indexOf(q) > -1 || r.code.toLowerCase() === q; })
+    .sort(function(a, b){
+      var ap = q && a.name.toLowerCase().indexOf(q) === 0 ? 0 : 1, bp = q && b.name.toLowerCase().indexOf(q) === 0 ? 0 : 1;
+      return ap - bp || a.name.localeCompare(b.name);   /* names that start with the search come first */
+    });
+  document.getElementById("ctList").innerHTML = rows.length ? rows.map(function(r){
+    var on = r.code === cur;
+    return '<button class="ct-row' + (on ? " on" : "") + '" type="button" data-cc="' + r.code + '"><span class="fl">' + acFlag(r.code) + '</span><span>' + esc(r.name) + '</span>'
+      + (on ? '<i class="ph ph-check ck" aria-hidden="true"></i>' : "") + '</button>';
+  }).join("") : '<div class="bm-empty">No country found.</div>';
+}
+document.getElementById("acCountry").addEventListener("click", function(){
+  document.getElementById("ctSearch").value = "";
+  document.getElementById("ctAuto").hidden = !acSaved();
+  acList();
+  openModal(countryModal);
+  document.getElementById("ctList").scrollTop = 0;
+});
+document.getElementById("ctSearch").addEventListener("input", acList);
+document.getElementById("ctList").addEventListener("click", function(e){
+  var b = e.target.closest("[data-cc]");
+  if (!b) return;
+  try { localStorage.setItem(AC_KEY, JSON.stringify({ code: b.getAttribute("data-cc") })); } catch (err) {}
+  closeModal(countryModal);
+  acRender();
+  showToast("Country set to " + acName(b.getAttribute("data-cc")));
+});
+document.getElementById("ctAuto").addEventListener("click", function(){
+  try { localStorage.removeItem(AC_KEY); } catch (err) {}
+  closeModal(countryModal);
+  acRender();
+  showToast("Using your device\u2019s setting");
+});
+document.getElementById("ctClose").addEventListener("click", function(){ closeModal(countryModal); });
+countryModal.addEventListener("click", function(e){ if (e.target === countryModal) closeModal(countryModal); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeModal(countryModal); });
+acRender();
+
 function showView(name){
   homeView.hidden = name !== "home";
   pricesView.hidden = name !== "prices";
   discoverView.hidden = name !== "discover";
   eventsView.hidden = name !== "events";
+  accountView.hidden = name !== "account";
   chartView.hidden = true;
   tradeView.hidden = true;
   syncLive();
@@ -2784,7 +3000,7 @@ function showView(name){
   if (name === "home" && typeof hm !== "undefined" && hm.tab === "today") todayEnter();
 }
 function currentView(){
-  return !pricesView.hidden ? "prices" : (!discoverView.hidden ? "discover" : (!eventsView.hidden ? "events" : "home"));
+  return !pricesView.hidden ? "prices" : (!discoverView.hidden ? "discover" : (!eventsView.hidden ? "events" : (!accountView.hidden ? "account" : "home")));
 }
 
 document.querySelectorAll(".ptab").forEach(function(b){
@@ -2833,7 +3049,7 @@ pList.addEventListener("error", function(e){
   im.parentNode.replaceChild(span, im);
 }, true);
 document.querySelectorAll("a.logo").forEach(function(a){
-  a.addEventListener("click", function(){ if (!pricesView.hidden || !chartView.hidden || !tradeView.hidden || !discoverView.hidden || !eventsView.hidden){ showView("home"); setTab("home"); } });
+  a.addEventListener("click", function(){ if (!pricesView.hidden || !chartView.hidden || !tradeView.hidden || !discoverView.hidden || !eventsView.hidden || !accountView.hidden){ showView("home"); setTab("home"); } });
 });
 
 function setTab(name){
@@ -2877,7 +3093,10 @@ document.getElementById("tabbar").addEventListener("click", function(e){
     window.scrollTo(0, 0);
     if (!ev.built) buildEvents();
   } else if (name === "account"){
-    showSoon("Account");
+    showView("account");
+    setTab("account");
+    window.scrollTo(0, 0);
+    acRender();
   }
 });
 
