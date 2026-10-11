@@ -587,6 +587,30 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .vc-card strong{display:block;font-family:var(--font-head);font-size:15px;line-height:1.3}
 .vc-card small{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;line-height:1.4}
 .vc-note{margin:16px 2px 0;font-size:12px;color:var(--muted);line-height:1.5}
+.bk-country{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;margin-top:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--text);font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.bk-country .fl{font-size:20px}
+.bk-country .t{flex:1;min-width:0}
+.bk-country em{font-style:normal;color:var(--brand);font-weight:700;font-size:13px}
+.bk-card{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.bk-top{display:flex;align-items:center;gap:14px}
+.bk-logo,.bk-logo img,.bk-logo .p-ini{width:56px;height:56px;border-radius:14px}
+.bk-logo{flex:none}
+.bk-logo img{object-fit:cover;background:var(--surface-2);display:block}
+.bk-logo .p-ini{display:grid;place-items:center;font-size:18px;font-weight:700;color:#fff;font-family:var(--font-head)}
+.bk-id{min-width:0}
+.bk-id strong{display:block;font-family:var(--font-head);font-size:18px}
+.bk-id span{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.bk-desc{margin:14px 0 0;font-size:14.5px;line-height:1.55}
+.bk-adv{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(34,197,94,.1);color:#86efac;font-size:13.5px;line-height:1.45}
+.bk-adv i{flex:none;font-size:18px;margin-top:1px}
+.bk-where{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.bk-chip{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.bk-actions{display:flex;gap:10px;margin-top:14px}
+.bk-go{flex:1;display:inline-flex;justify-content:center;align-items:center;gap:6px;background:var(--brand);color:#fff;font-weight:700;font-size:14.5px;border-radius:12px;padding:12px 16px}
+.bk-x{flex:none;display:grid;place-items:center;width:46px;border:1px solid var(--line);border-radius:12px;color:var(--text);font-size:18px;background:var(--surface-2)}
+.bk-empty{margin-top:18px;padding:30px 20px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted);font-size:14.5px;line-height:1.5}
+.bk-empty strong{display:block;margin-bottom:6px;color:var(--text);font-family:var(--font-head);font-size:17px}
+.bk-empty button{margin-top:16px}
 .ac-label{margin:26px 4px 10px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
 .ac-group{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .ac-row{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:14px 16px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -1017,6 +1041,20 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   </div>
 </section>
 
+<section class="tradepage" id="brokerView" hidden aria-label="Where to trade">
+  <div class="wrap cp-wrap">
+    <div class="tr-sticky">
+      <div class="cp-bar">
+        <button class="cp-back" id="bkBack" type="button" aria-label="Back"><i class="ph ph-arrow-left" aria-hidden="true"></i></button>
+        <div class="cp-title"><strong id="bkName"></strong><span id="bkSub"></span></div>
+      </div>
+      <button class="bk-country" id="bkCountry" type="button"></button>
+    </div>
+    <div id="bkList"></div>
+    <p class="p-note" id="bkNote"></p>
+  </div>
+</section>
+
 <nav class="tabbar" id="tabbar" aria-label="Main">
   <button class="tab active" type="button" data-tab="home"><i class="ph ph-house" aria-hidden="true"></i><i class="ph-fill ph-house" aria-hidden="true"></i><span>Home</span></button>
   <button class="tab" type="button" data-tab="prices"><i class="ph ph-chart-line-up" aria-hidden="true"></i><i class="ph-fill ph-chart-line-up" aria-hidden="true"></i><span>Prices</span></button>
@@ -1144,6 +1182,23 @@ var CONFIG = {
   /* Optional: a free CoinGecko "Demo" key (coingecko.com/en/api). Leave empty to use the keyless public API.
      Only add it if exchange prices keep failing to load. Note: a key placed here is visible to anyone who views the page. */
   coingeckoKey: "",
+  /* Stocks Buy / Sell page: partner platforms shown by the user's country.
+     regions: ["*"] = everywhere, or country codes such as "NG", "GH", and "EU" for all European Union countries.
+     url = your referral link (https only). logo = file in the repo (a letter circle shows until it exists). */
+  stockPlatforms: [
+    { id: "roqqu", name: "Roqqu", tagline: "Crypto and stock trading", logo: "/roqqu.jpg",
+      desc: "Buy, sell, trade and accept cryptocurrency payments from anyone, anywhere in the world.",
+      advantage: "0 deposit and withdrawal fees, and 0 fees on stocks.",
+      regions: ["NG", "GH", "EU"], url: "https://roqqu.sng.link/F336c/rb1jy/r_f6869cef22", x: "https://x.com/roqqupay" },
+    { id: "grow", name: "Grow", tagline: "Your global investing account", logo: "/grow.jpg",
+      desc: "Invest in US stocks, ETFs, crypto and even private companies like OpenAI. Save, earn and invest without borders.",
+      advantage: "Strategic investment access to US stocks and pre-IPO companies.",
+      regions: ["*"], url: "https://www.getgrowapp.co/join?referralCode=A9C97A", x: "https://x.com/get_grow_app" },
+    { id: "willtrade", name: "Will Trade", tagline: "Global live trading", logo: "/willtrade.jpg",
+      desc: "A live trading platform open to traders around the world.",
+      advantage: "",
+      regions: ["*"], url: "https://ref-earn.com/nzTYXh", x: "https://x.com/TradeW_Global" }
+  ],
   /* Profile page */
   appVersion: "1.0.0",                                  // shown in the Profile footer; change it when you release an update
   privacyUrl: "https://app.yongsocial.com/privacy-policy",
@@ -1688,6 +1743,7 @@ var homeView = document.getElementById("top");
 var discoverView = document.getElementById("discoverView");
 var eventsView = document.getElementById("eventsView");
 var accountView = document.getElementById("accountView");
+var brokerView = document.getElementById("brokerView");
 var pList = document.getElementById("pList");
 
 function watchAll(){
@@ -1858,7 +1914,7 @@ function openChart(sym, name, fromUrl){
   name = name || symName(sym);
   if (chartView.hidden){ chartState.y = window.scrollY; chartState.from = currentView(); }
   chartState.sym = sym;
-  pricesView.hidden = true; homeView.hidden = true; discoverView.hidden = true; eventsView.hidden = true; accountView.hidden = true; tradeView.hidden = true; chartView.hidden = false;
+  pricesView.hidden = true; homeView.hidden = true; discoverView.hidden = true; eventsView.hidden = true; accountView.hidden = true; tradeView.hidden = true; brokerView.hidden = true; chartView.hidden = false;
   syncLive();
   tickSync();
   document.getElementById("cpName").textContent = name;
@@ -1933,7 +1989,7 @@ document.getElementById("cpBack").addEventListener("click", function(){
 });
 window.addEventListener("popstate", function(){
   if (arPop(history.state)) return;
-  if (!tradeView.hidden) closeTrade(); else closeChart();
+  if (!brokerView.hidden) closeBroker(); else if (!tradeView.hidden) closeTrade(); else closeChart();
 });
 
 /* ---- Buy / Sell: compare exchanges (CoinGecko coin tickers, free public API) ---- */
@@ -2162,7 +2218,7 @@ document.addEventListener("visibilitychange", function(){
 
 function openTrade(side, sym, name){
   var base = cryptoBase(sym);
-  if (!base){ showSoon((side === "buy" ? "Buying " : "Selling ") + name); return; }
+  if (!base){ openBroker(side, sym, name); return; }
   tradeState.token++;
   tradeState.side = side; tradeState.sym = sym; tradeState.name = name; tradeState.base = base; tradeState.rows = null;
   tradeState.updated = null; tradeState.stale = false; tradeState.cgid = null;
@@ -2879,6 +2935,87 @@ function startPricesTimer(){}
 function stopPricesTimer(){}
 
 /* =========================================================================
+   STOCKS: where to buy or sell (partner platforms, by the user's country)
+   ========================================================================= */
+var EU_CODES = "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE".split(" ");
+var bkState = { side: "buy", sym: "", name: "", y: 0 };
+
+function bkAvailable(p, cc){
+  var r = p.regions || ["*"], i;
+  for (i = 0; i < r.length; i++){
+    if (r[i] === "*" || r[i] === cc || (r[i] === "EU" && EU_CODES.indexOf(cc) > -1)) return true;
+  }
+  return false;
+}
+function bkRegionLabel(r){
+  if (r === "*") return "\uD83C\uDF0D Available worldwide";
+  if (r === "EU") return "\uD83C\uDDEA\uD83C\uDDFA European Union";
+  return acFlag(r) + " " + acName(r);
+}
+function bkIsWorldwide(p){ return (p.regions || ["*"]).indexOf("*") > -1; }
+
+function bkCard(p){
+  var ini = vcInitials(p.name);
+  var logo = p.logo ? '<img loading="lazy" src="' + esc(p.logo) + '" alt="" data-fallback="' + esc(ini) + '">'
+    : '<span class="p-ini" style="background:' + avatarColor(ini) + '">' + esc(ini) + '</span>';
+  var chips = (p.regions || ["*"]).map(function(r){ return '<span class="bk-chip">' + esc(bkRegionLabel(r)) + '</span>'; }).join("");
+  var go = /^https:\/\//.test(p.url || "")
+    ? '<a class="bk-go" href="' + esc(p.url) + '" target="_blank" rel="sponsored noopener noreferrer">Open ' + esc(p.name) + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>' : "";
+  var x = /^https:\/\//.test(p.x || "")
+    ? '<a class="bk-x" href="' + esc(p.x) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(p.name) + ' on X"><i class="ph ph-x-logo" aria-hidden="true"></i></a>' : "";
+  return '<article class="bk-card">'
+    + '<div class="bk-top"><span class="bk-logo">' + logo + '</span><div class="bk-id"><strong>' + esc(p.name) + '</strong><span>' + esc(p.tagline || "") + '</span></div></div>'
+    + (p.desc ? '<p class="bk-desc">' + esc(p.desc) + '</p>' : "")
+    + (p.advantage ? '<div class="bk-adv"><i class="ph-fill ph-check-circle" aria-hidden="true"></i><span><b>Advantage:</b> ' + esc(p.advantage) + '</span></div>' : "")
+    + '<div class="bk-where">' + chips + '</div>'
+    + '<div class="bk-actions">' + go + x + '</div></article>';
+}
+
+function bkRender(){
+  var cc = userCountry(), btn = document.getElementById("bkCountry"), box = document.getElementById("bkList");
+  btn.innerHTML = cc
+    ? '<span class="fl">' + acFlag(cc) + '</span><span class="t">Platforms available in ' + esc(acName(cc)) + '</span><em>Change</em>'
+    : '<span class="fl">\uD83C\uDF0D</span><span class="t">Choose your country</span><em>Choose</em>';
+  var list = cc ? (CONFIG.stockPlatforms || []).filter(function(p){ return bkAvailable(p, cc); }) : [];
+  list.sort(function(a, b){ return (bkIsWorldwide(a) ? 1 : 0) - (bkIsWorldwide(b) ? 1 : 0); });   /* platforms made for your country first */
+  if (!cc){
+    box.innerHTML = '<div class="bk-empty"><strong>Choose your country</strong>We&rsquo;ll show the investing platforms available where you live.<br><button class="modal-btn" type="button" data-bkchange>Choose country</button></div>';
+  } else if (!list.length){
+    box.innerHTML = '<div class="bk-empty"><strong>No platforms for ' + esc(acName(cc)) + ' yet</strong>We&rsquo;re adding new platforms all the time. Check back soon, or change your country if this isn&rsquo;t right.<br><button class="modal-btn" type="button" data-bkchange>Change country</button></div>';
+  } else {
+    box.innerHTML = list.map(bkCard).join("");
+  }
+  document.getElementById("bkNote").innerHTML = 'These are independent platforms, not run by Yong Social. We may earn a commission if you sign up through these links, at no extra cost to you. '
+    + 'Investing involves risk, including the loss of your money, and nothing here is financial advice. Products, fees and availability are set by each platform and can change, so check their terms and your local rules before you invest.';
+}
+
+function openBroker(side, sym, name){
+  bkState.side = side; bkState.sym = sym; bkState.name = name; bkState.y = window.scrollY;
+  var ticker = String(sym).split(":").pop();
+  document.getElementById("bkName").textContent = name;
+  document.getElementById("bkSub").textContent = (side === "buy" ? "Where to buy " : "Where to sell ") + ticker;
+  bkRender();
+  chartView.hidden = true;
+  brokerView.hidden = false;
+  try { history.pushState({ broker: side }, "", location.pathname + location.search); } catch (err) {}
+  window.scrollTo(0, 0);
+}
+function closeBroker(){
+  if (brokerView.hidden) return;
+  brokerView.hidden = true;
+  chartView.hidden = false;
+  window.scrollTo(0, bkState.y || 0);
+}
+document.getElementById("bkBack").addEventListener("click", function(){
+  if (history.state && history.state.broker) history.back(); else closeBroker();
+});
+document.getElementById("bkCountry").addEventListener("click", function(){ document.getElementById("acCountry").click(); });
+document.getElementById("bkList").addEventListener("click", function(e){
+  if (e.target.closest("[data-bkchange]")) document.getElementById("acCountry").click();
+});
+document.getElementById("bkList").addEventListener("error", onImgErr, true);
+
+/* =========================================================================
    PROFILE: country (from the device), links, footer
    ========================================================================= */
 var AC_TZ = "AD:Europe/Andorra;AE:Asia/Dubai;AF:Asia/Kabul;AG:America/Antigua;AI:America/Anguilla;AL:Europe/Tirane;AM:Asia/Yerevan;AO:Africa/Luanda;AQ:Antarctica/Casey,Antarctica/Davis,Antarctica/DumontDUrville,Antarctica/Mawson,Antarctica/McMurdo,Antarctica/Palmer,Antarctica/Rothera,Antarctica/South_Pole,Antarctica/Syowa,Antarctica/Troll,Antarctica/Vostok;AR:America/Argentina/Buenos_Aires,America/Argentina/Catamarca,America/Argentina/ComodRivadavia,America/Argentina/Cordoba,America/Argentina/Jujuy,America/Argentina/La_Rioja,America/Argentina/Mendoza,America/Argentina/Rio_Gallegos,America/Argentina/Salta,America/Argentina/San_Juan,America/Argentina/San_Luis,America/Argentina/Tucuman,America/Argentina/Ushuaia,America/Buenos_Aires,America/Catamarca,America/Cordoba,America/Jujuy,America/Mendoza,America/Rosario;AS:Pacific/Pago_Pago,Pacific/Samoa,US/Samoa;AT:Europe/Vienna;AU:Antarctica/Macquarie,Australia/ACT,Australia/Adelaide,Australia/Brisbane,Australia/Broken_Hill,Australia/Canberra,Australia/Currie,Australia/Darwin,Australia/Eucla,Australia/Hobart,Australia/LHI,Australia/Lindeman,Australia/Lord_Howe,Australia/Melbourne,Australia/NSW,Australia/North,Australia/Perth,Australia/Queensland,Australia/South,Australia/Sydney,Australia/Tasmania,Australia/Victoria,Australia/West,Australia/Yancowinna;AW:America/Aruba;AX:Europe/Mariehamn;AZ:Asia/Baku;BA:Europe/Sarajevo;BB:America/Barbados;BD:Asia/Dacca,Asia/Dhaka;BE:Europe/Brussels;BF:Africa/Ouagadougou;BG:Europe/Sofia;BH:Asia/Bahrain;BI:Africa/Bujumbura;BJ:Africa/Porto-Novo;BL:America/St_Barthelemy;BM:Atlantic/Bermuda;BN:Asia/Brunei;BO:America/La_Paz;BQ:America/Kralendijk;BR:America/Araguaina,America/Bahia,America/Belem,America/Boa_Vista,America/Campo_Grande,America/Cuiaba,America/Eirunepe,America/Fortaleza,America/Maceio,America/Manaus,America/Noronha,America/Porto_Acre,America/Porto_Velho,America/Recife,America/Rio_Branco,America/Santarem,America/Sao_Paulo,Brazil/Acre,Brazil/DeNoronha,Brazil/East,Brazil/West;BS:America/Nassau;BT:Asia/Thimbu,Asia/Thimphu;BW:Africa/Gaborone;BY:Europe/Minsk;BZ:America/Belize;CA:America/Atikokan,America/Blanc-Sablon,America/Cambridge_Bay,America/Coral_Harbour,America/Creston,America/Dawson,America/Dawson_Creek,America/Edmonton,America/Fort_Nelson,America/Glace_Bay,America/Goose_Bay,America/Halifax,America/Inuvik,America/Iqaluit,America/Moncton,America/Montreal,America/Nipigon,America/Pangnirtung,America/Rainy_River,America/Rankin_Inlet,America/Regina,America/Resolute,America/St_Johns,America/Swift_Current,America/Thunder_Bay,America/Toronto,America/Vancouver,America/Whitehorse,America/Winnipeg,America/Yellowknife,Canada/Atlantic,Canada/Central,Canada/Eastern,Canada/Mountain,Canada/Newfoundland,Canada/Pacific,Canada/Saskatchewan,Canada/Yukon;CC:Indian/Cocos;CD:Africa/Kinshasa,Africa/Lubumbashi;CF:Africa/Bangui;CG:Africa/Brazzaville;CH:Europe/Zurich;CI:Africa/Abidjan;CK:Pacific/Rarotonga;CL:America/Coyhaique,America/Punta_Arenas,America/Santiago,Chile/Continental,Chile/EasterIsland,Pacific/Easter;CM:Africa/Douala;CN:Asia/Chongqing,Asia/Chungking,Asia/Harbin,Asia/Kashgar,Asia/Shanghai,Asia/Urumqi,PRC;CO:America/Bogota;CR:America/Costa_Rica;CU:America/Havana,Cuba;CV:Atlantic/Cape_Verde;CW:America/Curacao;CX:Indian/Christmas;CY:Asia/Famagusta,Asia/Nicosia,Europe/Nicosia;CZ:Europe/Prague;DE:Europe/Berlin,Europe/Busingen;DJ:Africa/Djibouti;DK:Europe/Copenhagen;DM:America/Dominica;DO:America/Santo_Domingo;DZ:Africa/Algiers;EC:America/Guayaquil,Pacific/Galapagos;EE:Europe/Tallinn;EG:Africa/Cairo,Egypt;EH:Africa/El_Aaiun;ER:Africa/Asmara,Africa/Asmera;ES:Africa/Ceuta,Atlantic/Canary,Europe/Madrid;ET:Africa/Addis_Ababa;FI:Europe/Helsinki;FJ:Pacific/Fiji;FK:Atlantic/Stanley;FM:Pacific/Chuuk,Pacific/Kosrae,Pacific/Pohnpei,Pacific/Ponape,Pacific/Truk,Pacific/Yap;FO:Atlantic/Faeroe,Atlantic/Faroe;FR:Europe/Paris;GA:Africa/Libreville;GB:Europe/Belfast,Europe/London,GB,GB-Eire;GD:America/Grenada;GE:Asia/Tbilisi;GF:America/Cayenne;GG:Europe/Guernsey;GH:Africa/Accra;GI:Europe/Gibraltar;GL:America/Danmarkshavn,America/Godthab,America/Nuuk,America/Scoresbysund,America/Thule;GM:Africa/Banjul;GN:Africa/Conakry;GP:America/Guadeloupe;GQ:Africa/Malabo;GR:Europe/Athens;GS:Atlantic/South_Georgia;GT:America/Guatemala;GU:Pacific/Guam;GW:Africa/Bissau;GY:America/Guyana;HK:Asia/Hong_Kong,Hongkong;HN:America/Tegucigalpa;HR:Europe/Zagreb;HT:America/Port-au-Prince;HU:Europe/Budapest;ID:Asia/Jakarta,Asia/Jayapura,Asia/Makassar,Asia/Pontianak,Asia/Ujung_Pandang;IE:Eire,Europe/Dublin;IL:Asia/Jerusalem,Asia/Tel_Aviv,Israel;IM:Europe/Isle_of_Man;IN:Asia/Calcutta,Asia/Kolkata;IO:Indian/Chagos;IQ:Asia/Baghdad;IR:Asia/Tehran,Iran;IS:Atlantic/Reykjavik,Iceland;IT:Europe/Rome;JE:Europe/Jersey;JM:America/Jamaica,Jamaica;JO:Asia/Amman;JP:Asia/Tokyo,Japan;KE:Africa/Nairobi;KG:Asia/Bishkek;KH:Asia/Phnom_Penh;KI:Pacific/Enderbury,Pacific/Kanton,Pacific/Kiritimati,Pacific/Tarawa;KM:Indian/Comoro;KN:America/St_Kitts;KP:Asia/Pyongyang;KR:Asia/Seoul,ROK;KW:Asia/Kuwait;KY:America/Cayman;KZ:Asia/Almaty,Asia/Aqtau,Asia/Aqtobe,Asia/Atyrau,Asia/Oral,Asia/Qostanay,Asia/Qyzylorda;LA:Asia/Vientiane;LB:Asia/Beirut;LC:America/St_Lucia;LI:Europe/Vaduz;LK:Asia/Colombo;LR:Africa/Monrovia;LS:Africa/Maseru;LT:Europe/Vilnius;LU:Europe/Luxembourg;LV:Europe/Riga;LY:Africa/Tripoli,Libya;MA:Africa/Casablanca;MC:Europe/Monaco;MD:Europe/Chisinau,Europe/Tiraspol;ME:Europe/Podgorica;MF:America/Marigot;MG:Indian/Antananarivo;MH:Kwajalein,Pacific/Kwajalein,Pacific/Majuro;MK:Europe/Skopje;ML:Africa/Bamako,Africa/Timbuktu;MM:Asia/Rangoon,Asia/Yangon;MN:Asia/Choibalsan,Asia/Hovd,Asia/Ulaanbaatar,Asia/Ulan_Bator;MO:Asia/Macao,Asia/Macau;MP:Pacific/Saipan;MQ:America/Martinique;MR:Africa/Nouakchott;MS:America/Montserrat;MT:Europe/Malta;MU:Indian/Mauritius;MV:Indian/Maldives;MW:Africa/Blantyre;MX:America/Bahia_Banderas,America/Cancun,America/Chihuahua,America/Ciudad_Juarez,America/Ensenada,America/Hermosillo,America/Matamoros,America/Mazatlan,America/Merida,America/Mexico_City,America/Monterrey,America/Ojinaga,America/Santa_Isabel,America/Tijuana,Mexico/BajaNorte,Mexico/BajaSur,Mexico/General;MY:Asia/Kuala_Lumpur,Asia/Kuching;MZ:Africa/Maputo;NA:Africa/Windhoek;NC:Pacific/Noumea;NE:Africa/Niamey;NF:Pacific/Norfolk;NG:Africa/Lagos;NI:America/Managua;NL:Europe/Amsterdam;NO:Atlantic/Jan_Mayen,Europe/Oslo;NP:Asia/Kathmandu,Asia/Katmandu;NR:Pacific/Nauru;NU:Pacific/Niue;NZ:NZ,NZ-CHAT,Pacific/Auckland,Pacific/Chatham;OM:Asia/Muscat;PA:America/Panama;PE:America/Lima;PF:Pacific/Gambier,Pacific/Marquesas,Pacific/Tahiti;PG:Pacific/Bougainville,Pacific/Port_Moresby;PH:Asia/Manila;PK:Asia/Karachi;PL:Europe/Warsaw,Poland;PM:America/Miquelon;PN:Pacific/Pitcairn;PR:America/Puerto_Rico;PS:Asia/Gaza,Asia/Hebron;PT:Atlantic/Azores,Atlantic/Madeira,Europe/Lisbon,Portugal;PW:Pacific/Palau;PY:America/Asuncion;QA:Asia/Qatar;RE:Indian/Reunion;RO:Europe/Bucharest;RS:Europe/Belgrade;RU:Asia/Anadyr,Asia/Barnaul,Asia/Chita,Asia/Irkutsk,Asia/Kamchatka,Asia/Khandyga,Asia/Krasnoyarsk,Asia/Magadan,Asia/Novokuznetsk,Asia/Novosibirsk,Asia/Omsk,Asia/Sakhalin,Asia/Srednekolymsk,Asia/Tomsk,Asia/Ust-Nera,Asia/Vladivostok,Asia/Yakutsk,Asia/Yekaterinburg,Europe/Astrakhan,Europe/Kaliningrad,Europe/Kirov,Europe/Moscow,Europe/Samara,Europe/Saratov,Europe/Ulyanovsk,Europe/Volgograd,W-SU;RW:Africa/Kigali;SA:Asia/Riyadh;SB:Pacific/Guadalcanal;SC:Indian/Mahe;SD:Africa/Khartoum;SE:Europe/Stockholm;SG:Asia/Singapore,Singapore;SH:Atlantic/St_Helena;SI:Europe/Ljubljana;SJ:Arctic/Longyearbyen;SK:Europe/Bratislava;SL:Africa/Freetown;SM:Europe/San_Marino;SN:Africa/Dakar;SO:Africa/Mogadishu;SR:America/Paramaribo;SS:Africa/Juba;ST:Africa/Sao_Tome;SV:America/El_Salvador;SX:America/Lower_Princes;SY:Asia/Damascus;SZ:Africa/Mbabane;TC:America/Grand_Turk;TD:Africa/Ndjamena;TF:Indian/Kerguelen;TG:Africa/Lome;TH:Asia/Bangkok;TJ:Asia/Dushanbe;TK:Pacific/Fakaofo;TL:Asia/Dili;TM:Asia/Ashgabat,Asia/Ashkhabad;TN:Africa/Tunis;TO:Pacific/Tongatapu;TR:Asia/Istanbul,Europe/Istanbul,Turkey;TT:America/Port_of_Spain;TV:Pacific/Funafuti;TW:Asia/Taipei,ROC;TZ:Africa/Dar_es_Salaam;UA:Europe/Kiev,Europe/Kyiv,Europe/Simferopol,Europe/Uzhgorod,Europe/Zaporozhye;UG:Africa/Kampala;UM:Pacific/Midway,Pacific/Wake;US:America/Adak,America/Anchorage,America/Atka,America/Boise,America/Chicago,America/Denver,America/Detroit,America/Fort_Wayne,America/Indiana/Indianapolis,America/Indiana/Knox,America/Indiana/Marengo,America/Indiana/Petersburg,America/Indiana/Tell_City,America/Indiana/Vevay,America/Indiana/Vincennes,America/Indiana/Winamac,America/Indianapolis,America/Juneau,America/Kentucky/Louisville,America/Kentucky/Monticello,America/Knox_IN,America/Los_Angeles,America/Louisville,America/Menominee,America/Metlakatla,America/New_York,America/Nome,America/North_Dakota/Beulah,America/North_Dakota/Center,America/North_Dakota/New_Salem,America/Phoenix,America/Shiprock,America/Sitka,America/Yakutat,Navajo,Pacific/Honolulu,Pacific/Johnston,US/Alaska,US/Aleutian,US/Arizona,US/Central,US/East-Indiana,US/Eastern,US/Hawaii,US/Indiana-Starke,US/Michigan,US/Mountain,US/Pacific;UY:America/Montevideo;UZ:Asia/Samarkand,Asia/Tashkent;VA:Europe/Vatican;VC:America/St_Vincent;VE:America/Caracas;VG:America/Tortola;VI:America/St_Thomas,America/Virgin;VN:Asia/Ho_Chi_Minh,Asia/Saigon;VU:Pacific/Efate;WF:Pacific/Wallis;WS:Pacific/Apia;YE:Asia/Aden;YT:Indian/Mayotte;ZA:Africa/Johannesburg;ZM:Africa/Lusaka;ZW:Africa/Harare";
@@ -2943,6 +3080,8 @@ function acRender(){
   if (logo) document.getElementById("acLogo").src = logo.src;
   document.getElementById("acVer").textContent = CONFIG.appVersion;
   document.getElementById("acCopy").textContent = CONFIG.copyright;
+  var bv = document.getElementById("brokerView");
+  if (bv && !bv.hidden && typeof bkRender === "function") bkRender();   /* the country changed: refresh the platform list */
 }
 
 var countryModal = document.getElementById("countryModal");
@@ -2995,6 +3134,7 @@ function showView(name){
   accountView.hidden = name !== "account";
   chartView.hidden = true;
   tradeView.hidden = true;
+  brokerView.hidden = true;
   syncLive();
   tickSync();
   if (name === "home" && typeof hm !== "undefined" && hm.tab === "today") todayEnter();
@@ -3049,7 +3189,7 @@ pList.addEventListener("error", function(e){
   im.parentNode.replaceChild(span, im);
 }, true);
 document.querySelectorAll("a.logo").forEach(function(a){
-  a.addEventListener("click", function(){ if (!pricesView.hidden || !chartView.hidden || !tradeView.hidden || !discoverView.hidden || !eventsView.hidden || !accountView.hidden){ showView("home"); setTab("home"); } });
+  a.addEventListener("click", function(){ if (!pricesView.hidden || !chartView.hidden || !tradeView.hidden || !brokerView.hidden || !discoverView.hidden || !eventsView.hidden || !accountView.hidden){ showView("home"); setTab("home"); } });
 });
 
 function setTab(name){
