@@ -330,6 +330,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .cp-trade button:active{transform:scale(.98)}
 .cp-buy{background:#16a34a}
 .cp-sell{background:#dc2626}
+.cp-live{background:linear-gradient(90deg,var(--brand-2),var(--brand))}
 .cp-sub{margin:2px 0 0;font-size:13px;color:var(--muted)}
 .cp-post{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;color:var(--text)}
 .cp-post:hover{border-color:var(--brand);background:var(--surface-2)}
@@ -1183,21 +1184,22 @@ var CONFIG = {
      Only add it if exchange prices keep failing to load. Note: a key placed here is visible to anyone who views the page. */
   coingeckoKey: "",
   /* Stocks Buy / Sell page: partner platforms shown by the user's country.
+     for: ["buy"] shows under the Buy button, ["live"] under Trade Live (use both to show in both).
      regions: ["*"] = everywhere, or country codes such as "NG", "GH", and "EU" for all European Union countries.
      url = your referral link (https only). logo = file in the repo (a letter circle shows until it exists). */
   stockPlatforms: [
     { id: "roqqu", name: "Roqqu", tagline: "Crypto and stock trading", logo: "/roqqu.jpg",
       desc: "Buy, sell, trade and accept cryptocurrency payments from anyone, anywhere in the world.",
       advantage: "0 deposit and withdrawal fees, and 0 fees on stocks.",
-      regions: ["NG", "GH", "EU"], url: "https://roqqu.sng.link/F336c/rb1jy/r_f6869cef22", x: "https://x.com/roqqupay" },
+      for: ["buy"], regions: ["NG", "GH", "EU"], url: "https://roqqu.sng.link/F336c/rb1jy/r_f6869cef22", x: "https://x.com/roqqupay" },
     { id: "grow", name: "Grow", tagline: "Your global investing account", logo: "/grow.jpg",
       desc: "Invest in US stocks, ETFs, crypto and even private companies like OpenAI. Save, earn and invest without borders.",
       advantage: "Strategic investment access to US stocks and pre-IPO companies.",
-      regions: ["*"], url: "https://www.getgrowapp.co/join?referralCode=A9C97A", x: "https://x.com/get_grow_app" },
+      for: ["buy"], regions: ["*"], url: "https://www.getgrowapp.co/join?referralCode=A9C97A", x: "https://x.com/get_grow_app" },
     { id: "willtrade", name: "Will Trade", tagline: "Global live trading", logo: "/willtrade.jpg",
       desc: "A live trading platform open to traders around the world.",
       advantage: "",
-      regions: ["*"], url: "https://ref-earn.com/nzTYXh", x: "https://x.com/TradeW_Global" }
+      for: ["live"], regions: ["*"], url: "https://ref-earn.com/nzTYXh", x: "https://x.com/TradeW_Global" }
   ],
   /* Profile page */
   appVersion: "1.0.0",                                  // shown in the Profile footer; change it when you release an update
@@ -1927,8 +1929,11 @@ function openChart(sym, name, fromUrl){
     showToast(added ? "Added to watchlist" : "Removed from watchlist");
     prices.tv.watch = false;
   };
-  document.getElementById("cpBuy").onclick = function(){ openTrade("buy", sym, name); };
-  document.getElementById("cpSell").onclick = function(){ openTrade("sell", sym, name); };
+  var isCrypto = !!cryptoBase(sym), cpSell = document.getElementById("cpSell");
+  cpSell.className = isCrypto ? "cp-sell" : "cp-live";
+  cpSell.innerHTML = isCrypto ? '<i class="ph ph-arrow-down-right" aria-hidden="true"></i>Sell' : '<i class="ph ph-lightning" aria-hidden="true"></i>Trade Live';
+  document.getElementById("cpBuy").onclick = function(){ if (isCrypto) openTrade("buy", sym, name); else openBroker("buy", sym, name); };
+  cpSell.onclick = function(){ if (isCrypto) openTrade("sell", sym, name); else openBroker("live", sym, name); };
   loadChartNews(name, sym);
   var box = document.getElementById("cpChart");
   box.innerHTML = "";
@@ -2940,7 +2945,8 @@ function stopPricesTimer(){}
 var EU_CODES = "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE".split(" ");
 var bkState = { side: "buy", sym: "", name: "", y: 0 };
 
-function bkAvailable(p, cc){
+function bkAvailable(p, cc, mode){
+  if ((p.for || ["buy", "live"]).indexOf(mode) < 0) return false;
   var r = p.regions || ["*"], i;
   for (i = 0; i < r.length; i++){
     if (r[i] === "*" || r[i] === cc || (r[i] === "EU" && EU_CODES.indexOf(cc) > -1)) return true;
@@ -2976,24 +2982,26 @@ function bkRender(){
   btn.innerHTML = cc
     ? '<span class="fl">' + acFlag(cc) + '</span><span class="t">Platforms available in ' + esc(acName(cc)) + '</span><em>Change</em>'
     : '<span class="fl">\uD83C\uDF0D</span><span class="t">Choose your country</span><em>Choose</em>';
-  var list = cc ? (CONFIG.stockPlatforms || []).filter(function(p){ return bkAvailable(p, cc); }) : [];
+  var live = bkState.side === "live";
+  var list = cc ? (CONFIG.stockPlatforms || []).filter(function(p){ return bkAvailable(p, cc, bkState.side); }) : [];
   list.sort(function(a, b){ return (bkIsWorldwide(a) ? 1 : 0) - (bkIsWorldwide(b) ? 1 : 0); });   /* platforms made for your country first */
   if (!cc){
     box.innerHTML = '<div class="bk-empty"><strong>Choose your country</strong>We&rsquo;ll show the investing platforms available where you live.<br><button class="modal-btn" type="button" data-bkchange>Choose country</button></div>';
   } else if (!list.length){
-    box.innerHTML = '<div class="bk-empty"><strong>No platforms for ' + esc(acName(cc)) + ' yet</strong>We&rsquo;re adding new platforms all the time. Check back soon, or change your country if this isn&rsquo;t right.<br><button class="modal-btn" type="button" data-bkchange>Change country</button></div>';
+    box.innerHTML = '<div class="bk-empty"><strong>No ' + (live ? "live trading " : "") + 'platforms for ' + esc(acName(cc)) + ' yet</strong>We&rsquo;re adding new platforms all the time. Check back soon, or change your country if this isn&rsquo;t right.<br><button class="modal-btn" type="button" data-bkchange>Change country</button></div>';
   } else {
     box.innerHTML = list.map(bkCard).join("");
   }
   document.getElementById("bkNote").innerHTML = 'These are independent platforms, not run by Yong Social. We may earn a commission if you sign up through these links, at no extra cost to you. '
+    + (live ? 'Live trading moves fast and carries a high risk of losing money. ' : '')
     + 'Investing involves risk, including the loss of your money, and nothing here is financial advice. Products, fees and availability are set by each platform and can change, so check their terms and your local rules before you invest.';
 }
 
 function openBroker(side, sym, name){
-  bkState.side = side; bkState.sym = sym; bkState.name = name; bkState.y = window.scrollY;
+  bkState.side = side === "live" ? "live" : "buy"; bkState.sym = sym; bkState.name = name; bkState.y = window.scrollY;
   var ticker = String(sym).split(":").pop();
   document.getElementById("bkName").textContent = name;
-  document.getElementById("bkSub").textContent = (side === "buy" ? "Where to buy " : "Where to sell ") + ticker;
+  document.getElementById("bkSub").textContent = bkState.side === "live" ? "Trade " + ticker + " live" : "Where to buy " + ticker;
   bkRender();
   chartView.hidden = true;
   brokerView.hidden = false;
