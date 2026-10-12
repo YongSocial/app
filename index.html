@@ -630,6 +630,8 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .ac-foot{margin:36px 0 10px;text-align:center;color:var(--muted);font-size:12.5px}
 .ac-foot img{display:block;width:46px;height:46px;border-radius:11px;margin:0 auto 12px}
 .ac-foot p{margin:4px 0}
+.ac-data{font-size:11.5px;opacity:.8}
+.ac-data a{color:inherit;text-decoration:underline}
 .ct-search{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:11px 14px;font:inherit;font-size:15px;outline:none;margin-bottom:10px}
 .ct-auto{display:block;width:100%;box-sizing:border-box;text-align:left;background:none;border:1px dashed var(--line);border-radius:12px;color:var(--brand);font:600 14px var(--font-body);padding:10px 14px;margin-bottom:10px;cursor:pointer}
 .ct-list{max-height:48vh;overflow-y:auto;margin:0 -8px;padding:0 8px}
@@ -668,6 +670,8 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .td-fg .num{font-family:var(--font-head);font-size:42px;font-weight:800;line-height:1}
 .td-fg .cls{font-weight:700;font-size:15px;margin-top:4px}
 .td-fg .side{flex:1;min-width:0}
+.td-cred{margin-top:6px;font-size:11px;color:var(--muted);opacity:.8}
+.td-cred a{color:inherit;text-decoration:underline}
 .td-meter{position:relative;height:10px;border-radius:999px;background:linear-gradient(90deg,#ef4444,#f97316 30%,#eab308 50%,#84cc16 75%,#22c55e);margin:6px 0 10px}
 .td-meter i{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
 .td-sec{margin-top:30px}
@@ -1019,6 +1023,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
     <footer class="ac-foot">
       <img id="acLogo" alt="Yong Social Finance">
       <p>App version <span id="acVer"></span></p>
+      <p class="ac-data">Market data by <a href="https://www.coingecko.com/" target="_blank" rel="noopener">CoinGecko</a> &middot; Fear &amp; Greed Index by <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">Alternative.me</a></p>
       <p id="acCopy"></p>
     </footer>
   </div>
@@ -3733,7 +3738,8 @@ function tdSnapHtml(){
     html += '<div class="dv-tile wide"><h3>Fear &amp; Greed index</h3><div class="td-fg">'
       + '<div><div class="num" style="color:' + dvMoodColor(v) + '">' + v + '</div><div class="cls">' + esc(f.data[0].value_classification) + '</div></div>'
       + '<div class="side"><div class="td-meter" role="img" aria-label="Fear and Greed index ' + v + ' out of 100"><i style="left:' + Math.max(2, Math.min(98, v)) + '%"></i></div>'
-      + '<div class="dv-sm">' + (y != null ? 'Yesterday: ' + y + ' &middot; ' : '') + '0 = extreme fear, 100 = extreme greed</div></div></div></div>';
+      + '<div class="dv-sm">' + (y != null ? 'Yesterday: ' + y + ' &middot; ' : '') + '0 = extreme fear, 100 = extreme greed</div>'
+      + '<div class="td-cred">Index by <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">Alternative.me</a></div></div></div></div>';
   }
   return html;
 }
@@ -3747,7 +3753,7 @@ function tdRender(){
   document.getElementById("tdMovers").innerHTML = list.map(function(c, i){ return tdRow(c, i); }).join("")
     || '<div class="dv-err">No movers to show right now.</div>';
   document.getElementById("tdNote").textContent = "Updated " + timeStr(TD.t || Date.now())
-    + ". Prices from CoinGecko, sentiment from Alternative.me. For information only, not financial advice.";
+    + ". For information only, not financial advice.";
 }
 
 function tdSkeleton(){
