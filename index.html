@@ -299,11 +299,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .dv-gl summary::after{content:"+";font-size:20px;color:var(--muted);font-weight:400}
 .dv-gl[open] summary::after{content:"\2212"}
 .dv-gl p{margin:0;padding:0 16px 14px;color:var(--muted);font-size:14px;line-height:1.55}
-.dv-promo{display:flex;align-items:center;gap:14px;margin-top:18px;padding:16px;border-radius:var(--radius);border:1px solid var(--line);background:linear-gradient(90deg,rgba(37,99,235,.18),rgba(33,150,243,.08));color:var(--text)}
-.dv-promo:hover{border-color:var(--brand)}
-.dv-ptxt{flex:1;min-width:0}
-.dv-ptxt strong{display:block;font-size:15px}
-.dv-ptxt small{color:var(--muted);font-size:12.5px}
 .ev-filters{position:sticky;top:calc(var(--hdr,60px) - 1px);z-index:30;display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;padding:12px 0;background:var(--bg);border-bottom:1px solid var(--line)}
 .ev-box{margin-top:6px;min-height:200px}
 .tvhost{display:flex;align-items:flex-start}
@@ -432,7 +427,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   .layout{grid-template-columns:1fr}
 }
 @media(max-width:640px){
-  .burger{display:inline-flex;margin-left:auto}
+  .burger{display:inline-flex;margin-left:auto;font-size:24px;line-height:1;padding:8px 10px}
   nav.main{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,85vw);height:100vh;height:100dvh;margin:0;z-index:60;background:var(--surface);border-left:1px solid var(--line);flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:72px 14px 24px;overflow-y:auto;overscroll-behavior:contain;display:flex;transform:translateX(100%);visibility:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,0);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s linear .3s}
   nav.main.open{transform:translateX(0);visibility:visible;box-shadow:0 0 0 100vmax rgba(0,0,0,.6);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s}
   nav.main::before{content:"Menu";position:absolute;top:0;left:0;right:0;height:60px;display:flex;align-items:center;padding:0 20px;font-family:var(--font-head);font-weight:800;font-size:18px;color:#fff;border-bottom:1px solid var(--line)}
@@ -481,8 +476,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .ar-foot{margin-top:34px;padding-top:26px;border-top:1px solid var(--line)}
 .ar-note{display:flex;flex-wrap:wrap;gap:12px;align-items:center;color:var(--muted);font-size:14px;margin-bottom:22px}
 .ar-chart{margin:28px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
-.ar-ad{position:relative;z-index:0;margin:36px 0 8px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
-.ar-ad-label{display:block;margin-bottom:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .ar-chart-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .ar-chart-head strong{font-family:var(--font-head);font-size:15px}
 .ar-chart-head span{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
@@ -712,15 +705,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 
 <div class="tick" id="tick" aria-label="Live crypto prices"><div class="tick-track" id="tickTrack"></div></div>
 
-<!-- BEGIN AADS AD UNIT 2458304 -->
-<div class="ad-wrap" style="position:relative;z-index:0;max-width:100%;margin:8px auto;">
-<div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
-          <iframe data-aa='2458304' src='//acceptable.a-ads.com/2458304/?size=Adaptive'
-                            style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
-        </div>
-</div>
-<!-- END AADS AD UNIT 2458304 -->
-
 <main id="top">
   <div class="hm-tabs" id="hmTabs"><div class="hm-tabs-in" id="hmTabsIn" role="tablist" aria-label="Home sections">
     <button class="hm-tab on" type="button" role="tab" aria-selected="true" data-hm="today">Today in Crypto</button>
@@ -906,11 +890,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
       <div class="dv-start" id="dvStart"></div>
       <h3 class="dv-sub">Crypto glossary</h3>
       <div class="dv-card" id="dvGloss"></div>
-      <a class="dv-promo" id="dvPromo" href="https://alison.com/?utm_source=alison_user&amp;utm_medium=affiliate&amp;utm_campaign=43172863" target="_blank" rel="noopener sponsored">
-        <span class="dv-ico"><i class="ph ph-graduation-cap" aria-hidden="true"></i></span>
-        <span class="dv-ptxt"><strong>Keep learning</strong><small>Free courses to build new skills &middot; partner link</small></span>
-        <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
-      </a>
     </section>
   </div>
 </section>
@@ -966,7 +945,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   <article class="ar-wrap">
     <div id="arHead"></div>
     <div class="ar-body" id="arBody"></div>
-    <div class="ar-ad" id="arAd" hidden></div>
     <div class="ar-foot" id="arFoot"></div>
   </article>
 </section>
@@ -3509,18 +3487,6 @@ function arInitCharts(){
   });
 }
 
-/* Sponsored ad (A-ADS) at the end of the article, above the footer. Only for loaded articles. */
-function arAdSet(on){
-  var box = document.getElementById("arAd");
-  if (!box) return;
-  if (!on){ box.hidden = true; box.innerHTML = ""; return; }
-  box.innerHTML = '<span class="ar-ad-label">Advertisement</span>'
-    + '<div id="arAdFrame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">'
-    + "<iframe data-aa='2458304' src='//acceptable.a-ads.com/2458304/?size=Adaptive' "
-    + "style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe></div>";
-  box.hidden = false;
-}
-
 function arShow(p, mode){
   ar.ref = p;
   var head = document.getElementById("arHead"), body = document.getElementById("arBody"), foot = document.getElementById("arFoot");
@@ -3533,16 +3499,13 @@ function arShow(p, mode){
     arPlaceChart(frag, p);
     body.appendChild(frag);
     arInitCharts();
-    arAdSet(true);
     foot.innerHTML = arFootHtml(p, mode === "partial", true);
     arMore(p, ar.token);
   } else if (mode === "loading"){
     head.innerHTML = arHeadHtml(p, 0);
     body.innerHTML = '<div class="ar-skel"></div><div class="ar-skel"></div><div class="ar-skel" style="width:92%"></div><div class="ar-skel"></div><div class="ar-skel" style="width:70%"></div>';
     foot.innerHTML = "";
-    arAdSet(false);
   } else {
-    arAdSet(false);
     head.innerHTML = arHeadHtml(p, 0);
     body.innerHTML = '<div class="notice">Couldn&rsquo;t load this article. Check your connection and try again.<br><br><button class="dv-btn" type="button" data-ar-retry>Try again</button></div>';
     foot.innerHTML = arFootHtml(p, false, false);
@@ -3601,7 +3564,6 @@ function closeArticle(){
   articleView.hidden = true;
   document.body.style.overflow = "";
   document.getElementById("arBody").innerHTML = "";
-  arAdSet(false);
 }
 
 function arBack(){
