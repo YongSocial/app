@@ -695,7 +695,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .td-cta>i{color:var(--muted);font-size:20px}
 .td-note{font-size:12px;line-height:1.5;color:var(--muted);margin:26px 2px 0}
 </style>
-<script async src="https://ss.mrmnd.com/native.js"></script>
 </head>
 <body>
 
@@ -3923,6 +3922,14 @@ hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
 function hmBuildVideos(){
   vcRender();
+  /* Load the ad only once the Videos tab is visible (ad scripts skip hidden containers). */
+  if (!hm.adLoaded){
+    hm.adLoaded = true;
+    var sc = document.createElement("script");
+    sc.async = true;
+    sc.src = "https://ss.mrmnd.com/native.js";
+    document.head.appendChild(sc);
+  }
 }
 
 /* ---- The Other Side: everything beyond crypto ---- */
