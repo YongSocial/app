@@ -716,6 +716,15 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 
 <div class="tick" id="tick" aria-label="Live crypto prices"><div class="tick-track" id="tickTrack"></div></div>
 
+<!-- BEGIN AADS AD UNIT 2458304 -->
+<div class="ad-wrap" style="position:relative;z-index:0;max-width:100%;margin:8px auto;">
+<div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+          <iframe data-aa='2458304' src='//acceptable.a-ads.com/2458304/?size=Adaptive'
+                            style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+        </div>
+</div>
+<!-- END AADS AD UNIT 2458304 -->
+
 <main id="top">
   <div class="hm-tabs" id="hmTabs"><div class="hm-tabs-in" id="hmTabsIn" role="tablist" aria-label="Home sections">
     <button class="hm-tab on" type="button" role="tab" aria-selected="true" data-hm="today">Today in Crypto</button>
@@ -840,7 +849,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
       <div class="vc-grid" id="vcGrid"></div>
       <p class="vc-note">Videos play from each channel&rsquo;s official YouTube page. Channel names and logos belong to their owners, and Yong Social is not affiliated with them.</p>
     </div>
-    <div class="hm-sec" id="vcAdSec"><div data-mndazid="325c436a-0633-4f30-8933-3c08f658aed7"></div></div>
+    <div class="hm-sec" id="vcAdSec" hidden><div id="vcAd"></div></div>
   </div>
   </div></section>
 </main>
@@ -1138,6 +1147,17 @@ var CONFIG = {
      list = the playlist ID (the text after "list=" in the playlist link), cat = one of videoCategories,
      img = optional logo file in the repo (a letter circle shows until the file exists). */
   videoCategories: ["Markets", "Crypto", "Business", "Personal Finance", "Documentaries"],
+  /* Ad card at the bottom of the Videos tab. Set enabled:false to hide it.
+     Replace the text, link (must start with https://) and optional image with your advertiser's. */
+  adCard: {
+    enabled: true,
+    label: "Advertisement",
+    title: "Advertise with Yong Social",
+    text: "Reach readers who follow markets, crypto and investing.",
+    button: "Get in touch",
+    url: "https://www.yongsocial.com/p/contact-us.html",
+    img: ""
+  },
   videoChannels: [
     { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
       blurb: "Market news, interviews and business headlines." },
@@ -3920,16 +3940,19 @@ hmEl("vcGrid").addEventListener("click", function(e){
 });
 hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
+function vcAdRender(){
+  var a = CONFIG.adCard, sec = hmEl("vcAdSec");
+  if (!a || !a.enabled || !/^https:\/\//.test(a.url || "")){ sec.hidden = true; return; }
+  hmEl("vcAd").innerHTML = '<a class="vc-ad" href="' + esc(a.url) + '" target="_blank" rel="sponsored noopener noreferrer">'
+    + '<span class="vc-ad-tag">' + esc(a.label || "Advertisement") + '</span>'
+    + '<span class="vc-ad-row">' + (a.img ? '<img loading="lazy" src="' + esc(a.img) + '" alt="">' : "")
+    + '<span class="vc-ad-tx"><strong>' + esc(a.title || "") + '</strong>' + (a.text ? '<small>' + esc(a.text) + '</small>' : "") + '</span></span>'
+    + '<span class="vc-ad-btn">' + esc(a.button || "Learn more") + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>';
+  sec.hidden = false;
+}
 function hmBuildVideos(){
   vcRender();
-  /* Load the ad only once the Videos tab is visible (ad scripts skip hidden containers). */
-  if (!hm.adLoaded){
-    hm.adLoaded = true;
-    var sc = document.createElement("script");
-    sc.async = true;
-    sc.src = "https://ss.mrmnd.com/native.js";
-    document.head.appendChild(sc);
-  }
+  vcAdRender();
 }
 
 /* ---- The Other Side: everything beyond crypto ---- */
