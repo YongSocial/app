@@ -695,6 +695,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .td-cta>i{color:var(--muted);font-size:20px}
 .td-note{font-size:12px;line-height:1.5;color:var(--muted);margin:26px 2px 0}
 </style>
+<script async src="https://ss.mrmnd.com/native.js"></script>
 </head>
 <body>
 
@@ -840,8 +841,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
       <div class="vc-grid" id="vcGrid"></div>
       <p class="vc-note">Videos play from each channel&rsquo;s official YouTube page. Channel names and logos belong to their owners, and Yong Social is not affiliated with them.</p>
     </div>
-    <div class="hm-sec" id="vcAdSec"><div id="vcAd"><script async="async" data-cfasync="false" src="https://pl31792201.profitableratecpmnetwork.com/c36e050cade2c2fc25434239dc515e2f/invoke.js"></script>
-<div id="container-c36e050cade2c2fc25434239dc515e2f"></div></div></div>
+    <div class="hm-sec" id="vcAdSec"><div data-mndazid="325c436a-0633-4f30-8933-3c08f658aed7"></div></div>
   </div>
   </div></section>
 </main>
@@ -1139,17 +1139,6 @@ var CONFIG = {
      list = the playlist ID (the text after "list=" in the playlist link), cat = one of videoCategories,
      img = optional logo file in the repo (a letter circle shows until the file exists). */
   videoCategories: ["Markets", "Crypto", "Business", "Personal Finance", "Documentaries"],
-  /* Ad card at the bottom of the Videos tab. Set enabled:false to hide it.
-     Replace the text, link (must start with https://) and optional image with your advertiser's. */
-  adCard: {
-    enabled: true,
-    label: "Advertisement",
-    title: "Advertise with Yong Social",
-    text: "Reach readers who follow markets, crypto and investing.",
-    button: "Get in touch",
-    url: "https://www.yongsocial.com/p/contact-us.html",
-    img: ""
-  },
   videoChannels: [
     { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
       blurb: "Market news, interviews and business headlines." },
@@ -3932,16 +3921,6 @@ hmEl("vcGrid").addEventListener("click", function(e){
 });
 hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
-function vcAdRender(){
-  var a = CONFIG.adCard, sec = hmEl("vcAdSec");
-  if (!a || !a.enabled || !/^https:\/\//.test(a.url || "")){ sec.hidden = true; return; }
-  hmEl("vcAd").innerHTML = '<a class="vc-ad" href="' + esc(a.url) + '" target="_blank" rel="sponsored noopener noreferrer">'
-    + '<span class="vc-ad-tag">' + esc(a.label || "Advertisement") + '</span>'
-    + '<span class="vc-ad-row">' + (a.img ? '<img loading="lazy" src="' + esc(a.img) + '" alt="">' : "")
-    + '<span class="vc-ad-tx"><strong>' + esc(a.title || "") + '</strong>' + (a.text ? '<small>' + esc(a.text) + '</small>' : "") + '</span></span>'
-    + '<span class="vc-ad-btn">' + esc(a.button || "Learn more") + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span></a>';
-  sec.hidden = false;
-}
 function hmBuildVideos(){
   vcRender();
 }
