@@ -61,8 +61,6 @@ nav.main a:hover,.navbtn:hover{color:#fff;background:var(--surface-2)}
 nav.main a.active{color:#fff;background:var(--surface-2)}
 .search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
 .search input{background:none;border:0;color:var(--text);outline:none;font-family:inherit;font-size:14px;width:150px}
-.empower-btn{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;transition:.2s}
-.empower-btn:hover{border-color:var(--brand);background:rgba(33,150,243,.12);color:#fff}
 .burger{display:none}
 
 /* Hero */
@@ -434,7 +432,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   .layout{grid-template-columns:1fr}
 }
 @media(max-width:640px){
-  .burger{display:inline-flex}
+  .burger{display:inline-flex;margin-left:auto}
   nav.main{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,85vw);height:100vh;height:100dvh;margin:0;z-index:60;background:var(--surface);border-left:1px solid var(--line);flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:72px 14px 24px;overflow-y:auto;overscroll-behavior:contain;display:flex;transform:translateX(100%);visibility:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,0);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s linear .3s}
   nav.main.open{transform:translateX(0);visibility:visible;box-shadow:0 0 0 100vmax rgba(0,0,0,.6);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s}
   nav.main::before{content:"Menu";position:absolute;top:0;left:0;right:0;height:60px;display:flex;align-items:center;padding:0 20px;font-family:var(--font-head);font-weight:800;font-size:18px;color:#fff;border-bottom:1px solid var(--line)}
@@ -710,10 +708,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   <button class="navbtn burger" id="burger" aria-label="Menu">&#9776;</button>
   <nav class="main" id="nav"></nav>
   <button class="navbtn navclose" id="navclose" aria-label="Close menu">&#10005;</button>
-  <a class="search empower-btn" href="https://alison.com/?utm_source=alison_user&amp;utm_medium=affiliate&amp;utm_campaign=43172863" target="_blank" rel="noopener">
-    <span>&#127891;</span>
-    <span>Empower Yourself</span>
-  </a>
 </div></header>
 
 <div class="tick" id="tick" aria-label="Live crypto prices"><div class="tick-track" id="tickTrack"></div></div>
@@ -912,7 +906,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
       <div class="dv-start" id="dvStart"></div>
       <h3 class="dv-sub">Crypto glossary</h3>
       <div class="dv-card" id="dvGloss"></div>
-      <a class="dv-promo" id="dvPromo" href="#" target="_blank" rel="noopener sponsored">
+      <a class="dv-promo" id="dvPromo" href="https://alison.com/?utm_source=alison_user&amp;utm_medium=affiliate&amp;utm_campaign=43172863" target="_blank" rel="noopener sponsored">
         <span class="dv-ico"><i class="ph ph-graduation-cap" aria-hidden="true"></i></span>
         <span class="dv-ptxt"><strong>Keep learning</strong><small>Free courses to build new skills &middot; partner link</small></span>
         <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
@@ -2758,8 +2752,6 @@ function dvInitStart(){
   dvEl("dvGloss").innerHTML = DV_GLOSS.map(function(g){
     return '<details class="dv-gl"><summary>' + esc(g[0]) + '</summary><p>' + esc(g[1]) + '</p></details>';
   }).join("");
-  var emp = document.querySelector(".empower-btn");
-  if (emp && emp.href) dvEl("dvPromo").href = emp.href; else dvEl("dvPromo").hidden = true;
 }
 dvInitStart();
 
