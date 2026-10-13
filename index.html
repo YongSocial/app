@@ -428,7 +428,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 }
 @media(max-width:640px){
   .burger{display:inline-flex;margin-left:auto;font-size:24px;line-height:1;padding:8px 10px}
-  nav.main{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,85vw);height:100vh;height:100dvh;margin:0;z-index:60;background:var(--surface);border-left:1px solid var(--line);flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:72px 14px 24px;overflow-y:auto;overscroll-behavior:contain;display:flex;transform:translateX(100%);visibility:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,0);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s linear .3s}
+  nav.main{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,85vw);height:100vh;height:100dvh;margin:0;z-index:60;background:var(--surface);border-left:1px solid var(--line);flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:72px 14px calc(88px + env(safe-area-inset-bottom,0px));overflow-y:auto;overscroll-behavior:contain;display:flex;transform:translateX(100%);visibility:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,0);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s linear .3s}
   nav.main.open{transform:translateX(0);visibility:visible;box-shadow:0 0 0 100vmax rgba(0,0,0,.6);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s}
   nav.main::before{content:"Menu";position:absolute;top:0;left:0;right:0;height:60px;display:flex;align-items:center;padding:0 20px;font-family:var(--font-head);font-weight:800;font-size:18px;color:#fff;border-bottom:1px solid var(--line)}
   nav.main a,nav.main button.navlink{padding:8px 14px;font-size:15px;width:100%;gap:12px}
@@ -613,7 +613,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .nv-go{flex:none;font-size:14px;color:var(--muted)}
 .nv-foot{margin-top:auto;padding:14px 14px 4px;border-top:1px solid var(--line)}
 .nv-social{display:flex;gap:10px;flex-wrap:wrap}
-.nv-social a{display:grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;background:var(--surface-2);color:var(--text);border:1px solid var(--line)}
+nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;background:var(--surface-2);color:var(--text);border:1px solid var(--line)}
 .nv-social a svg{width:19px;height:19px}
 .nv-ver{margin:14px 0 0;font-size:12px;color:var(--muted)}
 .ab-logo{display:block;width:56px;height:56px;border-radius:14px;margin:0 0 12px}
