@@ -431,7 +431,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   nav.main{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,85vw);height:100vh;height:100dvh;margin:0;z-index:60;background:var(--surface);border-left:1px solid var(--line);flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;gap:4px;padding:72px 14px 24px;overflow-y:auto;overscroll-behavior:contain;display:flex;transform:translateX(100%);visibility:hidden;box-shadow:0 0 0 100vmax rgba(0,0,0,0);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s linear .3s}
   nav.main.open{transform:translateX(0);visibility:visible;box-shadow:0 0 0 100vmax rgba(0,0,0,.6);transition:transform .3s cubic-bezier(.4,0,.2,1),box-shadow .3s ease,visibility 0s}
   nav.main::before{content:"Menu";position:absolute;top:0;left:0;right:0;height:60px;display:flex;align-items:center;padding:0 20px;font-family:var(--font-head);font-weight:800;font-size:18px;color:#fff;border-bottom:1px solid var(--line)}
-  nav.main a,nav.main button.navlink{padding:13px 14px;font-size:15px;width:100%}
+  nav.main a,nav.main button.navlink{padding:8px 14px;font-size:15px;width:100%;gap:12px}
   .navclose{position:fixed;top:10px;right:12px;z-index:61;width:40px;height:40px;border-radius:10px;align-items:center;justify-content:center;font-size:20px;display:none}
   nav.main.open + .navclose{display:inline-flex}
   body:has(nav.main.open){overflow:hidden}
@@ -605,6 +605,25 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .bk-empty{margin-top:18px;padding:30px 20px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted);font-size:14.5px;line-height:1.5}
 .bk-empty strong{display:block;margin-bottom:6px;color:var(--text);font-family:var(--font-head);font-size:17px}
 .bk-empty button{margin-top:16px}
+.nv-group{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.nv-h{padding:10px 14px 6px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);opacity:.85}
+.nv-ico{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--surface-2);color:var(--brand);font-size:18px}
+.nv-t{flex:1;min-width:0;text-align:left}
+.nv-val{font-size:13px;color:var(--muted);white-space:nowrap}
+.nv-go{flex:none;font-size:14px;color:var(--muted)}
+.nv-foot{margin-top:auto;padding:14px 14px 4px;border-top:1px solid var(--line)}
+.nv-social{display:flex;gap:10px;flex-wrap:wrap}
+.nv-social a{display:grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;background:var(--surface-2);color:var(--text);border:1px solid var(--line)}
+.nv-social a svg{width:19px;height:19px}
+.nv-ver{margin:14px 0 0;font-size:12px;color:var(--muted)}
+.ab-logo{display:block;width:56px;height:56px;border-radius:14px;margin:0 0 12px}
+#abText p{margin:0 0 10px;font-size:14.5px;line-height:1.6}
+.ab-ver{margin:14px 0 0;font-size:12px;color:var(--muted)}
+@media(min-width:641px){
+  .nv-group{display:contents}
+  .nv-h,.nv-foot,.nv-ico,.nv-go,.nv-val{display:none}
+  nav.main .navlink:not(.nv-d){display:none}
+}
 .ac-label{margin:26px 4px 10px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
 .ac-group{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .ac-row{display:flex;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding:14px 16px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -1094,6 +1113,16 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
   </div>
 </div>
 
+<div class="modal" id="aboutModal" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="abTitle">
+    <button class="modal-close" id="abClose" aria-label="Close">&times;</button>
+    <img class="ab-logo" id="abLogo" alt="Yong Social Finance" />
+    <h4 id="abTitle">About Yong Social Finance</h4>
+    <div id="abText"></div>
+    <p class="ab-ver" id="abVer"></p>
+  </div>
+</div>
+
 <div class="modal" id="countryModal" aria-hidden="true">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="ctTitle">
     <button class="modal-close" id="ctClose" aria-label="Close">&times;</button>
@@ -1248,12 +1277,32 @@ var CONFIG = {
   ],
   subscribeUrl: "https://x.com/yongsocial",             // newsletter / subscribe link (now X follow link)
   // Header nav — replace href values with your real page URLs
-  pages: [
-    { label: "8 AM Finance",      url: "https://www.yongsocial.com/search?q=8+am+finance" },
-    { label: "Let's Discuss Crypto", url: "https://www.yongsocial.com/search?q=let%27s+discuss+crypto" },
-    { label: "Tech It Up",        url: "https://www.yongsocial.com/search?q=tech+it+up" },
-    { label: "Bookmark",          action: "bookmarks", icon: "bookmark" },
-    { label: "Advertise With Us", action: "soon" }
+  /* Side menu. type: series (opens the News tab for a label, with a search as backup), bookmarks, share, country,
+     rate (hidden until playUrl below is set), about, contact, privacy, terms. */
+  menu: [
+    { title: "Read", items: [
+      { type: "series", label: "8 AM Finance",         tag: "8 AM Finance",         q: "8 am finance",         icon: "ph-sun-horizon" },
+      { type: "series", label: "Let's Discuss Crypto", tag: "Let's Discuss Crypto", q: "let's discuss crypto", icon: "ph-chats-circle" },
+      { type: "series", label: "Tech It Up",           tag: "Tech It Up",           q: "tech it up",           icon: "ph-cpu" },
+      { type: "bookmarks", label: "Bookmarks", icon: "ph-bookmark-simple" }
+    ]},
+    { title: "App", items: [
+      { type: "share",   label: "Share the app", icon: "ph-share-network" },
+      { type: "country", label: "Country",       icon: "ph-globe-hemisphere-west" },
+      { type: "rate",    label: "Rate us",       icon: "ph-star" }
+    ]},
+    { title: "Company", items: [
+      { type: "about",   label: "About Yong Social Finance", icon: "ph-info" },
+      { type: "contact", label: "Contact us",                icon: "ph-envelope-simple" },
+      { type: "privacy", label: "Privacy Policy",            icon: "ph-shield-check" },
+      { type: "terms",   label: "Terms of Use",              icon: "ph-file-text" }
+    ]}
+  ],
+  playUrl: "",   // after the app is live on Google Play, paste its link here (https://play.google.com/store/apps/details?id=com.yongsocial.app) to show "Rate us" and share that link
+  aboutText: [
+    "Yong Social Finance brings markets, investing and digital assets together in one place: live prices, clear explainers, curated videos and daily reads like 8 AM Finance and Tech It Up.",
+    "Our aim is simple: help you follow the money and make sense of it.",
+    "Nothing in this app is financial advice. Always do your own research."
   ],
   footerLegal: [
     { label: "Privacy Policy",  url: "https://app.yongsocial.com/privacy-policy" }
@@ -1534,9 +1583,11 @@ var currentShare = { url: "", title: "" };
 var shareModal = document.getElementById("shareModal");
 var toast = document.getElementById("toast");
 
-function openShare(url, title){
+function openShare(url, title, heading){
   currentShare.url = url;
   currentShare.title = title;
+  var h = document.getElementById("shareTitle");
+  if (h) h.textContent = heading || "Share this article";
   shareModal.classList.add("show");
   shareModal.setAttribute("aria-hidden", "false");
 }
@@ -1641,22 +1692,75 @@ document.addEventListener("keydown", function(e){
 /* =========================================================================
    5. CHROME + EVENTS
    ========================================================================= */
+var NV_SERIES = {};
+function nvRow(it){
+  var ico = '<span class="nv-ico"><i class="ph ' + esc(it.icon) + '" aria-hidden="true"></i></span>';
+  var lbl = '<span class="nv-t">' + esc(it.label) + '</span>';
+  var go = '<i class="ph ph-caret-right nv-go" aria-hidden="true"></i>';
+  var ext = ' target="_blank" rel="noopener"';
+  switch (it.type){
+    case "series":
+      NV_SERIES[it.label] = it;
+      return '<button class="navlink nv-d" type="button" data-nav-series="' + esc(it.label) + '">' + ico + lbl + go + '</button>';
+    case "bookmarks":
+      return '<button class="navlink nv-d" type="button" data-nav-bookmarks>' + ico + lbl + '<span class="bm-count" style="display:none">0</span>' + go + '</button>';
+    case "share":   return '<button class="navlink" type="button" data-nav-share>' + ico + lbl + go + '</button>';
+    case "country": return '<button class="navlink" type="button" data-nav-country>' + ico + lbl + '<span class="nv-val" id="nvCountryVal"></span>' + go + '</button>';
+    case "about":   return '<button class="navlink" type="button" data-nav-about>' + ico + lbl + go + '</button>';
+    case "rate":    return /^https:\/\//.test(CONFIG.playUrl || "") ? '<a class="navlink" href="' + esc(CONFIG.playUrl) + '"' + ext + '>' + ico + lbl + go + '</a>' : "";
+    case "contact": return '<a class="navlink" href="mailto:' + esc(CONFIG.contactEmail) + '">' + ico + lbl + go + '</a>';
+    case "privacy": return '<a class="navlink" href="' + esc(CONFIG.privacyUrl) + '"' + ext + '>' + ico + lbl + go + '</a>';
+    case "terms":   return '<a class="navlink" href="' + esc(CONFIG.termsUrl) + '"' + ext + '>' + ico + lbl + go + '</a>';
+  }
+  return "";
+}
+function nvSyncCountry(){
+  var el = document.getElementById("nvCountryVal"), cc = typeof userCountry === "function" ? userCountry() : null;
+  if (el) el.textContent = cc ? acFlag(cc) + " " + acName(cc) : "Choose";
+}
 function buildChrome(){
-  document.getElementById("nav").innerHTML = CONFIG.pages.map(function(p){
-    if (p.action === "bookmarks"){
-      return '<button class="navlink" type="button" data-nav-bookmarks>'
-        + '<span class="nav-ico">' + bmIcon(true) + '</span>' + esc(p.label)
-        + '<span class="bm-count" style="display:none">0</span></button>';
-    }
-    if (p.action === "soon"){
-      return '<button class="navlink" type="button" data-nav-soon="' + esc(p.label) + '">' + esc(p.label) + '</button>';
-    }
-    var ext = p.url.charAt(0) !== "#";
-    return '<a href="' + esc(p.url) + '"' + (ext ? ' target="_blank" rel="noopener"' : ' class="active"') + '>' + esc(p.label) + '</a>';
+  var groups = (CONFIG.menu || []).map(function(g){
+    var rows = g.items.map(nvRow).join("");
+    return rows ? '<div class="nv-group"><div class="nv-h">' + esc(g.title) + '</div>' + rows + '</div>' : "";
   }).join("");
+  var social = (CONFIG.socials || []).map(function(sc){
+    return '<a href="' + esc(sc.url) + '" target="_blank" rel="noopener" aria-label="' + esc(sc.label) + '">' + (SOCIAL_ICONS[sc.icon] || esc(sc.label)) + '</a>';
+  }).join("");
+  document.getElementById("nav").innerHTML = groups
+    + '<div class="nv-foot"><div class="nv-h" style="padding:0 0 10px">Follow us</div><div class="nv-social">' + social + '</div>'
+    + '<p class="nv-ver">Version ' + esc(CONFIG.appVersion || "") + '</p></div>';
   updateBmCount();
+  nvSyncCountry();
   document.getElementById("visitBlog").href = CONFIG.blogUrl;
   document.getElementById("today").textContent = new Date().toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+}
+
+function nvClose(){ document.getElementById("nav").classList.remove("open"); }
+function nvOpenSeries(label){
+  var s = NV_SERIES[label];
+  if (!s) return;
+  nvClose();
+  showView("home"); setTab("home"); hmSwitch("news", true);
+  var bySearch = function(){ document.getElementById("hq").value = s.q || s.label; runSearch(s.q || s.label); };
+  hmExactLabel(s.tag).then(function(lbl){
+    return jsonp(CONFIG.blogUrl + "/feeds/posts/summary/-/" + encodeURIComponent(lbl) + "?max-results=1").then(function(d){
+      return { lbl: lbl, has: ((d.feed || {}).entry || []).length > 0 };
+    });
+  }).then(function(r){
+    if (!r.has){ bySearch(); return; }
+    state.label = r.lbl; state.query = null; state.start = 1;
+    document.getElementById("hq").value = "";
+    document.querySelectorAll("#chips .chip").forEach(function(c){
+      c.classList.toggle("active", (c.getAttribute("data-label") || "") === r.lbl);
+    });
+    load();
+    window.scrollTo(0, 0);
+  }).catch(bySearch);
+}
+function nvShareApp(){
+  var url = CONFIG.playUrl || "https://app.yongsocial.com", title = "Yong Social Finance", text = "Markets, crypto prices and news in one app.";
+  if (navigator.share){ navigator.share({ title: title, text: text, url: url }).catch(function(){}); return; }
+  openShare(url, title + ": " + text, "Share the app");
 }
 
 function runSearch(value){
@@ -1710,13 +1814,12 @@ document.addEventListener("click", function(e){
     openModal(bmModal);
     return;
   }
-  var navSoon = e.target.closest("[data-nav-soon]");
-  if (navSoon){
-    e.preventDefault();
-    document.getElementById("nav").classList.remove("open");
-    showSoon(navSoon.getAttribute("data-nav-soon"));
-    return;
-  }
+  var navSeries = e.target.closest("[data-nav-series]");
+  if (navSeries){ e.preventDefault(); nvOpenSeries(navSeries.getAttribute("data-nav-series")); return; }
+  if (e.target.closest("[data-nav-share]")){ e.preventDefault(); nvClose(); nvShareApp(); return; }
+  if (e.target.closest("[data-nav-country]")){ e.preventDefault(); nvClose(); document.getElementById("acCountry").click(); return; }
+  if (e.target.closest("[data-nav-about]")){ e.preventDefault(); nvClose(); abOpen(); return; }
+  if (e.target.closest("#nav a")) setTimeout(nvClose, 60);
 });
 
 document.getElementById("heroSearchForm").addEventListener("submit", function(e){
@@ -3075,10 +3178,21 @@ function acRender(){
   if (logo) document.getElementById("acLogo").src = logo.src;
   document.getElementById("acVer").textContent = CONFIG.appVersion;
   document.getElementById("acCopy").textContent = CONFIG.copyright;
+  nvSyncCountry();
   var bv = document.getElementById("brokerView");
   if (bv && !bv.hidden && typeof bkRender === "function") bkRender();   /* the country changed: refresh the platform list */
 }
 
+var aboutModal = document.getElementById("aboutModal");
+function abOpen(){
+  var logo = document.querySelector(".logo-img");
+  if (logo) document.getElementById("abLogo").src = logo.src;
+  document.getElementById("abText").innerHTML = (CONFIG.aboutText || []).map(function(t){ return "<p>" + esc(t) + "</p>"; }).join("");
+  document.getElementById("abVer").textContent = "Version " + CONFIG.appVersion;
+  openModal(aboutModal);
+}
+document.getElementById("abClose").addEventListener("click", function(){ closeModal(aboutModal); });
+aboutModal.addEventListener("click", function(e){ if (e.target === aboutModal) closeModal(aboutModal); });
 var countryModal = document.getElementById("countryModal");
 function acList(){
   var q = document.getElementById("ctSearch").value.trim().toLowerCase(), cur = userCountry();
@@ -3118,7 +3232,7 @@ document.getElementById("ctAuto").addEventListener("click", function(){
 });
 document.getElementById("ctClose").addEventListener("click", function(){ closeModal(countryModal); });
 countryModal.addEventListener("click", function(e){ if (e.target === countryModal) closeModal(countryModal); });
-document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeModal(countryModal); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeModal(countryModal); closeModal(aboutModal); } });
 acRender();
 
 function showView(name){
