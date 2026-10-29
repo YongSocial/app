@@ -1175,7 +1175,7 @@ var CONFIG = {
     url: "https://www.yongsocial.com/p/contact-us.html",
     img: ""
   },
-  adsUrl: "https://offers.yongsocial.com/promos.js",   // the rotating ads list lives here; edit that file, not the app
+  adsUrl: "https://offers.yongsocial.com/offers.js",   // the rotating ads list lives here; edit that file, not the app
   videoChannels: [
     { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
       blurb: "Market news, interviews and business headlines." },
@@ -4041,7 +4041,7 @@ hmEl("vcGrid").addEventListener("click", function(e){
 });
 hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
-/* ---- Rotating promos: list is read from offers.yongsocial.com/promos.js ---- */
+/* ---- Rotating promos: list is read from offers.yongsocial.com/offers.js ---- */
 var promos = { data: null, t: 0, p: null };
 function promosLoad(){
   if (promos.data && Date.now() - promos.t < 300000) return Promise.resolve(promos.data);
