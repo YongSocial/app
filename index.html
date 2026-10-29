@@ -706,6 +706,18 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 .td-cta small{color:var(--muted);font-size:13px}
 .td-cta>i{color:var(--muted);font-size:20px}
 .td-note{font-size:12px;line-height:1.5;color:var(--muted);margin:26px 2px 0}
+
+/* Rotating promos (loaded from offers.yongsocial.com) */
+.pr-rot{border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,var(--surface-2),var(--surface));padding:12px 12px 14px;margin-top:26px}
+.pr-tag{display:inline-block;margin-bottom:10px;font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.pr-img{display:block;border-radius:12px;overflow:hidden;background:var(--surface-2);aspect-ratio:1200/628}
+.pr-img img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .25s}
+.pr-img img.fade{opacity:0}
+.pr-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.pr-btn{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px}
+.pr-dots{display:flex;gap:7px}
+.pr-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);cursor:pointer}
+.pr-dots i.on{background:var(--accent)}
 </style>
 </head>
 <body>
@@ -765,6 +777,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
         <i class="ph ph-arrow-right" aria-hidden="true"></i>
       </button>
     </section>
+    <div id="tdAd"></div>
     <p class="td-note" id="tdNote"></p>
   </div></section>
 
@@ -1162,6 +1175,7 @@ var CONFIG = {
     url: "https://www.yongsocial.com/p/contact-us.html",
     img: ""
   },
+  adsUrl: "https://offers.yongsocial.com/promos.js",   // the rotating ads list lives here; edit that file, not the app
   videoChannels: [
     { id: "bloombergtv", name: "Bloomberg Television", cat: "Markets", list: "PLD_KG88nMEmg", img: "/bloombergtv.jpg",
       blurb: "Market news, interviews and business headlines." },
@@ -3925,6 +3939,7 @@ function todayStories(force){
 }
 
 function todayEnter(){
+  if (!hmEl("tdAd").firstChild || Date.now() - promos.t > 300000) promoMount("tdAd");
   document.getElementById("tdDate").textContent = new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
   todayLoad(false);
   todayStories(false);
@@ -4026,7 +4041,103 @@ hmEl("vcGrid").addEventListener("click", function(e){
 });
 hmEl("vcGrid").addEventListener("error", onImgErr, true);
 
+/* ---- Rotating promos: list is read from offers.yongsocial.com/promos.js ---- */
+var promos = { data: null, t: 0, p: null };
+function promosLoad(){
+  if (promos.data && Date.now() - promos.t < 300000) return Promise.resolve(promos.data);
+  if (promos.p) return promos.p;
+  var base = CONFIG.adsUrl;
+  if (!/^https:\/\//.test(base || "")) return Promise.resolve(promos.data);
+  promos.p = new Promise(function(resolve){
+    var s = document.createElement("script"), timer;
+    function fin(v){
+      clearTimeout(timer);
+      if (s.parentNode) s.parentNode.removeChild(s);
+      promos.p = null;
+      if (v){ promos.data = v; promos.t = Date.now(); }
+      resolve(promos.data);
+    }
+    timer = setTimeout(function(){ fin(null); }, 8000);
+    window.YS_PROMOS = null;
+    s.onload = function(){ fin(window.YS_PROMOS && typeof window.YS_PROMOS === "object" ? window.YS_PROMOS : null); };
+    s.onerror = function(){ fin(null); };
+    /* the number changes every 5 minutes so the phone fetches a fresh copy of the file */
+    s.src = base + (base.indexOf("?") > -1 ? "&" : "?") + "v=" + Math.floor(Date.now() / 300000);
+    document.head.appendChild(s);
+  });
+  return promos.p;
+}
+function promoMount(id){
+  return promosLoad().then(function(c){
+    var box = hmEl(id);
+    if (!box) return false;
+    if (box._adT){ clearInterval(box._adT); box._adT = null; }
+    var items = (c && c.enabled !== false ? (c.items || []) : []).filter(function(a){
+      return a && /^https:\/\//.test(a.image || "") && /^https:\/\//.test(a.link || "");
+    });
+    if (!items.length){ box.innerHTML = ""; return false; }
+    box.innerHTML = '<div class="pr-rot"><span class="pr-tag">' + esc(c.label || "Advertisement") + '</span>'
+      + '<a class="pr-img" target="_blank" rel="sponsored noopener noreferrer"><img alt=""></a>'
+      + '<div class="pr-foot"><a class="pr-btn" target="_blank" rel="sponsored noopener noreferrer"></a><span class="pr-dots"></span></div></div>';
+    var root = box.firstChild, img = root.querySelector(".pr-img img"), imgA = root.querySelector(".pr-img"),
+        btn = root.querySelector(".pr-btn"), dots = root.querySelector(".pr-dots"),
+        i = 0, sec = Math.max(3, +c.seconds || 6);
+    items.forEach(function(a, n){
+      var pre = new Image();
+      pre.onerror = function(){ a.bad = true; };
+      pre.src = a.image;
+      var d = document.createElement("i");
+      d.onclick = function(){ show(n); restart(); };
+      dots.appendChild(d);
+    });
+    if (items.length < 2) dots.hidden = true;
+    function show(n){
+      i = n;
+      var a = items[n];
+      img.classList.add("fade");
+      setTimeout(function(){
+        img.src = a.image;
+        img.alt = a.title || "Advertisement";
+        imgA.href = btn.href = a.link;
+        btn.innerHTML = esc(a.button || "Learn more") + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i>';
+        Array.prototype.forEach.call(dots.children, function(d, k){ d.classList.toggle("on", k === n); });
+        img.classList.remove("fade");
+      }, 180);
+    }
+    function nextGood(){
+      var k, n;
+      for (k = 1; k <= items.length; k++){
+        n = (i + k) % items.length;
+        if (!items[n].bad) return n;
+      }
+      return i;
+    }
+    function stop(){ clearInterval(box._adT); box._adT = null; }
+    function restart(){
+      stop();
+      if (items.length < 2) return;
+      box._adT = setInterval(function(){
+        if (!box.isConnected){ stop(); return; }
+        if (document.hidden || !box.offsetParent) return;   /* pause while the screen or tab isn't showing */
+        var n = nextGood();
+        if (n !== i) show(n);
+      }, sec * 1000);
+    }
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("mouseleave", restart);
+    show(0);
+    restart();
+    return true;
+  });
+}
 function vcAdRender(){
+  var sec = hmEl("vcAdSec"), box = hmEl("vcAd");
+  if (box.querySelector(".pr-rot") && Date.now() - promos.t < 300000){ sec.hidden = false; return; }
+  promoMount("vcAd").then(function(ok){
+    if (ok) sec.hidden = false; else vcAdStatic();   /* file unreachable or empty: show the old card instead */
+  });
+}
+function vcAdStatic(){
   var a = CONFIG.adCard, sec = hmEl("vcAdSec");
   if (!a || !a.enabled || !/^https:\/\//.test(a.url || "")){ sec.hidden = true; return; }
   hmEl("vcAd").innerHTML = '<a class="vc-ad" href="' + esc(a.url) + '" target="_blank" rel="sponsored noopener noreferrer">'
