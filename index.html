@@ -562,6 +562,52 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .hm-watch .tx b{display:block;font-family:var(--font-head);font-size:16px;line-height:1.35}
 .hm-watch .tx small{display:block;margin-top:5px;font-size:13px;color:var(--muted)}
 .hm-intro{color:var(--muted);font-size:14.5px;margin:16px 0 14px}
+/* YSFResearch tab */
+.rs-hero{position:relative;overflow:hidden;margin:18px 0 16px;padding:22px 18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(135deg,#0f2a44,#171a21 62%)}
+.rs-hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(33,150,243,.28),transparent 70%);pointer-events:none}
+.rs-title{display:flex;align-items:center;gap:10px}
+.rs-title h2{font-family:var(--font-head);font-size:26px;margin:0;letter-spacing:-.4px}
+.rs-mark{font-size:24px;line-height:1}
+.rs-tag{margin:10px 0 0;color:#d3d9e4;font-size:14.5px;line-height:1.5;max-width:46ch}
+.rs-by{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.rs-by b{color:var(--text);font-weight:600}
+.rs-pump{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--brand-2);color:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13.5px}
+.rs-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
+.rs-seg-b{display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:none;color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:14.5px;padding:11px 10px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rs-seg-b.on{background:var(--surface-2);color:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.rs-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:rsPulse 1.8s infinite}
+@keyframes rsPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.rs-n{min-width:20px;padding:1px 7px;border-radius:999px;background:var(--line);color:var(--text);font-size:11.5px;line-height:18px;text-align:center}
+.rs-n:empty{display:none}
+.rs-card{display:flex;flex-direction:column;margin:0 0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.rs-img{position:relative;display:block;aspect-ratio:16/9;background:var(--surface-2)}
+.rs-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rs-badge{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(15,17,21,.82);backdrop-filter:blur(4px);font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#fff}
+.rs-badge.live i{width:7px;height:7px;border-radius:50%;background:#22c55e}
+.rs-badge.ended{color:#c3c8d2}
+.rs-body{padding:16px 16px 18px}
+.rs-meta{font-size:12.5px;color:var(--muted)}
+.rs-body h3{margin:6px 0 8px;font-family:var(--font-head);font-size:18px;line-height:1.3;letter-spacing:-.2px}
+.rs-body h3 a{color:var(--text)}
+.rs-body p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rs-act{margin-top:16px}
+.rs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:150px;padding:12px 20px;border-radius:999px;background:var(--accent);color:#111;font-weight:800;font-size:14.5px}
+.rs-btn.ghost{background:transparent;color:var(--text);box-shadow:inset 0 0 0 1px var(--line);font-weight:700}
+.rs-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:34px 20px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface)}
+.rs-empty i{font-size:34px;color:var(--muted)}
+.rs-empty strong{font-family:var(--font-head);font-size:16.5px}
+.rs-empty span{color:var(--muted);font-size:14px}
+.rs-follow{margin-top:26px}
+.rs-follow h3{font-family:var(--font-head);font-size:18px;margin:0 0 12px}
+.rs-soc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rs-soc a{display:flex;align-items:center;gap:10px;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--text)}
+.rs-soc a:hover{border-color:var(--brand)}
+.rs-soc .ic{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:19px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.rs-soc .tx{min-width:0;display:flex;flex-direction:column}
+.rs-soc b{font-size:14px;font-family:var(--font-head)}
+.rs-soc small{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(min-width:620px){.rs-soc{grid-template-columns:repeat(4,1fr)}.rs-soc a{flex-direction:column;text-align:center;padding:16px 10px}.rs-soc .tx{align-items:center;max-width:100%}}
+
 .hm-follow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .hm-follow a{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--text)}
 .hm-follow a:hover{border-color:var(--brand)}
@@ -745,7 +791,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
     <button class="hm-tab on" type="button" role="tab" aria-selected="true" data-hm="today">Today in Crypto</button>
     <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="news">News</button>
     <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="videos">Videos</button>
-    <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="other">YSFResearch</button>
+    <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="research">YSFResearch</button>
   </div></div>
 
   <!-- TODAY IN CRYPTO -->
@@ -823,21 +869,22 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
   </section>
 
   <!-- YSFRESEARCH -->
-  <section id="hmPane-other" role="tabpanel" hidden><div class="hm-wrap">
-    <p class="hm-intro">Research and analysis from Yong Social Finance, plus stocks, tech and the wider money picture.</p>
-    <div class="dv-start" style="display:grid;gap:10px">
-      <button class="dv-step" type="button" data-hm-go="stocks">
-        <span class="dv-ico"><i class="ph ph-chart-line-up" aria-hidden="true"></i></span>
-        <span><strong>Track stocks live</strong><small>Nvidia, Apple, Tesla, Coinbase and more.</small></span>
-        <i class="ph ph-caret-right" aria-hidden="true"></i>
-      </button>
-      <button class="dv-step" type="button" data-hm-go="events">
-        <span class="dv-ico"><i class="ph ph-calendar-blank" aria-hidden="true"></i></span>
-        <span><strong>Economic calendar</strong><small>The data releases that move markets.</small></span>
-        <i class="ph ph-caret-right" aria-hidden="true"></i>
-      </button>
+  <section id="hmPane-research" role="tabpanel" hidden><div class="hm-wrap">
+    <header class="rs-hero">
+      <div class="rs-title"><span class="rs-mark" aria-hidden="true">&#128269;</span><h2>YSFResearch</h2></div>
+      <p class="rs-tag">Research bounties, crypto insights and financial market discoveries.</p>
+      <p class="rs-by">Powered by <b>Yong Social Finance</b></p>
+      <a class="rs-pump" id="rsPump" href="https://pump.fun/u/YSFResearch" target="_blank" rel="noopener noreferrer"><i class="ph ph-pill" aria-hidden="true"></i>YSFResearch on pump.fun<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
+    </header>
+    <div class="rs-seg" id="rsSeg" role="tablist" aria-label="Research status">
+      <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i>Live<span class="rs-n" id="rsNLive"></span></button>
+      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended">Ended<span class="rs-n" id="rsNEnded"></span></button>
     </div>
-    <div id="hmOtherList"></div>
+    <div id="rsList" aria-live="polite"></div>
+    <section class="rs-follow" aria-label="Follow our socials">
+      <h3>Follow our socials</h3>
+      <div class="rs-soc" id="rsSoc"></div>
+    </section>
   </div></section>
 
   <!-- VIDEOS -->
@@ -1282,15 +1329,19 @@ var CONFIG = {
   ],
   openPostsOnBlogger: true,            // posts open on the original Blogger URL
   openPostsInApp: true,                // true = articles open in the in-app reader; false = open on Blogger
-  /* Home > YSFResearch: research posts, then sections beyond crypto.
-     tag = the exact Blogger label to pull posts from (spelling must match the label in Blogger).
-     q   = optional backup search, used only while no posts carry that label yet. */
-  otherSide: [
-    { label: "YSFResearch",       tag: "YSFResearch",   q: "ysfresearch",   icon: "ph-magnifying-glass" },
-    { label: "8 AM Finance",      tag: "8 AM Finance",  q: "8 am finance",  icon: "ph-sun-horizon" },
-    { label: "Tech It Up",        tag: "Tech It Up",    q: "tech it up",    icon: "ph-cpu" },
-    { label: "Stocks & markets",  tag: "Stocks",        q: "stock market",  icon: "ph-chart-line-up" }
-  ],
+  /* Home > YSFResearch. Posts come from the blog at "feed"; labels decide the tab (capital letters don't matter). */
+  research: {
+    feed: "https://ysfresearch.yongsocial.com",
+    liveLabel: "Live",
+    endedLabel: "Ended",
+    maxPosts: 20,
+    socials: [
+      { name: "X",         note: "@YSFNews",       url: "https://x.com/YSFNews",                                              icon: "ph-x-logo",        color: "#111111" },
+      { name: "Telegram",  note: "Join the channel", url: "https://t.me/yongsocialfinance",                                    icon: "ph-telegram-logo", color: "#229ED9" },
+      { name: "WhatsApp",  note: "Join the channel", url: "https://whatsapp.com/channel/0029Vb8bp4dA2pLGEi7cJQ0M",             icon: "ph-whatsapp-logo", color: "#25D366" },
+      { name: "pump.fun",  note: "YSFResearch",    url: "https://pump.fun/u/YSFResearch",                                     icon: "ph-pill",          color: "#16a34a" }
+    ]
+  },
   subscribeUrl: "https://x.com/yongsocial",             // newsletter / subscribe link (now X follow link)
   // Header nav — replace href values with your real page URLs
   /* Side menu. type: series (opens the News tab for a label, with a search as backup), bookmarks, share, country,
@@ -3755,8 +3806,8 @@ document.addEventListener("keydown", function(e){
 /* =========================================================================
    HOME TAB: Today in Crypto / News / Videos / YSFResearch
    ========================================================================= */
-var hm = { tab: "today", recent: null, recentFail: false, videos: [], coins: null, tC: 0, loadingC: false, loadingM: false, vidsBuilt: false, otherBuilt: false };
-var HM_PANES = ["today", "news", "videos", "other"];
+var hm = { tab: "today", recent: null, recentFail: false, videos: [], coins: null, tC: 0, loadingC: false, loadingM: false, vidsBuilt: false };
+var HM_PANES = ["today", "news", "videos", "research"];
 var HM_YT = /(?:youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?(?:[^"'\s<]*[&;])?v=)|youtu\.be\/|ytimg\.com\/vi\/)([A-Za-z0-9_-]{11})/g;
 
 function hmEl(id){ return document.getElementById(id); }
@@ -3801,7 +3852,7 @@ function hmSwitch(name, keepScroll){
   HM_PANES.forEach(function(n){ hmEl("hmPane-" + n).hidden = n !== name; });
   if (!keepScroll) window.scrollTo(0, 0);
   if (name === "today") todayEnter();
-  else if (name === "other") hmBuildOther();
+  else if (name === "research") hmBuildResearch();
   else if (name === "videos") hmBuildVideos();
 }
 
@@ -4163,42 +4214,89 @@ function hmExactLabel(tag){
     return tag;
   });
 }
-function hmBuildOther(){
-  if (hm.otherBuilt) return;
-  hm.otherBuilt = true;
-  var secs = CONFIG.otherSide || [];
-  hmEl("hmOtherList").innerHTML = secs.map(function(s, i){
-    return '<section class="hm-sec" id="hmOs' + i + '"><div class="hm-sec-h"><h2>' + esc(s.label) + '</h2>'
-      + '<button class="hm-more" type="button" data-hm-q="' + esc(s.q || s.tag || s.label) + '">See all</button></div>'
-      + '<div class="hm-osbody"><div class="dv-skel sq" style="height:210px"></div></div></section>';
+/* ---- YSFResearch: Live / Ended research posts from the research blog ---- */
+var RS = { tab: "live", data: null, t: 0, loading: false, labelsP: null, socDone: false };
+function rsCfg(){ return CONFIG.research || {}; }
+function rsHttps(u){ return String(u || "").replace(/^http:\/\//i, "https://"); }
+function rsLabels(){
+  if (!RS.labelsP){
+    RS.labelsP = jsonp(rsCfg().feed + "/feeds/posts/summary?max-results=0")
+      .then(function(d){ return ((d.feed || {}).category || []).map(function(c){ return c.term; }); })
+      .catch(function(){ RS.labelsP = null; return null; });
+  }
+  return RS.labelsP;
+}
+/* Finds the label's exact spelling on the research blog; null = that label doesn't exist there (so no posts). */
+function rsExactLabel(tag){
+  var want = String(tag).replace(/\s+/g, " ").trim().toLowerCase();
+  return rsLabels().then(function(all){
+    if (!all) return tag;
+    for (var i = 0; i < all.length; i++) if (String(all[i]).replace(/\s+/g, " ").trim().toLowerCase() === want) return all[i];
+    return null;
+  });
+}
+function rsPosts(tag){
+  var c = rsCfg();
+  return rsExactLabel(tag).then(function(t){
+    if (!t) return [];
+    return jsonp(c.feed + "/feeds/posts/default/-/" + encodeURIComponent(t) + "?max-results=" + (c.maxPosts || 20))
+      .then(function(d){ return ((d.feed || {}).entry || []).map(pick).filter(function(p){ return p.url; }); });
+  });
+}
+function rsSocials(){
+  if (RS.socDone) return;
+  RS.socDone = true;
+  hmEl("rsSoc").innerHTML = (rsCfg().socials || []).map(function(s){
+    return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer"><span class="ic" style="background:' + esc(s.color || "#2563eb") + '"><i class="ph ' + esc(s.icon || "ph-link") + '" aria-hidden="true"></i></span>'
+      + '<span class="tx"><b>' + esc(s.name) + '</b><small>' + esc(s.note || "") + '</small></span></a>';
   }).join("");
-  function feedUrl(s, tag){
-    return CONFIG.blogUrl + "/feeds/posts/summary" + (tag ? "/-/" + encodeURIComponent(tag) : "")
-      + "?max-results=4" + (!tag && s.q ? "&q=" + encodeURIComponent(s.q) : "");
-  }
-  function getPosts(url){
-    return jsonp(url).then(function(d){ return ((d.feed || {}).entry || []).map(pick).filter(function(p){ return p.url; }); });
-  }
-  secs.forEach(function(s, i){
-    /* Capital letters don't matter: we look up the label's exact spelling in the blog's own label list. */
-    (s.tag ? hmExactLabel(s.tag) : Promise.resolve(null)).then(function(tag){
-      return getPosts(feedUrl(s, tag)).then(function(posts){
-        if (!posts.length && tag && s.q) return getPosts(feedUrl(s, null)).then(function(p2){ return { posts: p2, tag: null }; });
-        return { posts: posts, tag: tag };
-      });
-    }).then(function(r){
-      var sec = hmEl("hmOs" + i);
-      if (!r.posts.length){ sec.hidden = true; return; }
-      if (r.tag){   /* "See all" then filters the News tab by this label, same as tapping its topic chip */
-        var btn = sec.querySelector(".hm-more");
-        btn.removeAttribute("data-hm-q");
-        btn.setAttribute("data-label", r.tag);
-      }
-      sec.querySelector(".hm-osbody").innerHTML = '<div class="hm-list">' + r.posts.map(hmRow).join("") + '</div>';
-    }).catch(function(){
-      hm.otherBuilt = false;   /* retry next time the tab opens */
-      hmEl("hmOs" + i).querySelector(".hm-osbody").innerHTML = hmNotice("Couldn&rsquo;t load this section.", 'data-hm-retry="other"');
-    });
+}
+function rsCard(p, live){
+  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title);
+  return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
+    + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
+    + (live ? '<span class="rs-badge live"><i></i>Live</span>' : '<span class="rs-badge ended">Ended</span>') + '</a>'
+    + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
+    + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
+    + (p.snippet ? '<p>' + esc(p.snippet) + '</p>' : '')
+    + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" href="' + url + '" target="_blank" rel="noopener noreferrer">'
+    + (live ? 'Participate' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
+}
+function rsRender(){
+  var box = hmEl("rsList"), d = RS.data, live = RS.tab === "live";
+  hmEl("rsNLive").textContent = d && d.live.length ? d.live.length : "";
+  hmEl("rsNEnded").textContent = d && d.ended.length ? d.ended.length : "";
+  if (!d) return;
+  var list = live ? d.live : d.ended;
+  box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, live); }).join("")
+    : '<div class="rs-empty"><i class="ph ' + (live ? "ph-flask" : "ph-archive") + '" aria-hidden="true"></i>'
+      + '<strong>' + (live ? "No live research, check back soon." : "No ended research yet.") + '</strong>'
+      + '<span>' + (live ? "New research bounties are posted here as soon as they go live." : "Finished research will appear here.") + '</span></div>';
+}
+function rsTab(name){
+  RS.tab = name === "ended" ? "ended" : "live";
+  document.querySelectorAll("#rsSeg .rs-seg-b").forEach(function(b){
+    var on = b.getAttribute("data-rs") === RS.tab;
+    b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  if (RS.data) rsRender();
+}
+function hmBuildResearch(force){
+  rsSocials();
+  var box = hmEl("rsList");
+  if (!force && RS.data && Date.now() - RS.t < 300000){ rsRender(); return; }
+  if (RS.loading) return;
+  RS.loading = true;
+  if (!RS.data) box.innerHTML = '<div class="dv-skel sq" style="height:250px;margin-bottom:16px"></div><div class="dv-skel sq" style="height:250px"></div>';
+  var c = rsCfg();
+  Promise.all([rsPosts(c.liveLabel || "Live"), rsPosts(c.endedLabel || "Ended")]).then(function(r){
+    var gone = {}; r[1].forEach(function(p){ gone[p.url] = 1; });
+    RS.data = { live: r[0].filter(function(p){ return !gone[p.url]; }), ended: r[1] };
+    RS.t = Date.now(); RS.loading = false;
+    rsRender();
+  }).catch(function(){
+    RS.loading = false;
+    if (!RS.data) box.innerHTML = hmNotice("Couldn&rsquo;t load research right now. Check your connection and try again.", 'data-hm-retry="research"');
   });
 }
 
@@ -4206,6 +4304,8 @@ function hmBuildOther(){
 homeView.addEventListener("click", function(e){
   var t = e.target.closest(".hm-tab");
   if (t){ hmSwitch(t.getAttribute("data-hm")); return; }
+  var rsb = e.target.closest("[data-rs]");
+  if (rsb){ rsTab(rsb.getAttribute("data-rs")); return; }
   var go = e.target.closest("[data-hm-go]");
   if (go){
     var to = go.getAttribute("data-hm-go");
@@ -4227,7 +4327,7 @@ homeView.addEventListener("click", function(e){
   var retry = e.target.closest("[data-hm-retry]");
   if (retry){
     var what = retry.getAttribute("data-hm-retry");
-    if (what === "other"){ hm.otherBuilt = false; hmBuildOther(); }
+    if (what === "research"){ hmBuildResearch(true); }
     else { hm.recentFail = false; loadSidebar(); }
     return;
   }
