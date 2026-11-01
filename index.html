@@ -104,7 +104,8 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 .tv .tv-foot p{margin:0;color:var(--muted);font-size:13.5px;flex:1;min-width:220px}
 .tv .tv-cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,var(--brand-2),var(--brand));color:#fff;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px}
 .tv .tv-cta svg{width:16px;height:16px;fill:currentColor}
-.spon-empty{color:var(--muted);font-size:14px}
+#newsAd .pr-rot{margin-top:0}
+#newsAd:not(:empty){margin-bottom:20px}
 
 /* Cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
@@ -484,6 +485,9 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .ar-chart-foot .btn{font-size:13px;padding:8px 14px;font-family:inherit;cursor:pointer}
 .ar-chart-foot small{flex:1;min-width:180px;color:var(--muted);font-size:11.5px;line-height:1.45}
 @media(max-width:560px){.ar-chart-box{height:300px}}
+.ar-ad{display:none;margin:28px 0}
+.ar-ad.on{display:block}
+.ar-ad .pr-rot{margin-top:0}
 .ar-sec{margin-bottom:26px}
 .ar-sec h3{font-family:var(--font-head);font-size:18px;margin:0 0 12px}
 .ar-next{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--text);transition:.2s}
@@ -503,7 +507,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 @media(max-width:560px){.ar-site{display:none}.ar-tools{margin-left:auto}}
 
 /* ============================================================
-   HOME TAB: Today in Crypto / News / The Other Side / Videos
+   HOME TAB: Today in Crypto / News / Videos / YSFResearch
    ============================================================ */
 .hm-tabs{position:sticky;top:calc(var(--hdr,60px) + 37px);z-index:34;background:var(--bg);border-bottom:1px solid var(--line)}
 .hm-tabs-in{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;max-width:var(--max);margin:0 auto;padding:0 12px}
@@ -740,8 +744,8 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
   <div class="hm-tabs" id="hmTabs"><div class="hm-tabs-in" id="hmTabsIn" role="tablist" aria-label="Home sections">
     <button class="hm-tab on" type="button" role="tab" aria-selected="true" data-hm="today">Today in Crypto</button>
     <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="news">News</button>
-    <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="other">The Other Side</button>
     <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="videos">Videos</button>
+    <button class="hm-tab" type="button" role="tab" aria-selected="false" data-hm="other">YSFResearch</button>
   </div></div>
 
   <!-- TODAY IN CRYPTO -->
@@ -804,10 +808,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
       </div>
 
       <aside>
-        <div class="box">
-          <h4>Sponsored</h4>
-          <div id="sponsored"><span style="color:var(--muted);font-size:14px">Loading&hellip;</span></div>
-        </div>
+        <div id="newsAd"></div>
         <div class="box">
           <h4>Topics</h4>
           <div class="labels" id="labels"></div>
@@ -821,9 +822,9 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
     </div>
   </section>
 
-  <!-- THE OTHER SIDE -->
+  <!-- YSFRESEARCH -->
   <section id="hmPane-other" role="tabpanel" hidden><div class="hm-wrap">
-    <p class="hm-intro">Beyond crypto: stocks, tech and the wider money picture.</p>
+    <p class="hm-intro">Research and analysis from Yong Social Finance, plus stocks, tech and the wider money picture.</p>
     <div class="dv-start" style="display:grid;gap:10px">
       <button class="dv-step" type="button" data-hm-go="stocks">
         <span class="dv-ico"><i class="ph ph-chart-line-up" aria-hidden="true"></i></span>
@@ -1281,10 +1282,11 @@ var CONFIG = {
   ],
   openPostsOnBlogger: true,            // posts open on the original Blogger URL
   openPostsInApp: true,                // true = articles open in the in-app reader; false = open on Blogger
-  /* Home > The Other Side: sections beyond crypto.
+  /* Home > YSFResearch: research posts, then sections beyond crypto.
      tag = the exact Blogger label to pull posts from (spelling must match the label in Blogger).
      q   = optional backup search, used only while no posts carry that label yet. */
   otherSide: [
+    { label: "YSFResearch",       tag: "YSFResearch",   q: "ysfresearch",   icon: "ph-magnifying-glass" },
     { label: "8 AM Finance",      tag: "8 AM Finance",  q: "8 am finance",  icon: "ph-sun-horizon" },
     { label: "Tech It Up",        tag: "Tech It Up",    q: "tech it up",    icon: "ph-cpu" },
     { label: "Stocks & markets",  tag: "Stocks",        q: "stock market",  icon: "ph-chart-line-up" }
@@ -1530,34 +1532,12 @@ function loadSidebar(){
   }).catch(function(){ hmRecentFail(); });
 }
 
-/* ---- Sponsored / Featured posts (random selection) ---------------------- */
+/* ---- Helpers ---------------------- */
 function shuffle(a){
   for (var i = a.length - 1; i > 0; i--){
     var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
   }
   return a;
-}
-
-function loadSponsored(){
-  var box = document.getElementById("sponsored");
-  var reqs = CONFIG.sponsoredLabels.map(function(label){
-    return jsonp(CONFIG.blogUrl + "/feeds/posts/default/-/" + encodeURIComponent(label) + "?max-results=50")
-      .then(function(d){ return ((d.feed || {}).entry || []).map(pick); })
-      .catch(function(){ return []; });
-  });
-  Promise.all(reqs).then(function(groups){
-    var seen = {}, pool = [];
-    groups.forEach(function(g){
-      g.forEach(function(p){ if (p.url && !seen[p.url]) { seen[p.url] = 1; pool.push(p); } });
-    });
-    if (!pool.length){
-      box.innerHTML = '<span class="spon-empty">No sponsored posts right now.</span>';
-      return;
-    }
-    box.innerHTML = shuffle(pool).slice(0, CONFIG.sponsoredCount).map(miniHtml).join("");
-  }).catch(function(){
-    box.innerHTML = '<span class="spon-empty">Feed unavailable.</span>';
-  });
 }
 
 /* ---- Yong Social TV player --------------------------------------------- */
@@ -3556,8 +3536,11 @@ function arSymbolFor(labels){
 /* Put the chart after the first subheading's opening paragraph; no subheading = after the second paragraph. */
 function arPlaceChart(frag, p){
   var hit = arSymbolFor(p.labels);
-  if (!hit) return;
   var box = document.createElement("div");
+  if (!hit){
+    box.className = "ar-ad";
+    box.id = "arAd";
+  } else {
   box.className = "ar-chart";
   box.setAttribute("data-sym", hit[0]);
   box.setAttribute("data-name", hit[1]);
@@ -3565,6 +3548,7 @@ function arPlaceChart(frag, p){
     + '<div class="ar-chart-box"></div>'
     + '<div class="ar-chart-foot"><button class="btn ghost" type="button" data-ar-chart>Open full chart</button>'
     + '<small>Market data by TradingView. For information only, not financial advice.</small></div>';
+  }
   var kids = Array.prototype.slice.call(frag.childNodes);
   function isPara(n){ return ((n.textContent || "").trim().length >= 30) && !(n.nodeType === 1 && /^H[1-6]$/.test(n.tagName)); }
   var ref = null, h = frag.querySelector("h1,h2,h3,h4");
@@ -3626,6 +3610,11 @@ function arShow(p, mode){
     arPlaceChart(frag, p);
     body.appendChild(frag);
     arInitCharts();
+    if (hmEl("arAd")) promoMount("arAd").then(function(ok){
+      var b = hmEl("arAd");
+      if (!b) return;
+      if (ok) b.classList.add("on"); else if (b.parentNode) b.parentNode.removeChild(b);
+    });
     foot.innerHTML = arFootHtml(p, mode === "partial", true);
     arMore(p, ar.token);
   } else if (mode === "loading"){
@@ -3764,10 +3753,10 @@ document.addEventListener("keydown", function(e){
 
 
 /* =========================================================================
-   HOME TAB: Today in Crypto / News / The Other Side / Videos
+   HOME TAB: Today in Crypto / News / Videos / YSFResearch
    ========================================================================= */
 var hm = { tab: "today", recent: null, recentFail: false, videos: [], coins: null, tC: 0, loadingC: false, loadingM: false, vidsBuilt: false, otherBuilt: false };
-var HM_PANES = ["today", "news", "other", "videos"];
+var HM_PANES = ["today", "news", "videos", "other"];
 var HM_YT = /(?:youtube(?:-nocookie)?\.com\/(?:embed\/|watch\?(?:[^"'\s<]*[&;])?v=)|youtu\.be\/|ytimg\.com\/vi\/)([A-Za-z0-9_-]{11})/g;
 
 function hmEl(id){ return document.getElementById(id); }
@@ -4125,7 +4114,11 @@ function promoMount(id){
     }
     root.addEventListener("mouseenter", stop);
     root.addEventListener("mouseleave", restart);
-    show(0);
+    /* random first ad per visit; each box on the page starts one ad further along */
+    if (promos.base == null) promos.base = Math.floor(Math.random() * 1000);
+    promos.n = (promos.n || 0) + 1;
+    var start = (promos.base + promos.n) % items.length;
+    show(start);
     restart();
     return true;
   });
@@ -4152,7 +4145,7 @@ function hmBuildVideos(){
   vcAdRender();
 }
 
-/* ---- The Other Side: everything beyond crypto ---- */
+/* ---- YSFResearch: research posts and everything beyond crypto ---- */
 /* All of the blog's label names (fetched once), used to match a configured label ignoring capital letters. */
 function hmLabels(){
   if (!hm.labelsP){
@@ -4252,7 +4245,7 @@ tickSync();
 })();
 load();
 loadSidebar();
-loadSponsored();
+promoMount("newsAd");
 
 /* ===== Fixed News topics (case-insensitive label match; a chip can match several labels) ===== */
 var NEWS_CATS = [
