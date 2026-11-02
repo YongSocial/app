@@ -566,19 +566,24 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* YSFResearch tab */
-.rs-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:18px 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
-.rs-seg-b{display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:none;color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:14.5px;padding:11px 10px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rs-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin:18px 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
+.rs-seg-b{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:none;color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:13.5px;padding:11px 4px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rs-seg-b.on{background:var(--surface-2);color:#fff;box-shadow:inset 0 0 0 1px var(--line)}
-.rs-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:rsPulse 1.8s infinite}
-@keyframes rsPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.rs-n{min-width:20px;padding:1px 7px;border-radius:999px;background:var(--line);color:var(--text);font-size:11.5px;line-height:18px;text-align:center}
+.rs-dot,.rs-badge i{--c:34,197,94;flex:none;width:8px;height:8px;border-radius:50%;background:rgb(var(--c));box-shadow:0 0 0 0 rgba(var(--c),.6);animation:rsPulse 1.6s infinite}
+.rs-dot.dev,.rs-badge.developing i{--c:250,204,21;animation:rsBlink 1.1s infinite}
+.rs-dot.end,.rs-badge.ended i{--c:239,68,68;animation:none;box-shadow:0 0 0 2px rgba(239,68,68,.22)}
+@keyframes rsPulse{0%{box-shadow:0 0 0 0 rgba(var(--c),.55)}70%{box-shadow:0 0 0 8px rgba(var(--c),0)}100%{box-shadow:0 0 0 0 rgba(var(--c),0)}}
+@keyframes rsBlink{0%,100%{opacity:1;box-shadow:0 0 8px 2px rgba(var(--c),.7)}50%{opacity:.25;box-shadow:0 0 0 0 rgba(var(--c),0)}}
+@media(prefers-reduced-motion:reduce){.rs-dot,.rs-badge i{animation:none}}
+.rs-n{min-width:18px;padding:1px 6px;border-radius:999px;background:var(--line);color:var(--text);font-size:11.5px;line-height:18px;text-align:center}
 .rs-n:empty{display:none}
 .rs-card{display:flex;flex-direction:column;margin:0 0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
 .rs-img{position:relative;display:block;aspect-ratio:16/9;background:var(--surface-2)}
 .rs-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .rs-badge{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(15,17,21,.82);backdrop-filter:blur(4px);font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#fff}
-.rs-badge.live i{width:7px;height:7px;border-radius:50%;background:#22c55e}
-.rs-badge.ended{color:#c3c8d2}
+.rs-badge i{width:7px;height:7px}
+.rs-badge.ended{color:#e5c9c9}
+
 .rs-body{padding:16px 16px 18px}
 .rs-meta{font-size:12.5px;color:var(--muted)}
 .rs-body h3{margin:6px 0 8px;font-family:var(--font-head);font-size:18px;line-height:1.3;letter-spacing:-.2px}
@@ -864,9 +869,10 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 
   <!-- YSFRESEARCH -->
   <section id="hmPane-research" role="tabpanel" hidden><div class="hm-wrap">
-    <div class="rs-seg" id="rsSeg" role="tablist" aria-label="Research status">
-      <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i><span class="rs-name" id="rsNameLive">Developing live</span><span class="rs-n" id="rsNLive"></span></button>
-      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended"><span class="rs-name" id="rsNameEnded">Ended</span><span class="rs-n" id="rsNEnded"></span></button>
+    <div class="rs-seg" id="rsSeg" role="tablist" aria-label="Research stage">
+      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="developing"><i class="rs-dot dev" aria-hidden="true"></i><span class="rs-name" id="rsNameDev">Developing</span><span class="rs-n" id="rsNDev"></span></button>
+      <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i><span class="rs-name" id="rsNameLive">Live</span><span class="rs-n" id="rsNLive"></span></button>
+      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended"><i class="rs-dot end" aria-hidden="true"></i><span class="rs-name" id="rsNameEnded">Ended</span><span class="rs-n" id="rsNEnded"></span></button>
     </div>
     <div id="rsList" aria-live="polite"></div>
     <section class="rs-follow" aria-label="Follow our socials">
@@ -1327,9 +1333,11 @@ var CONFIG = {
   /* Home > YSFResearch. Posts come from the blog at "feed"; labels decide the tab (capital letters don't matter). */
   research: {
     feed: "https://ysfresearch.yongsocial.com",
-    liveLabel: "Live",          // blog label that marks live research
-    endedLabel: "Ended",        // blog label that marks finished research
-    liveTitle: "Developing live",  // tab name shown in the app
+    developingLabel: "Developing",  // blog label: research being prepared, not open yet
+    liveLabel: "Live",              // blog label: research open for participation
+    endedLabel: "Ended",            // blog label: finished research
+    developingTitle: "Developing",  // names shown on the tabs in the app
+    liveTitle: "Live",
     endedTitle: "Ended",
     maxPosts: 20,
     socials: [
@@ -4248,30 +4256,36 @@ function rsSocials(){
       + '<span class="tx"><b>' + esc(s.name) + '</b><small>' + esc(s.note || "") + '</small></span></a>';
   }).join("");
 }
-function rsCard(p, live){
-  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title);
+var RS_STAGES = ["developing", "live", "ended"];
+var RS_BADGE = { developing: "Developing", live: "Live", ended: "Ended" };
+function rsCard(p, stage){
+  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), live = stage === "live";
   return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
     + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
-    + (live ? '<span class="rs-badge live"><i></i>Live</span>' : '<span class="rs-badge ended">Ended</span>') + '</a>'
+    + '<span class="rs-badge ' + stage + '"><i></i>' + RS_BADGE[stage] + '</span></a>'
     + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
     + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
     + (p.snippet ? '<p>' + esc(p.snippet) + '</p>' : '')
     + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" href="' + url + '" target="_blank" rel="noopener noreferrer">'
     + (live ? 'Participate' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
 }
+var RS_EMPTY = {
+  developing: ["ph-wrench", "Nothing in development right now.", "Upcoming research shows here before it goes live."],
+  live: ["ph-flask", "No live research, check back soon.", "New research bounties are posted here as soon as they go live."],
+  ended: ["ph-archive", "No ended research yet.", "Finished research will appear here."]
+};
 function rsRender(){
-  var box = hmEl("rsList"), d = RS.data, live = RS.tab === "live";
+  var box = hmEl("rsList"), d = RS.data;
+  hmEl("rsNDev").textContent = d && d.developing.length ? d.developing.length : "";
   hmEl("rsNLive").textContent = d && d.live.length ? d.live.length : "";
   hmEl("rsNEnded").textContent = d && d.ended.length ? d.ended.length : "";
   if (!d) return;
-  var list = live ? d.live : d.ended;
-  box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, live); }).join("")
-    : '<div class="rs-empty"><i class="ph ' + (live ? "ph-flask" : "ph-archive") + '" aria-hidden="true"></i>'
-      + '<strong>' + (live ? "No live research, check back soon." : "No ended research yet.") + '</strong>'
-      + '<span>' + (live ? "New research bounties are posted here as soon as they go live." : "Finished research will appear here.") + '</span></div>';
+  var list = d[RS.tab], e = RS_EMPTY[RS.tab];
+  box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, RS.tab); }).join("")
+    : '<div class="rs-empty"><i class="ph ' + e[0] + '" aria-hidden="true"></i><strong>' + e[1] + '</strong><span>' + e[2] + '</span></div>';
 }
 function rsTab(name){
-  RS.tab = name === "ended" ? "ended" : "live";
+  RS.tab = RS_STAGES.indexOf(name) > -1 ? name : "live";
   document.querySelectorAll("#rsSeg .rs-seg-b").forEach(function(b){
     var on = b.getAttribute("data-rs") === RS.tab;
     b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
@@ -4280,17 +4294,28 @@ function rsTab(name){
 }
 function hmBuildResearch(force){
   rsSocials();
-  var cf = rsCfg(); hmEl("rsNameLive").textContent = cf.liveTitle || "Developing live"; hmEl("rsNameEnded").textContent = cf.endedTitle || "Ended";
+  var cf = rsCfg();
+  hmEl("rsNameDev").textContent = cf.developingTitle || "Developing";
+  hmEl("rsNameLive").textContent = cf.liveTitle || "Live";
+  hmEl("rsNameEnded").textContent = cf.endedTitle || "Ended";
   var box = hmEl("rsList");
   if (!force && RS.data && Date.now() - RS.t < 300000){ rsRender(); return; }
   if (RS.loading) return;
   RS.loading = true;
   if (!RS.data) box.innerHTML = '<div class="dv-skel sq" style="height:250px;margin-bottom:16px"></div><div class="dv-skel sq" style="height:250px"></div>';
-  var c = rsCfg();
-  Promise.all([rsPosts(c.liveLabel || "Live"), rsPosts(c.endedLabel || "Ended")]).then(function(r){
-    var gone = {}; r[1].forEach(function(p){ gone[p.url] = 1; });
-    RS.data = { live: r[0].filter(function(p){ return !gone[p.url]; }), ended: r[1] };
+  Promise.all([rsPosts(cf.developingLabel || "Developing"), rsPosts(cf.liveLabel || "Live"), rsPosts(cf.endedLabel || "Ended")]).then(function(r){
+    /* a post sits in its furthest stage: Ended beats Live, Live beats Developing */
+    var ended = {}, live = {};
+    r[2].forEach(function(p){ ended[p.url] = 1; });
+    var liveList = r[1].filter(function(p){ return !ended[p.url]; });
+    liveList.forEach(function(p){ live[p.url] = 1; });
+    var first = !RS.data;
+    RS.data = { developing: r[0].filter(function(p){ return !ended[p.url] && !live[p.url]; }), live: liveList, ended: r[2] };
     RS.t = Date.now(); RS.loading = false;
+    if (first){   /* open on the first stage that has something in it, Live preferred */
+      var order = ["live", "developing", "ended"], k;
+      for (k = 0; k < order.length; k++) if (RS.data[order[k]].length){ rsTab(order[k]); break; }
+    }
     rsRender();
   }).catch(function(){
     RS.loading = false;
