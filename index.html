@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
 <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#0f1115" />
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
@@ -562,17 +562,11 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .hm-watch .tx b{display:block;font-family:var(--font-head);font-size:16px;line-height:1.35}
 .hm-watch .tx small{display:block;margin-top:5px;font-size:13px;color:var(--muted)}
 .hm-intro{color:var(--muted);font-size:14.5px;margin:16px 0 14px}
+/* No pinch or double-tap zoom anywhere in the app */
+html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
 /* YSFResearch tab */
-.rs-hero{position:relative;overflow:hidden;margin:18px 0 16px;padding:22px 18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(135deg,#0f2a44,#171a21 62%)}
-.rs-hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(33,150,243,.28),transparent 70%);pointer-events:none}
-.rs-title{display:flex;align-items:center;gap:10px}
-.rs-title h2{font-family:var(--font-head);font-size:26px;margin:0;letter-spacing:-.4px}
-.rs-mark{font-size:24px;line-height:1}
-.rs-tag{margin:10px 0 0;color:#d3d9e4;font-size:14.5px;line-height:1.5;max-width:46ch}
-.rs-by{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
-.rs-by b{color:var(--text);font-weight:600}
-.rs-pump{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:var(--brand-2);color:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13.5px}
-.rs-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
+.rs-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:18px 0 16px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
 .rs-seg-b{display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:none;color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:14.5px;padding:11px 10px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rs-seg-b.on{background:var(--surface-2);color:#fff;box-shadow:inset 0 0 0 1px var(--line)}
 .rs-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:rsPulse 1.8s infinite}
@@ -870,15 +864,9 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 
   <!-- YSFRESEARCH -->
   <section id="hmPane-research" role="tabpanel" hidden><div class="hm-wrap">
-    <header class="rs-hero">
-      <div class="rs-title"><span class="rs-mark" aria-hidden="true">&#128269;</span><h2>YSFResearch</h2></div>
-      <p class="rs-tag">Research bounties, crypto insights and financial market discoveries.</p>
-      <p class="rs-by">Powered by <b>Yong Social Finance</b></p>
-      <a class="rs-pump" id="rsPump" href="https://pump.fun/u/YSFResearch" target="_blank" rel="noopener noreferrer"><i class="ph ph-pill" aria-hidden="true"></i>YSFResearch on pump.fun<i class="ph ph-arrow-up-right" aria-hidden="true"></i></a>
-    </header>
     <div class="rs-seg" id="rsSeg" role="tablist" aria-label="Research status">
-      <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i>Live<span class="rs-n" id="rsNLive"></span></button>
-      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended">Ended<span class="rs-n" id="rsNEnded"></span></button>
+      <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i><span class="rs-name" id="rsNameLive">Developing live</span><span class="rs-n" id="rsNLive"></span></button>
+      <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended"><span class="rs-name" id="rsNameEnded">Ended</span><span class="rs-n" id="rsNEnded"></span></button>
     </div>
     <div id="rsList" aria-live="polite"></div>
     <section class="rs-follow" aria-label="Follow our socials">
@@ -1197,6 +1185,13 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 <div class="toast" id="toast">Link copied to clipboard</div>
 
 <script>
+/* iPhone/iPad Safari ignores user-scalable=no, so block its pinch zoom here too */
+(function(){
+  ["gesturestart","gesturechange","gestureend"].forEach(function(n){ document.addEventListener(n, function(e){ e.preventDefault(); }, { passive: false }); });
+  document.addEventListener("touchmove", function(e){ if (e.touches && e.touches.length > 1 && e.cancelable) e.preventDefault(); }, { passive: false });
+})();
+</script>
+<script>
 /* =========================================================================
    1. CONFIG — EDIT THIS BLOCK ONLY
    ========================================================================= */
@@ -1332,8 +1327,10 @@ var CONFIG = {
   /* Home > YSFResearch. Posts come from the blog at "feed"; labels decide the tab (capital letters don't matter). */
   research: {
     feed: "https://ysfresearch.yongsocial.com",
-    liveLabel: "Live",
-    endedLabel: "Ended",
+    liveLabel: "Live",          // blog label that marks live research
+    endedLabel: "Ended",        // blog label that marks finished research
+    liveTitle: "Developing live",  // tab name shown in the app
+    endedTitle: "Ended",
     maxPosts: 20,
     socials: [
       { name: "X",         note: "@YSFNews",       url: "https://x.com/YSFNews",                                              icon: "ph-x-logo",        color: "#111111" },
@@ -4283,6 +4280,7 @@ function rsTab(name){
 }
 function hmBuildResearch(force){
   rsSocials();
+  var cf = rsCfg(); hmEl("rsNameLive").textContent = cf.liveTitle || "Developing live"; hmEl("rsNameEnded").textContent = cf.endedTitle || "Ended";
   var box = hmEl("rsList");
   if (!force && RS.data && Date.now() - RS.t < 300000){ rsRender(); return; }
   if (RS.loading) return;
