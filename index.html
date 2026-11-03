@@ -594,14 +594,10 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .rs-body h3 a{color:var(--text)}
 .rs-body p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .rs-act{margin-top:16px}
-.rs-vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}
-.rs-vc{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
-.rs-vc .rs-img{display:block;position:relative;aspect-ratio:1/1;background:var(--surface-2)}
-.rs-vc .rs-img img{width:100%;height:100%;object-fit:cover;display:block}
-.rs-vc .rs-letter{position:absolute;left:8px;top:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font:800 13px/26px var(--font-head);text-align:center}
-.rs-vc h3{margin:0;padding:10px 10px 0;font-family:var(--font-head);font-size:14px;line-height:1.3;letter-spacing:-.1px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.rs-vc h3 a{color:var(--text)}
-.rs-vc .rs-vote{margin:10px;padding:10px 6px;border-radius:999px;text-align:center;font-family:var(--font-head);font-weight:800;font-size:14px;background:#facc15;color:#1a1400;display:block}
+.rs-letter{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;font:800 14px/30px var(--font-head);text-align:center}
+.rs-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rs-two .rs-btn{min-width:0;padding-left:8px;padding-right:8px;justify-content:center;width:100%;box-sizing:border-box}
+.rs-btn.rs-vote{background:#facc15;color:#1a1400;border-color:#facc15}
 .rs-vhead{margin:0 0 10px;font-family:var(--font-head);font-weight:800;font-size:15px;text-align:center}
 .rs-vhead span{display:block;margin-top:2px;font-weight:500;font-size:12.5px;color:var(--muted)}
 .rs-cd{display:flex;align-items:center;gap:12px;margin:14px 0 0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
@@ -4359,9 +4355,13 @@ function rsFindPair(list){
 }
 function rsVoteCard(p, n){
   var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title);
-  return '<article class="rs-vc"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'"><span class="rs-letter">' + n + '</span></a>'
+  return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
+    + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
+    + '<span class="rs-badge developing"><i></i>Developing</span><span class="rs-letter">' + n + '</span></a>'
+    + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
     + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
-    + '<a class="rs-vote" href="' + url + '" target="_blank" rel="noopener noreferrer">Vote</a></article>';
+    + '<div class="rs-act rs-two"><a class="rs-btn ghost" href="' + url + '" target="_blank" rel="noopener noreferrer">View details</a>'
+    + '<a class="rs-btn rs-vote" href="' + url + '" target="_blank" rel="noopener noreferrer">Vote</a></div></div></article>';
 }
 function rsRender(){
   var box = hmEl("rsList"), d = RS.data;
@@ -4374,8 +4374,8 @@ function rsRender(){
   var pair = RS.tab === "developing" ? rsFindPair(list) : null;
   if (pair){
     box.innerHTML = '<div class="rs-vhead">Vote for the one you want live<span>The most-voted research goes live</span></div>'
-      + rsCountdownHtml(pair[0], "developing").replace('class="rs-cd developing"', 'class="rs-cd developing" style="margin:0 0 14px"')
-      + '<div class="rs-vs">' + rsVoteCard(pair[0], "X") + rsVoteCard(pair[1], "Y") + '</div>';
+      + rsCountdownHtml(pair[0], "developing").replace('class="rs-cd developing"', 'class="rs-cd developing" style="margin:0 0 16px"')
+      + rsVoteCard(pair[0], "X") + rsVoteCard(pair[1], "Y");
     rsStartTick();
     return;
   }
