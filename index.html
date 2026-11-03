@@ -594,6 +594,12 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .rs-body h3 a{color:var(--text)}
 .rs-body p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .rs-act{margin-top:16px}
+.rs-cd{display:flex;align-items:center;gap:12px;margin:14px 0 0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.rs-cd>i{font-size:22px;color:#facc15;flex:none}
+.rs-cd .l{display:block;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.rs-cd .t{display:block;margin-top:2px;font-family:var(--font-head);font-weight:800;font-size:17px;font-variant-numeric:tabular-nums}
+.rs-cd .d{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
+.rs-cd.live>i{color:#22c55e}.rs-cd.done>i{color:#ef4444}
 .rs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:150px;padding:12px 20px;border-radius:999px;background:var(--accent);color:#111;font-weight:800;font-size:14.5px}
 .rs-btn.ghost{background:transparent;color:var(--text);box-shadow:inset 0 0 0 1px var(--line);font-weight:700}
 .rs-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:34px 20px;border:1px dashed var(--line);border-radius:var(--radius);background:var(--surface)}
@@ -1341,6 +1347,7 @@ var CONFIG = {
     developingLabel: "Developing",  // blog label: research being prepared, not open yet
     liveLabel: "Live",              // blog label: research open for participation
     endedLabel: "Ended",            // blog label: finished research
+    timezone: "+01:00",             // time zone of the dates written in posts (+01:00 = Lagos/WAT). A post can override it by writing UTC, GMT+2, etc.
     suggestLabel: "Yongites",       // blog label: what Yongites are suggesting
     suggestTitle: "Yongites are suggesting",
     developingTitle: "Developing",  // names shown on the tabs in the app
@@ -4263,6 +4270,54 @@ function rsSocials(){
       + '<span class="tx"><b>' + esc(s.name) + '</b><small>' + esc(s.note || "") + '</small></span></a>';
   }).join("");
 }
+/* Reads a date and time out of a post's text, e.g. "ends (Wed, November 3, 2026, 3:00 am)". Returns a Date or null. */
+var RS_MON = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+function rsFindDate(p){
+  if (p.rsEnd !== undefined) return p.rsEnd;
+  var tmp = document.createElement("div"); tmp.innerHTML = p.html || "";
+  var t = (tmp.textContent || "").replace(/\s+/g, " ");
+  var re = /(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(\d{4})(?:\s*(?:,|at|@|-)?\s*(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?)?\s*(?:\(?\s*(?:UTC|GMT)\s*([+-]\d{1,2})(?::?(\d{2}))?\)?|\(?\s*(UTC|GMT)\)?|\b(WAT)\b)?/i;
+  var m = re.exec(t), d = null;
+  if (m){
+    var h = m[4] ? parseInt(m[4], 10) % 12 : 0, mi = m[5] ? parseInt(m[5], 10) : 0;
+    if (m[6] && m[6].toLowerCase() === "p") h += 12;
+    var off = String(rsCfg().timezone || "+01:00");
+    if (m[7]){ var sg = m[7].charAt(0), hh = ("0" + Math.abs(parseInt(m[7], 10))).slice(-2); off = sg + hh + ":" + (m[8] || "00"); }
+    else if (m[9]) off = "+00:00";
+    else if (m[10]) off = "+01:00";
+    var iso = m[3] + "-" + ("0" + (RS_MON[m[1].toLowerCase()] + 1)).slice(-2) + "-" + ("0" + m[2]).slice(-2) + "T" + ("0" + h).slice(-2) + ":" + ("0" + mi).slice(-2) + ":00" + off;
+    d = new Date(iso); if (isNaN(d.getTime())) d = null;
+  }
+  p.rsEnd = d; return d;
+}
+function rsCd(ms){
+  var s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  function z(n){ return ("0" + n).slice(-2); }
+  return (d ? d + "d " : "") + z(h) + "h " + z(m) + "m " + z(x) + "s";
+}
+function rsCountdownHtml(p, stage){
+  if (stage === "yongites") return "";
+  var d = rsFindDate(p); if (!d) return "";
+  var when = d.toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+  var label = stage === "developing" ? "Developing ends in" : stage === "live" ? "Live ends in" : "Ended";
+  if (stage === "ended") return '<div class="rs-cd done"><i class="ph ph-flag-checkered" aria-hidden="true"></i><div><span class="l">Ended</span><span class="d">' + esc(when) + '</span></div></div>';
+  return '<div class="rs-cd ' + stage + '" data-end="' + d.getTime() + '" data-stage="' + stage + '"><i class="ph ph-timer" aria-hidden="true"></i><div><span class="l">' + label + '</span><span class="t">&nbsp;</span><span class="d">' + esc(when) + '</span></div></div>';
+}
+function rsTick(){
+  var els = document.querySelectorAll("#rsList .rs-cd[data-end]"), now = Date.now();
+  if (!els.length){ clearInterval(RS.tm); RS.tm = 0; return; }
+  els.forEach(function(el){
+    var left = parseInt(el.getAttribute("data-end"), 10) - now, t = el.querySelector(".t");
+    if (left > 0){ t.textContent = rsCd(left); }
+    else {
+      el.classList.add("done");
+      el.querySelector(".l").textContent = el.getAttribute("data-stage") === "developing" ? "Developing period is over" : "Time is up";
+      t.textContent = "Check the post for the latest";
+      t.style.fontSize = "14px";
+    }
+  });
+}
+function rsStartTick(){ rsTick(); if (!RS.tm) RS.tm = setInterval(rsTick, 1000); }
 var RS_STAGES = ["developing", "live", "ended", "yongites"];
 var RS_BADGE = { developing: "Developing", live: "Live", ended: "Ended", yongites: "Yongites" };
 function rsCard(p, stage){
@@ -4273,6 +4328,7 @@ function rsCard(p, stage){
     + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
     + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
     + (p.snippet ? '<p>' + esc(p.snippet) + '</p>' : '')
+    + rsCountdownHtml(p, stage)
     + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" href="' + url + '" target="_blank" rel="noopener noreferrer">'
     + (live ? 'Participate' : stage === "yongites" ? 'Read more' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
 }
@@ -4292,6 +4348,7 @@ function rsRender(){
   var list = d[RS.tab], e = RS_EMPTY[RS.tab];
   box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, RS.tab); }).join("")
     : '<div class="rs-empty"><i class="ph ' + e[0] + '" aria-hidden="true"></i><strong>' + e[1] + '</strong><span>' + e[2] + '</span></div>';
+  rsStartTick();
 }
 function rsTab(name){
   RS.tab = RS_STAGES.indexOf(name) > -1 ? name : "live";
