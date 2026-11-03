@@ -4327,15 +4327,15 @@ function rsStartTick(){ rsTick(); if (!RS.tm) RS.tm = setInterval(rsTick, 1000);
 var RS_STAGES = ["developing", "live", "ended", "yongites"];
 var RS_BADGE = { developing: "Developing", live: "Live", ended: "Ended", yongites: "Yongites" };
 function rsCard(p, stage){
-  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), live = stage === "live";
-  return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
+  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), live = stage === "live", inapp = rsInApp(p);
+  return '<article class="rs-card"><a class="rs-img" ' + inapp + ' tabindex="-1" aria-hidden="true">'
     + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
     + '<span class="rs-badge ' + stage + '"><i></i>' + RS_BADGE[stage] + '</span></a>'
     + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
-    + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
+    + '<h3><a ' + inapp + '>' + esc(p.title) + '</a></h3>'
     + (p.snippet ? '<p>' + esc(p.snippet) + '</p>' : '')
     + rsCountdownHtml(p, stage)
-    + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" href="' + url + '" target="_blank" rel="noopener noreferrer">'
+    + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" ' + (live ? 'href="' + url + '" target="_blank" rel="noopener noreferrer"' : inapp) + '>'
     + (live ? 'Participate' : stage === "yongites" ? 'Read more' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
 }
 var RS_EMPTY = {
@@ -4353,14 +4353,16 @@ function rsFindPair(list){
   }
   return null;
 }
+/* opens the post in the in-app reader (same as news); POSTS holds the full text from the research feed */
+function rsInApp(p){ return 'href="' + esc(rsHttps(p.url)) + '" data-article="' + esc(p.url) + '"'; }
 function rsVoteCard(p, n){
-  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title);
-  return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
+  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), inapp = rsInApp(p);
+  return '<article class="rs-card"><a class="rs-img" ' + inapp + ' tabindex="-1" aria-hidden="true">'
     + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
     + '<span class="rs-badge developing"><i></i>Developing</span><span class="rs-letter">' + n + '</span></a>'
     + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
-    + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
-    + '<div class="rs-act rs-two"><a class="rs-btn ghost" href="' + url + '" target="_blank" rel="noopener noreferrer">View details</a>'
+    + '<h3><a ' + inapp + '>' + esc(p.title) + '</a></h3>'
+    + '<div class="rs-act rs-two"><a class="rs-btn ghost" ' + inapp + '>View details</a>'
     + '<a class="rs-btn rs-vote" href="' + url + '" target="_blank" rel="noopener noreferrer">Vote</a></div></div></article>';
 }
 function rsRender(){
