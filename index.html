@@ -575,6 +575,10 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 @keyframes rsPulse{0%{box-shadow:0 0 0 0 rgba(var(--c),.55)}70%{box-shadow:0 0 0 8px rgba(var(--c),0)}100%{box-shadow:0 0 0 0 rgba(var(--c),0)}}
 @keyframes rsBlink{0%,100%{opacity:1;box-shadow:0 0 8px 2px rgba(var(--c),.7)}50%{opacity:.25;box-shadow:0 0 0 0 rgba(var(--c),0)}}
 @media(prefers-reduced-motion:reduce){.rs-dot,.rs-badge i{animation:none}}
+.rs-sug{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:-4px 0 16px;padding:12px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rs-sug i.ph{font-size:17px;color:#60a5fa}
+.rs-sug.on{background:var(--surface-2);color:#fff;border-color:#3b82f6;box-shadow:inset 0 0 0 1px rgba(59,130,246,.45)}
+.rs-badge.yongites i{--c:96,165,250;animation:none}
 .rs-n{min-width:18px;padding:1px 6px;border-radius:999px;background:var(--line);color:var(--text);font-size:11.5px;line-height:18px;text-align:center}
 .rs-n:empty{display:none}
 .rs-card{display:flex;flex-direction:column;margin:0 0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
@@ -874,6 +878,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
       <button class="rs-seg-b on" type="button" role="tab" aria-selected="true" data-rs="live"><i class="rs-dot" aria-hidden="true"></i><span class="rs-name" id="rsNameLive">Live</span><span class="rs-n" id="rsNLive"></span></button>
       <button class="rs-seg-b" type="button" role="tab" aria-selected="false" data-rs="ended"><i class="rs-dot end" aria-hidden="true"></i><span class="rs-name" id="rsNameEnded">Ended</span><span class="rs-n" id="rsNEnded"></span></button>
     </div>
+    <button class="rs-sug" type="button" role="tab" aria-selected="false" data-rs="yongites"><i class="ph ph-lightbulb" aria-hidden="true"></i><span id="rsNameSug">Yongites are suggesting</span><span class="rs-n" id="rsNSug"></span></button>
     <div id="rsList" aria-live="polite"></div>
     <section class="rs-follow" aria-label="Follow our socials">
       <h3>Follow our socials</h3>
@@ -1336,6 +1341,8 @@ var CONFIG = {
     developingLabel: "Developing",  // blog label: research being prepared, not open yet
     liveLabel: "Live",              // blog label: research open for participation
     endedLabel: "Ended",            // blog label: finished research
+    suggestLabel: "Yongites",       // blog label: what Yongites are suggesting
+    suggestTitle: "Yongites are suggesting",
     developingTitle: "Developing",  // names shown on the tabs in the app
     liveTitle: "Live",
     endedTitle: "Ended",
@@ -4256,8 +4263,8 @@ function rsSocials(){
       + '<span class="tx"><b>' + esc(s.name) + '</b><small>' + esc(s.note || "") + '</small></span></a>';
   }).join("");
 }
-var RS_STAGES = ["developing", "live", "ended"];
-var RS_BADGE = { developing: "Developing", live: "Live", ended: "Ended" };
+var RS_STAGES = ["developing", "live", "ended", "yongites"];
+var RS_BADGE = { developing: "Developing", live: "Live", ended: "Ended", yongites: "Yongites" };
 function rsCard(p, stage){
   var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), live = stage === "live";
   return '<article class="rs-card"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">'
@@ -4267,18 +4274,20 @@ function rsCard(p, stage){
     + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
     + (p.snippet ? '<p>' + esc(p.snippet) + '</p>' : '')
     + '<div class="rs-act"><a class="rs-btn' + (live ? '' : ' ghost') + '" href="' + url + '" target="_blank" rel="noopener noreferrer">'
-    + (live ? 'Participate' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
+    + (live ? 'Participate' : stage === "yongites" ? 'Read more' : 'View details') + ' <i class="ph ph-arrow-up-right" aria-hidden="true"></i></a></div></div></article>';
 }
 var RS_EMPTY = {
   developing: ["ph-wrench", "Nothing in development right now.", "Upcoming research shows here before it goes live."],
   live: ["ph-flask", "No live research, check back soon.", "New research bounties are posted here as soon as they go live."],
-  ended: ["ph-archive", "No ended research yet.", "Finished research will appear here."]
+  ended: ["ph-archive", "No ended research yet.", "Finished research will appear here."],
+  yongites: ["ph-lightbulb", "No suggestions yet.", "Ideas and picks from Yongites will appear here."]
 };
 function rsRender(){
   var box = hmEl("rsList"), d = RS.data;
   hmEl("rsNDev").textContent = d && d.developing.length ? d.developing.length : "";
   hmEl("rsNLive").textContent = d && d.live.length ? d.live.length : "";
   hmEl("rsNEnded").textContent = d && d.ended.length ? d.ended.length : "";
+  hmEl("rsNSug").textContent = d && d.yongites.length ? d.yongites.length : "";
   if (!d) return;
   var list = d[RS.tab], e = RS_EMPTY[RS.tab];
   box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, RS.tab); }).join("")
@@ -4286,7 +4295,7 @@ function rsRender(){
 }
 function rsTab(name){
   RS.tab = RS_STAGES.indexOf(name) > -1 ? name : "live";
-  document.querySelectorAll("#rsSeg .rs-seg-b").forEach(function(b){
+  document.querySelectorAll("#hmPane-research [data-rs]").forEach(function(b){
     var on = b.getAttribute("data-rs") === RS.tab;
     b.classList.toggle("on", on); b.setAttribute("aria-selected", on ? "true" : "false");
   });
@@ -4298,19 +4307,20 @@ function hmBuildResearch(force){
   hmEl("rsNameDev").textContent = cf.developingTitle || "Developing";
   hmEl("rsNameLive").textContent = cf.liveTitle || "Live";
   hmEl("rsNameEnded").textContent = cf.endedTitle || "Ended";
+  hmEl("rsNameSug").textContent = cf.suggestTitle || "Yongites are suggesting";
   var box = hmEl("rsList");
   if (!force && RS.data && Date.now() - RS.t < 300000){ rsRender(); return; }
   if (RS.loading) return;
   RS.loading = true;
   if (!RS.data) box.innerHTML = '<div class="dv-skel sq" style="height:250px;margin-bottom:16px"></div><div class="dv-skel sq" style="height:250px"></div>';
-  Promise.all([rsPosts(cf.developingLabel || "Developing"), rsPosts(cf.liveLabel || "Live"), rsPosts(cf.endedLabel || "Ended")]).then(function(r){
+  Promise.all([rsPosts(cf.developingLabel || "Developing"), rsPosts(cf.liveLabel || "Live"), rsPosts(cf.endedLabel || "Ended"), rsPosts(cf.suggestLabel || "Yongites")]).then(function(r){
     /* a post sits in its furthest stage: Ended beats Live, Live beats Developing */
     var ended = {}, live = {};
     r[2].forEach(function(p){ ended[p.url] = 1; });
     var liveList = r[1].filter(function(p){ return !ended[p.url]; });
     liveList.forEach(function(p){ live[p.url] = 1; });
     var first = !RS.data;
-    RS.data = { developing: r[0].filter(function(p){ return !ended[p.url] && !live[p.url]; }), live: liveList, ended: r[2] };
+    RS.data = { developing: r[0].filter(function(p){ return !ended[p.url] && !live[p.url]; }), live: liveList, ended: r[2], yongites: r[3] };
     RS.t = Date.now(); RS.loading = false;
     if (first){   /* open on the first stage that has something in it, Live preferred */
       var order = ["live", "developing", "ended"], k;
