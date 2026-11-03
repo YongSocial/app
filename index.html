@@ -1303,7 +1303,7 @@ var CONFIG = {
   appVersion: "1.0.0",                                  // shown in the Profile footer; change it when you release an update
   privacyUrl: "https://app.yongsocial.com/privacy-policy",
   termsUrl: "https://app.yongsocial.com/terms-of-use",
-  updatesUrl: "https://x.com/yongsocial",
+  updatesUrl: "https://x.com/YSFNews",
   contactEmail: "yongsocial@outlook.com",
   copyright: "\u00a9 2026 YongSocialCo. All rights reserved.",
   tvHeadH: 50,   // px height of the TradingView quote table header row (tune with ?tvdebug=1)
@@ -1362,20 +1362,17 @@ var CONFIG = {
     maxPosts: 20,
     socials: [
       { name: "X",         note: "@YSFNews",       url: "https://x.com/YSFNews",                                              icon: "ph-x-logo",        color: "#111111" },
-      { name: "Telegram",  note: "Join the channel", url: "https://t.me/yongsocialfinance",                                    icon: "ph-telegram-logo", color: "#229ED9" },
+      { name: "Telegram",  note: "Join the channel", url: "https://t.me/Yongsocialfinance",                                    icon: "ph-telegram-logo", color: "#229ED9" },
       { name: "WhatsApp",  note: "Join the channel", url: "https://whatsapp.com/channel/0029Vb8bp4dA2pLGEi7cJQ0M",             icon: "ph-whatsapp-logo", color: "#25D366" },
       { name: "pump.fun",  note: "YSFResearch",    url: "https://pump.fun/u/YSFResearch",                                     icon: "ph-pill",          color: "#16a34a" }
     ]
   },
-  subscribeUrl: "https://x.com/yongsocial",             // newsletter / subscribe link (now X follow link)
+  subscribeUrl: "https://x.com/YSFNews",             // newsletter / subscribe link (now X follow link)
   // Header nav — replace href values with your real page URLs
   /* Side menu. type: series (opens the News tab for a label, with a search as backup), bookmarks, share, country,
      rate (hidden until playUrl below is set), about, contact, privacy, terms. */
   menu: [
     { title: "Read", items: [
-      { type: "series", label: "8 AM Finance",         tag: "8 AM Finance",         q: "8 am finance",         icon: "ph-sun-horizon" },
-      { type: "series", label: "Let's Discuss Crypto", tag: "Let's Discuss Crypto", q: "let's discuss crypto", icon: "ph-chats-circle" },
-      { type: "series", label: "Tech It Up",           tag: "Tech It Up",           q: "tech it up",           icon: "ph-cpu" },
       { type: "bookmarks", label: "Bookmarks", icon: "ph-bookmark-simple" }
     ]},
     { title: "App", items: [
@@ -1392,7 +1389,7 @@ var CONFIG = {
   ],
   playUrl: "",   // after the app is live on Google Play, paste its link here (https://play.google.com/store/apps/details?id=com.yongsocial.app) to show "Rate us" and share that link
   aboutText: [
-    "Yong Social Finance brings markets, investing and digital assets together in one place: live prices, clear explainers, curated videos and daily reads like 8 AM Finance and Tech It Up.",
+    "Yong Social Finance brings markets, investing and digital assets together in one place: live prices, clear explainers and curated videos.",
     "Our aim is simple: help you follow the money and make sense of it.",
     "Nothing in this app is financial advice. Always do your own research."
   ],
@@ -1400,8 +1397,8 @@ var CONFIG = {
     { label: "Privacy Policy",  url: "https://app.yongsocial.com/privacy-policy" }
   ],
   socials: [
-    { label: "Yong Social on X", icon: "x", url: "https://x.com/yongsocial" },
-    { label: "Yong Social on Telegram", icon: "telegram", url: "https://t.me/yongsocial" },
+    { label: "Yong Social Finance on X", icon: "x", url: "https://x.com/YSFNews" },
+    { label: "Yong Social Finance on Telegram", icon: "telegram", url: "https://t.me/Yongsocialfinance" },
     { label: "Yong Social on WhatsApp", icon: "whatsapp", url: "https://whatsapp.com/channel/0029Vb8bp4dA2pLGEi7cJQ0M" }
   ]
 };
@@ -3552,7 +3549,7 @@ function arFootHtml(p, partial, more){
   return (partial ? '<div class="ar-note"><span>This is a short preview of the article.</span><a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Continue reading &#8599;</a></div>' : '')
     + (more ? '<div class="ar-sec" id="arNext" hidden></div><div class="ar-sec" id="arRel" hidden></div>' : '')
     + '<div class="ar-follow"><div><strong>Stay ahead of the markets</strong><span class="sub">Get Yong Social updates first.</span></div>'
-    + '<a class="btn" href="' + esc(CONFIG.subscribeUrl || "https://x.com/yongsocial") + '" target="_blank" rel="noopener">' + SOCIAL_ICONS.x + 'Follow Us on X</a></div>';
+    + '<a class="btn" href="' + esc(CONFIG.subscribeUrl || "https://x.com/YSFNews") + '" target="_blank" rel="noopener">' + SOCIAL_ICONS.x + 'Follow Us on X</a></div>';
 }
 
 /* Next article (the next older post) and Related articles (same topic), loaded after the article is on screen. */
