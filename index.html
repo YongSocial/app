@@ -594,6 +594,16 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .rs-body h3 a{color:var(--text)}
 .rs-body p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .rs-act{margin-top:16px}
+.rs-vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}
+.rs-vc{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.rs-vc .rs-img{display:block;position:relative;aspect-ratio:1/1;background:var(--surface-2)}
+.rs-vc .rs-img img{width:100%;height:100%;object-fit:cover;display:block}
+.rs-vc .rs-letter{position:absolute;left:8px;top:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font:800 13px/26px var(--font-head);text-align:center}
+.rs-vc h3{margin:0;padding:10px 10px 0;font-family:var(--font-head);font-size:14px;line-height:1.3;letter-spacing:-.1px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rs-vc h3 a{color:var(--text)}
+.rs-vc .rs-vote{margin:10px;padding:10px 6px;border-radius:999px;text-align:center;font-family:var(--font-head);font-weight:800;font-size:14px;background:#facc15;color:#1a1400;display:block}
+.rs-vhead{margin:0 0 10px;font-family:var(--font-head);font-weight:800;font-size:15px;text-align:center}
+.rs-vhead span{display:block;margin-top:2px;font-weight:500;font-size:12.5px;color:var(--muted)}
 .rs-cd{display:flex;align-items:center;gap:12px;margin:14px 0 0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
 .rs-cd>i{font-size:22px;color:#facc15;flex:none}
 .rs-cd .l{display:block;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
@@ -4338,6 +4348,21 @@ var RS_EMPTY = {
   ended: ["ph-archive", "No ended research yet.", "Finished research will appear here."],
   yongites: ["ph-lightbulb", "No suggestions yet.", "Ideas and picks from Yongites will appear here."]
 };
+/* Developing "vote" pair: two posts published within 10 minutes of each other that share the same end time. */
+function rsFindPair(list){
+  var a = list.filter(function(p){ return p.date && rsFindDate(p); }), i, j;
+  for (i = 0; i < a.length; i++) for (j = i + 1; j < a.length; j++){
+    if (Math.abs(a[i].date - a[j].date) <= 600000 && rsFindDate(a[i]).getTime() === rsFindDate(a[j]).getTime())
+      return a[i].date <= a[j].date ? [a[i], a[j]] : [a[j], a[i]];   /* first published = X */
+  }
+  return null;
+}
+function rsVoteCard(p, n){
+  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title);
+  return '<article class="rs-vc"><a class="rs-img" href="' + url + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'"><span class="rs-letter">' + n + '</span></a>'
+    + '<h3><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + esc(p.title) + '</a></h3>'
+    + '<a class="rs-vote" href="' + url + '" target="_blank" rel="noopener noreferrer">Vote</a></article>';
+}
 function rsRender(){
   var box = hmEl("rsList"), d = RS.data;
   hmEl("rsNDev").textContent = d && d.developing.length ? d.developing.length : "";
@@ -4346,6 +4371,14 @@ function rsRender(){
   hmEl("rsNSug").textContent = d && d.yongites.length ? d.yongites.length : "";
   if (!d) return;
   var list = d[RS.tab], e = RS_EMPTY[RS.tab];
+  var pair = RS.tab === "developing" ? rsFindPair(list) : null;
+  if (pair){
+    box.innerHTML = '<div class="rs-vhead">Vote for the one you want live<span>The most-voted research goes live</span></div>'
+      + rsCountdownHtml(pair[0], "developing").replace('class="rs-cd developing"', 'class="rs-cd developing" style="margin:0 0 14px"')
+      + '<div class="rs-vs">' + rsVoteCard(pair[0], "X") + rsVoteCard(pair[1], "Y") + '</div>';
+    rsStartTick();
+    return;
+  }
   box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, RS.tab); }).join("")
     : '<div class="rs-empty"><i class="ph ' + e[0] + '" aria-hidden="true"></i><strong>' + e[1] + '</strong><span>' + e[2] + '</span></div>';
   rsStartTick();
