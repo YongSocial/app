@@ -108,6 +108,8 @@ nav.main a.active{color:#fff;background:var(--surface-2)}
 #newsAd:not(:empty){margin-bottom:20px}
 
 /* Cards */
+.grid .ns-ad{grid-column:1/-1}
+.grid .ns-ad .pr-rot{margin-top:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:.25s}
 .card:hover{transform:translateY(-4px);border-color:#39404f;box-shadow:var(--shadow)}
@@ -326,6 +328,8 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .cp-sell{background:#dc2626}
 .cp-live{background:linear-gradient(90deg,var(--brand-2),var(--brand))}
 .cp-sub{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.cp-ad{margin-bottom:10px}
+.cp-ad .pr-rot{margin-top:0}
 .cp-post{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;color:var(--text)}
 .cp-post:hover{border-color:var(--brand);background:var(--surface-2)}
 .cp-post img{flex:none;width:84px;height:84px;border-radius:10px;object-fit:cover;background:var(--surface-2)}
@@ -1570,9 +1574,20 @@ function render(posts, isFirstPage){
   /* The Yong Social TV panel now occupies the top slot on the first page,
      so no post is promoted to a feature card any more. */
   slot.innerHTML = "";
+  /* In the list, the 2nd and 6th places are ads (post, AD, post, post, post, AD, post...) */
+  var html = "", k = 0, pi = 0, adN = 0, AD_AT = { 1: 1, 5: 1 };
+  while (pi < list.length){
+    if (AD_AT[k]){ adN++; html += '<div class="ns-ad" id="nsAd' + adN + '"></div>'; }
+    else { html += cardHtml(list[pi]); pi++; }
+    k++;
+  }
   document.getElementById("posts").innerHTML = list.length
-    ? list.map(cardHtml).join("")
+    ? html
     : '<div class="notice">No posts found. <a href="' + esc(CONFIG.blogUrl) + '" target="_blank" rel="noopener">Browse the blog</a></div>';
+  /* fill each ad slot; if the ad list can't be reached the empty slot is removed */
+  for (var a = 1; a <= adN; a++) (function(id){
+    promoMount(id).then(function(ok){ var el = document.getElementById(id); if (!ok && el && el.parentNode) el.parentNode.removeChild(el); });
+  })("nsAd" + a);
 }
 
 function setLoading(){
@@ -2040,10 +2055,20 @@ function loadChartNews(name, sym){
   var labels = chartLabels(name, sym), failed = 0, i = 0;
   function done(label, posts){
     if (token !== chartState.nt) return;
-    box.innerHTML = posts.map(function(p){
+    /* 2nd and 6th places are ads: post, AD, post, post, post, AD, post */
+    var cards = posts.map(function(p){
       return '<a class="cp-post" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="" onerror="this.src=\'' + ph(p.title) + '\'">'
         + '<span class="tx"><strong>' + esc(p.title) + '</strong><small>' + fmt(p.date) + (p.author ? ' \u00b7 ' + esc(p.author) : '') + '</small></span></a>';
-    }).join("") + '<button class="dv-btn cp-all" type="button" data-cpleave data-label="' + esc(label) + '">View all ' + esc(label) + ' articles</button>';
+    }), body = "", k = 0, pi = 0, adN = 0;
+    while (pi < cards.length){
+      if (k === 1 || k === 5){ adN++; body += '<div class="cp-ad" id="cpAd' + adN + '"></div>'; }
+      else { body += cards[pi]; pi++; }
+      k++;
+    }
+    box.innerHTML = body + '<button class="dv-btn cp-all" type="button" data-cpleave data-label="' + esc(label) + '">View all ' + esc(label) + ' articles</button>';
+    for (var a = 1; a <= adN; a++) (function(id){
+      promoMount(id).then(function(ok){ var el = document.getElementById(id); if (!ok && el && el.parentNode) el.parentNode.removeChild(el); });
+    })("cpAd" + a);
   }
   function empty(){
     if (token !== chartState.nt) return;
