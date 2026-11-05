@@ -556,6 +556,10 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .hm-intro{color:var(--muted);font-size:14.5px;margin:16px 0 14px}
 /* No pinch or double-tap zoom anywhere in the app */
 html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* no text selection or press-and-hold menus (copy / web search / open in new tab / image options) */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+img,a{-webkit-touch-callout:none;-webkit-user-drag:none}
+input,textarea,select,[contenteditable="true"]{-webkit-user-select:text;user-select:text}
 
 /* YSFResearch tab */
 .rs-post{display:flex;align-items:center;gap:12px;margin:18px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
@@ -1140,6 +1144,8 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 <script>
 /* iPhone/iPad Safari ignores user-scalable=no, so block its pinch zoom here too */
 (function(){
+  document.addEventListener("contextmenu", function(e){ if (!(e.target.closest && e.target.closest("input,textarea,[contenteditable=\"true\"]"))) e.preventDefault(); });
+  document.addEventListener("selectstart", function(e){ if (!(e.target.closest && e.target.closest("input,textarea,[contenteditable=\"true\"]"))) e.preventDefault(); });
   ["gesturestart","gesturechange","gestureend"].forEach(function(n){ document.addEventListener(n, function(e){ e.preventDefault(); }, { passive: false }); });
   document.addEventListener("touchmove", function(e){ if (e.touches && e.touches.length > 1 && e.cancelable) e.preventDefault(); }, { passive: false });
 })();
