@@ -450,6 +450,8 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .ar-body h3{font-size:20px}
 .ar-body h4{font-size:17px}
 .ar-body a{color:var(--brand);text-decoration:underline;text-underline-offset:3px}
+.ar-body .pr-btn,.ar-body .pr-btn:hover{color:#fff;text-decoration:none}
+.ar-body .pr-img{text-decoration:none}
 .ar-body img{display:block;max-width:100%;height:auto;margin:20px auto;border-radius:10px}
 .ar-body ul,.ar-body ol{padding-left:1.4em}
 .ar-body li{margin-bottom:.4em}
@@ -589,12 +591,6 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 .rs-body h3 a{color:var(--text)}
 .rs-body p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .rs-act{margin-top:16px}
-.rs-letter{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;font:800 14px/30px var(--font-head);text-align:center}
-.rs-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.rs-two .rs-btn{min-width:0;padding-left:8px;padding-right:8px;justify-content:center;width:100%;box-sizing:border-box}
-.rs-btn.rs-vote{background:#facc15;color:#1a1400;border-color:#facc15}
-.rs-vhead{margin:0 0 10px;font-family:var(--font-head);font-weight:800;font-size:15px;text-align:center}
-.rs-vhead span{display:block;margin-top:2px;font-weight:500;font-size:12.5px;color:var(--muted)}
 .rs-cd{display:flex;align-items:center;gap:12px;margin:14px 0 0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
 .rs-cd>i{font-size:22px;color:#facc15;flex:none}
 .rs-cd .l{display:block;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
@@ -4146,27 +4142,8 @@ var RS_EMPTY = {
   ended: ["ph-archive", "No ended research yet.", "Finished research will appear here."],
   yongites: ["ph-lightbulb", "No suggestions yet.", "Ideas and picks from Yongites will appear here."]
 };
-/* Developing "vote" pair: two posts published within 10 minutes of each other that share the same end time. */
-function rsFindPair(list){
-  var a = list.filter(function(p){ return p.date && rsFindDate(p); }), i, j;
-  for (i = 0; i < a.length; i++) for (j = i + 1; j < a.length; j++){
-    if (Math.abs(a[i].date - a[j].date) <= 600000 && rsFindDate(a[i]).getTime() === rsFindDate(a[j]).getTime())
-      return a[i].date <= a[j].date ? [a[i], a[j]] : [a[j], a[i]];   /* first published = X */
-  }
-  return null;
-}
 /* opens the post in the in-app reader (same as news); POSTS holds the full text from the research feed */
 function rsInApp(p){ return 'href="' + esc(rsHttps(p.url)) + '" data-article="' + esc(p.url) + '"'; }
-function rsVoteCard(p, n){
-  var url = esc(rsHttps(p.url)), img = p.thumb ? esc(rsHttps(p.thumb)) : ph(p.title), inapp = rsInApp(p);
-  return '<article class="rs-card"><a class="rs-img" ' + inapp + ' tabindex="-1" aria-hidden="true">'
-    + '<img loading="lazy" alt="" src="' + img + '" onerror="this.src=\'' + ph(p.title) + '\'">'
-    + '<span class="rs-badge developing"><i></i>Developing</span><span class="rs-letter">' + n + '</span></a>'
-    + '<div class="rs-body"><div class="rs-meta">' + (p.date ? hmAgo(p.date) : "") + '</div>'
-    + '<h3><a ' + inapp + '>' + esc(p.title) + '</a></h3>'
-    + '<div class="rs-act rs-two"><a class="rs-btn ghost" ' + inapp + '>View details</a>'
-    + '<a class="rs-btn rs-vote" href="' + url + '" target="_blank" rel="noopener noreferrer">Vote</a></div></div></article>';
-}
 function rsRender(){
   var box = hmEl("rsList"), d = RS.data;
   hmEl("rsNDev").textContent = d && d.developing.length ? d.developing.length : "";
@@ -4174,14 +4151,6 @@ function rsRender(){
   hmEl("rsNEnded").textContent = d && d.ended.length ? d.ended.length : "";
   if (!d) return;
   var list = d[RS.tab], e = RS_EMPTY[RS.tab];
-  var pair = RS.tab === "developing" ? rsFindPair(list) : null;
-  if (pair){
-    box.innerHTML = '<div class="rs-vhead">Vote for the one you want live<span>The most-voted research goes live</span></div>'
-      + rsCountdownHtml(pair[0], "developing").replace('class="rs-cd developing"', 'class="rs-cd developing" style="margin:0 0 16px"')
-      + rsVoteCard(pair[0], "X") + rsVoteCard(pair[1], "Y");
-    rsStartTick();
-    return;
-  }
   box.innerHTML = list.length ? list.map(function(p){ return rsCard(p, RS.tab); }).join("")
     : '<div class="rs-empty"><i class="ph ' + e[0] + '" aria-hidden="true"></i><strong>' + e[1] + '</strong><span>' + e[2] + '</span></div>';
   rsStartTick();
