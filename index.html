@@ -251,6 +251,12 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .dx-ad{margin-top:16px}
 .dx-ad .pr-rot{margin-top:0}
 #dvLegacy{display:none!important}
+.dx-res{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column}
+.dx-res[hidden]{display:none}
+.dx-res-h{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);color:var(--text);border-bottom:1px solid var(--line)}
+.dx-res-h button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:20px;display:grid;place-items:center;cursor:pointer}
+.dx-res-h strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-res-b{flex:1;overflow:auto;padding:8px;-webkit-user-select:text;user-select:text}
 
 .dv-wrap{max-width:760px}
 .dv-head h1{font-family:var(--font-head);font-size:30px;line-height:1.15;margin:0 0 6px;letter-spacing:-.5px}
@@ -932,6 +938,10 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
     </section>
     <div class="dx-ad" id="dxAd"></div>
   </div>
+  <div class="dx-res" id="dxResults" hidden role="dialog" aria-label="Search results">
+    <div class="dx-res-h"><button type="button" id="dxResBack" aria-label="Back"><i class="ph ph-arrow-left" aria-hidden="true"></i></button><strong id="dxResQ"></strong></div>
+    <div class="dx-res-b" id="dxResBox"></div>
+  </div>
   <div id="dvLegacy" hidden style="display:none"><div class="wrap dv-wrap">
     <header class="dv-head">
       <h1>Discover</h1>
@@ -1206,6 +1216,10 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
    1. CONFIG — EDIT THIS BLOCK ONLY
    ========================================================================= */
 var CONFIG = {
+  /* Search from the Discover tab. Google only allows its results to be shown inside a page through a
+     Programmable Search Engine: create one at programmablesearchengine.google.com and paste its ID (cx) here.
+     Until then, searches open Google in a new browser tab. */
+  googleCx: "",
   adsUrl: "https://offers.yongsocial.com/offers.js",   // the rotating ads list lives here; edit that file, not the app
   sponsoredLabels: ["Sponsored", "Featured"],
   sponsoredCount: 4,
@@ -2848,6 +2862,7 @@ var DX_ITEMS = [
   { id: "news",     name: "News",          ico: "ph-newspaper",        bg: "#0ea5e9", go: "home:news" },
   { id: "research", name: "YSFResearch",   ico: "ph-magnifying-glass", bg: "#f59e0b", go: "home:research" },
   { id: "today",    name: "Today",         ico: "ph-currency-btc",     bg: "#f97316", go: "home:today" },
+  { id: "account",  name: "Account",       ico: "ph-user",            bg: "#64748b", go: "tab:account" },
   { id: "blog",     name: "Blog",          ico: "ph-globe",            bg: "#16a34a", go: "url:https://www.yongsocial.com" },
   { id: "x",        name: "X",             ico: "ph-x-logo",           bg: "#111827", go: "url:https://x.com/YSFNews" },
   { id: "telegram", name: "Telegram",      ico: "ph-telegram-logo",    bg: "#229ed9", go: "url:https://t.me/Yongsocialfinance" }
@@ -2860,16 +2875,24 @@ var DX_BANNERS = [
 var dx = { rec: [], recAll: false, featAll: false, built: false, bi: 0, bt: 0 };
 function dxLoadRec(){
   try { var r = JSON.parse(localStorage.getItem("ys_dx_recent") || "null"); if (Array.isArray(r)) return r; } catch (e) {}
-  return ["prices", "news", "research", "events", "today"];   /* first visit: a starter row */
+  return [];
 }
 function dxSaveRec(){ try { localStorage.setItem("ys_dx_recent", JSON.stringify(dx.rec)); } catch (e) {} }
+/* every tab the user opens is remembered (newest first) for "Recently Visited" */
+function dxVisit(id){
+  if (!dxItem(id) || id === "discover") return;
+  var list = (typeof dx !== "undefined" && dx && dx.built) ? dx.rec : dxLoadRec();
+  list = [id].concat(list.filter(function(x){ return x !== id; })).slice(0, 12);
+  try { localStorage.setItem("ys_dx_recent", JSON.stringify(list)); } catch (e) {}
+  if (typeof dx !== "undefined" && dx && dx.built){ dx.rec = list; dxRender(); }
+}
 function dxItem(id){ for (var i = 0; i < DX_ITEMS.length; i++) if (DX_ITEMS[i].id === id) return DX_ITEMS[i]; return null; }
 function dxTile(it){
   return '<button type="button" class="dx-i" data-dxopen="' + it.id + '"><i class="tile" style="background:' + it.bg + '"><i class="ph ' + it.ico + '" aria-hidden="true"></i></i><span>' + esc(it.name) + '</span></button>';
 }
 function dxRender(){
   var rec = dx.rec.map(dxItem).filter(Boolean), n = dx.recAll ? rec.length : 5;
-  dvEl("dxRec").innerHTML = rec.length ? rec.slice(0, n).map(dxTile).join("") : '<div class="dx-empty">Nothing here yet.</div>';
+  dvEl("dxRec").innerHTML = rec.length ? rec.slice(0, n).map(dxTile).join("") : '<div class="dx-empty">The tabs you open will show up here.</div>';
   dvEl("dxFeat").innerHTML = DX_ITEMS.slice(0, dx.featAll ? DX_ITEMS.length : 5).map(dxTile).join("");
   var mr = discoverView.querySelector('[data-dx="more-rec"]'), mf = discoverView.querySelector('[data-dx="more-feat"]');
   mr.textContent = dx.recAll ? "Show Less" : "Show More";
@@ -2904,12 +2927,36 @@ function dxAuto(){
     box.scrollTo({ left: i * (box.clientWidth + 12), behavior: "smooth" });
   }, 5000);
 }
-/* search box: a link opens as typed, anything else is searched on DuckDuckGo */
+/* search box: a link opens as typed; anything else is a Google search.
+   With CONFIG.googleCx set, results show inside the app; otherwise Google opens in a new tab. */
+var dxCse = { loaded: false, ready: false, pending: "" };
+function dxShowResults(q){
+  var ov = dvEl("dxResults");
+  ov.hidden = false; document.body.style.overflow = "hidden";
+  dvEl("dxResQ").textContent = q;
+  if (!dxCse.loaded){
+    dxCse.loaded = true; dxCse.pending = q;
+    window.__gcse = { parsetags: "explicit", callback: function(){
+      try {
+        google.search.cse.element.render({ div: "dxResBox", tag: "searchresults-only", gname: "dxs" });
+        dxCse.ready = true; var el = google.search.cse.element.getElement("dxs"); if (dxCse.pending) el.execute(dxCse.pending);
+      } catch (err) {}
+    } };
+    var sc = document.createElement("script"); sc.async = true;
+    sc.src = "https://cse.google.com/cse.js?cx=" + encodeURIComponent(CONFIG.googleCx);
+    sc.onerror = function(){ dxCloseResults(); window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener,noreferrer"); };
+    document.head.appendChild(sc);
+  } else if (dxCse.ready){
+    try { google.search.cse.element.getElement("dxs").execute(q); } catch (err) {}
+  } else dxCse.pending = q;
+}
+function dxCloseResults(){ dvEl("dxResults").hidden = true; document.body.style.overflow = ""; }
 function dxSearchGo(q){
   q = String(q || "").trim(); if (!q) return;
   var isLink = /^https?:\/\//i.test(q) || (!/\s/.test(q) && /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?([\/?#].*)?$/i.test(q));
-  var url = isLink ? (/^https?:\/\//i.test(q) ? q : "https://" + q) : "https://duckduckgo.com/?q=" + encodeURIComponent(q);
-  window.open(url, "_blank", "noopener,noreferrer");
+  if (isLink){ window.open(/^https?:\/\//i.test(q) ? q : "https://" + q, "_blank", "noopener,noreferrer"); return; }
+  if (CONFIG.googleCx) dxShowResults(q);
+  else window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener,noreferrer");
 }
 function discoverEnter(){
   dxBuild();
@@ -2921,13 +2968,13 @@ discoverView.addEventListener("submit", function(e){
   e.preventDefault(); var q = dvEl("dxQ"); dxSearchGo(q.value); q.blur();
 });
 discoverView.addEventListener("click", function(e){
-  if (e.target.closest("#dxGift")){ showToast("Coming soon"); return; }
+  if (e.target.closest("#dxResBack")){ dxCloseResults(); return; }
+  if (e.target.closest("#dxGift")){ window.open("https://offers.yongsocial.com", "_blank", "noopener,noreferrer"); return; }
   var b = e.target.closest("[data-dxb]");
   if (b){ dxGo(DX_BANNERS[+b.getAttribute("data-dxb")].go); return; }
   var o = e.target.closest("[data-dxopen]");
   if (o){
     var it = dxItem(o.getAttribute("data-dxopen"));
-    dx.rec = [it.id].concat(dx.rec.filter(function(x){ return x !== it.id; })).slice(0, 20); dxSaveRec(); dxRender();
     dxGo(it.go); return;
   }
   var m = e.target.closest("[data-dx]");
@@ -3404,6 +3451,7 @@ document.getElementById("tabbar").addEventListener("click", function(e){
   if (!t) return;
   var name = t.getAttribute("data-tab");
   document.getElementById("nav").classList.remove("open");
+  dxVisit(name === "home" ? (hm.tab || "today") : name);
   if (name === "home"){
     showView("home");
     setTab("home");
@@ -3890,6 +3938,7 @@ function hmNotice(msg, attr){
 function hmSwitch(name, keepScroll){
   if (HM_PANES.indexOf(name) < 0) name = "today";
   hm.tab = name;
+  dxVisit(name);
   var box = hmEl("hmTabsIn");
   document.querySelectorAll("#hmTabs .hm-tab").forEach(function(b){
     var on = b.getAttribute("data-hm") === name;
