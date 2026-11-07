@@ -219,6 +219,39 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .tk-chg.up{color:#22c55e}
 .tk-chg.down{color:#ef4444}
 .discover{padding:24px 0 120px}
+.dx-wrap{max-width:760px}
+.dx-top{display:flex;justify-content:flex-end;margin-bottom:12px}
+.dx-gift{width:44px;height:44px;border-radius:50%;border:0;background:none;color:var(--brand);font-size:30px;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dx-search{display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.dx-search i{font-size:20px;color:var(--muted);flex:none}
+.dx-search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;color:var(--text);font:500 16px var(--font-body)}
+.dx-search input::placeholder{color:var(--muted)}
+.dx-banners{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:16px 0 0;-webkit-overflow-scrolling:touch}
+.dx-banners::-webkit-scrollbar{display:none}
+.dx-b{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column;justify-content:flex-end;min-height:170px;padding:20px;border:0;border-radius:18px;color:#fff;text-align:left;cursor:pointer;font-family:var(--font-body);position:relative;overflow:hidden}
+.dx-b strong{font-family:var(--font-head);font-size:24px;line-height:1.15;letter-spacing:-.3px;max-width:75%}
+.dx-b span{margin-top:6px;font-size:14px;opacity:.9;max-width:75%}
+.dx-b i.ph{position:absolute;right:18px;top:16px;font-size:74px;opacity:.28}
+.dx-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 0}
+.dx-dots i{width:18px;height:4px;border-radius:2px;background:var(--line)}
+.dx-dots i.on{background:var(--accent)}
+.dx-card{margin-top:16px;padding:16px 14px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+.dx-card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.dx-card-h h2{margin:0;font-family:var(--font-head);font-size:17px;font-weight:600;color:var(--muted);letter-spacing:0}
+.dx-acts{display:flex;align-items:center;gap:12px}
+.dx-acts button{border:0;background:none;color:var(--brand);font:600 14px var(--font-body);cursor:pointer;padding:4px 0}
+.dx-acts button i{font-size:20px;color:var(--muted)}
+.dx-sep{width:1px;height:16px;background:var(--line)}
+.dx-icons{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 8px}
+.dx-i{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;border:0;background:none;color:var(--muted);font:500 12px var(--font-body);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dx-i i.tile{width:100%;max-width:64px;aspect-ratio:1/1;border-radius:16px;display:grid;place-items:center;color:#fff;font-size:30px}
+.dx-i span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-icons:not(.named) .dx-i span{display:none}
+.dx-empty{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13.5px;padding:8px 0}
+.dx-ad{margin-top:16px}
+.dx-ad .pr-rot{margin-top:0}
+#dvLegacy{display:none!important}
+
 .dv-wrap{max-width:760px}
 .dv-head h1{font-family:var(--font-head);font-size:30px;line-height:1.15;margin:0 0 6px;letter-spacing:-.5px}
 .dv-head p{margin:0;color:var(--muted)}
@@ -881,7 +914,25 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 </section>
 
 <section class="discover" id="discoverView" hidden aria-label="Discover">
-  <div class="wrap dv-wrap">
+  <div class="wrap dx-wrap">
+    <div class="dx-top"><button type="button" class="dx-gift" id="dxGift" aria-label="Rewards"><i class="ph ph-gift" aria-hidden="true"></i></button></div>
+    <form class="dx-search" id="dxSearch" role="search" autocomplete="off">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      <input type="text" id="dxQ" inputmode="url" enterkeyhint="go" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Search or enter a link" aria-label="Search or enter a link">
+    </form>
+    <div class="dx-banners" id="dxBanners" aria-label="Highlights"></div>
+    <div class="dx-dots" id="dxDots" aria-hidden="true"></div>
+    <section class="dx-card" aria-labelledby="dxRecT">
+      <div class="dx-card-h"><h2 id="dxRecT">Recently Visited</h2><span class="dx-acts"><button type="button" data-dx="more-rec">Show More</button><i class="dx-sep"></i><button type="button" data-dx="clear" aria-label="Clear recently visited"><i class="ph ph-trash" aria-hidden="true"></i></button></span></div>
+      <div class="dx-icons" id="dxRec"></div>
+    </section>
+    <section class="dx-card" aria-labelledby="dxFeatT">
+      <div class="dx-card-h"><h2 id="dxFeatT">Featured</h2><span class="dx-acts"><button type="button" data-dx="more-feat">Show More</button></span></div>
+      <div class="dx-icons named" id="dxFeat"></div>
+    </section>
+    <div class="dx-ad" id="dxAd"></div>
+  </div>
+  <div id="dvLegacy" hidden style="display:none"><div class="wrap dv-wrap">
     <header class="dv-head">
       <h1>Discover</h1>
       <p>Trending coins, market mood, topics to explore, and where to start.</p>
@@ -916,7 +967,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
       <h3 class="dv-sub">Crypto glossary</h3>
       <div class="dv-card" id="dvGloss"></div>
     </section>
-  </div>
+  </div></div>
 </section>
 
 <section class="discover" id="eventsView" hidden aria-label="Events">
@@ -2790,16 +2841,104 @@ function dvInitStart(){
 }
 dvInitStart();
 
-function discoverEnter(){
-  dvLoadTrend(false);
-  dvLoadMood(false);
-  dvLoadTopics();
-  if (!dv.timer) dv.timer = setInterval(function(){
-    if (discoverView.hidden || document.hidden) return;
-    dvLoadTrend(true);
-    dvLoadMood(false);
-  }, 60000);
+/* ---- Discover: launcher (search, highlights, recently visited, featured, ad) ---- */
+var DX_ITEMS = [
+  { id: "prices",   name: "Prices",        ico: "ph-chart-line-up",    bg: "#2563eb", go: "tab:prices" },
+  { id: "events",   name: "Events",        ico: "ph-calendar-blank",   bg: "#7c3aed", go: "tab:events" },
+  { id: "news",     name: "News",          ico: "ph-newspaper",        bg: "#0ea5e9", go: "home:news" },
+  { id: "research", name: "YSFResearch",   ico: "ph-magnifying-glass", bg: "#f59e0b", go: "home:research" },
+  { id: "today",    name: "Today",         ico: "ph-currency-btc",     bg: "#f97316", go: "home:today" },
+  { id: "blog",     name: "Blog",          ico: "ph-globe",            bg: "#16a34a", go: "url:https://www.yongsocial.com" },
+  { id: "x",        name: "X",             ico: "ph-x-logo",           bg: "#111827", go: "url:https://x.com/YSFNews" },
+  { id: "telegram", name: "Telegram",      ico: "ph-telegram-logo",    bg: "#229ed9", go: "url:https://t.me/Yongsocialfinance" }
+];
+var DX_BANNERS = [
+  { t: "Live crypto prices",       d: "Track the market in real time",        ico: "ph-chart-line-up",    bg: "linear-gradient(135deg,#1e3a8a,#2563eb 55%,#38bdf8)", go: "tab:prices" },
+  { t: "YSFResearch",              d: "Research bounties and discoveries",    ico: "ph-magnifying-glass", bg: "linear-gradient(135deg,#78350f,#d97706 55%,#fbbf24)", go: "home:research" },
+  { t: "Today in Crypto",          d: "Market mood, movers and headlines",    ico: "ph-currency-btc",     bg: "linear-gradient(135deg,#4c1d95,#7c3aed 55%,#c084fc)", go: "home:today" }
+];
+var dx = { rec: [], recAll: false, featAll: false, built: false, bi: 0, bt: 0 };
+function dxLoadRec(){
+  try { var r = JSON.parse(localStorage.getItem("ys_dx_recent") || "null"); if (Array.isArray(r)) return r; } catch (e) {}
+  return ["prices", "news", "research", "events", "today"];   /* first visit: a starter row */
 }
+function dxSaveRec(){ try { localStorage.setItem("ys_dx_recent", JSON.stringify(dx.rec)); } catch (e) {} }
+function dxItem(id){ for (var i = 0; i < DX_ITEMS.length; i++) if (DX_ITEMS[i].id === id) return DX_ITEMS[i]; return null; }
+function dxTile(it){
+  return '<button type="button" class="dx-i" data-dxopen="' + it.id + '"><i class="tile" style="background:' + it.bg + '"><i class="ph ' + it.ico + '" aria-hidden="true"></i></i><span>' + esc(it.name) + '</span></button>';
+}
+function dxRender(){
+  var rec = dx.rec.map(dxItem).filter(Boolean), n = dx.recAll ? rec.length : 5;
+  dvEl("dxRec").innerHTML = rec.length ? rec.slice(0, n).map(dxTile).join("") : '<div class="dx-empty">Nothing here yet.</div>';
+  dvEl("dxFeat").innerHTML = DX_ITEMS.slice(0, dx.featAll ? DX_ITEMS.length : 5).map(dxTile).join("");
+  var mr = discoverView.querySelector('[data-dx="more-rec"]'), mf = discoverView.querySelector('[data-dx="more-feat"]');
+  mr.textContent = dx.recAll ? "Show Less" : "Show More";
+  mf.textContent = dx.featAll ? "Show Less" : "Show More";
+}
+function dxGo(go){
+  var k = go.split(":"), v = go.slice(k[0].length + 1);
+  if (k[0] === "tab"){ document.querySelector('#tabbar [data-tab="' + v + '"]').click(); }
+  else if (k[0] === "home"){ document.querySelector('#tabbar [data-tab="home"]').click(); setTimeout(function(){ hmSwitch(v); }, 60); }
+  else if (k[0] === "url"){ window.open(v, "_blank", "noopener,noreferrer"); }
+}
+function dxBuild(){
+  if (dx.built) return; dx.built = true;
+  dx.rec = dxLoadRec();
+  dvEl("dxBanners").innerHTML = DX_BANNERS.map(function(b, i){
+    return '<button type="button" class="dx-b" data-dxb="' + i + '" style="background:' + b.bg + '"><i class="ph ' + b.ico + '" aria-hidden="true"></i><strong>' + esc(b.t) + '</strong><span>' + esc(b.d) + '</span></button>';
+  }).join("");
+  dvEl("dxDots").innerHTML = DX_BANNERS.map(function(){ return "<i></i>"; }).join("");
+  var box = dvEl("dxBanners");
+  box.addEventListener("scroll", function(){
+    var i = Math.round(box.scrollLeft / Math.max(1, box.clientWidth + 12));
+    dx.bi = i; dxDots();
+  }, { passive: true });
+  dxRender(); dxDots();
+}
+function dxDots(){ var d = dvEl("dxDots").children; for (var i = 0; i < d.length; i++) d[i].classList.toggle("on", i === dx.bi); }
+function dxAuto(){
+  clearInterval(dx.bt);
+  dx.bt = setInterval(function(){
+    if (discoverView.hidden || document.hidden) return;
+    var box = dvEl("dxBanners"), n = DX_BANNERS.length, i = (dx.bi + 1) % n;
+    box.scrollTo({ left: i * (box.clientWidth + 12), behavior: "smooth" });
+  }, 5000);
+}
+/* search box: a link opens as typed, anything else is searched on DuckDuckGo */
+function dxSearchGo(q){
+  q = String(q || "").trim(); if (!q) return;
+  var isLink = /^https?:\/\//i.test(q) || (!/\s/.test(q) && /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?([\/?#].*)?$/i.test(q));
+  var url = isLink ? (/^https?:\/\//i.test(q) ? q : "https://" + q) : "https://duckduckgo.com/?q=" + encodeURIComponent(q);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+function discoverEnter(){
+  dxBuild();
+  dxAuto();
+  if (!document.getElementById("dxAd").firstChild) promoMount("dxAd");
+}
+discoverView.addEventListener("submit", function(e){
+  if (e.target.id !== "dxSearch") return;
+  e.preventDefault(); var q = dvEl("dxQ"); dxSearchGo(q.value); q.blur();
+});
+discoverView.addEventListener("click", function(e){
+  if (e.target.closest("#dxGift")){ showToast("Coming soon"); return; }
+  var b = e.target.closest("[data-dxb]");
+  if (b){ dxGo(DX_BANNERS[+b.getAttribute("data-dxb")].go); return; }
+  var o = e.target.closest("[data-dxopen]");
+  if (o){
+    var it = dxItem(o.getAttribute("data-dxopen"));
+    dx.rec = [it.id].concat(dx.rec.filter(function(x){ return x !== it.id; })).slice(0, 20); dxSaveRec(); dxRender();
+    dxGo(it.go); return;
+  }
+  var m = e.target.closest("[data-dx]");
+  if (m){
+    var k = m.getAttribute("data-dx");
+    if (k === "more-rec") dx.recAll = !dx.recAll;
+    else if (k === "more-feat") dx.featAll = !dx.featAll;
+    else if (k === "clear"){ dx.rec = []; dxSaveRec(); }
+    dxRender(); return;
+  }
+});
 discoverView.addEventListener("click", function(e){
   var seg = e.target.closest("[data-dvseg]");
   if (seg){
