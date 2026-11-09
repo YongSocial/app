@@ -9,7 +9,7 @@
  * You only need to change VERSION when you edit THIS file (for example to add files to SHELL).
  * Changing index.html does NOT require touching this file.
  */
-const VERSION = "v1";
+const VERSION = "v1.1.0";
 const CACHE = "ys-shell-" + VERSION;
 const SHELL = ["/", "/manifest.json", "/icon-192.png", "/icon-512.png", "/icon-maskable-512.png", "/apple-touch-icon.png"];
 const NAV_TIMEOUT_MS = 4000;
