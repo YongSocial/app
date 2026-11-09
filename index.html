@@ -251,6 +251,36 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 .dx-ad{margin-top:16px}
 .dx-ad .pr-rot{margin-top:0}
 #dvLegacy{display:none!important}
+.dx-tabbtn{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dx-tabbtn b{display:grid;place-items:center;min-width:28px;height:28px;padding:0 4px;box-sizing:border-box;border:2.5px solid var(--brand);border-radius:8px;color:var(--brand);font:800 13px var(--font-head)}
+.dx-tabs{position:fixed;inset:0;z-index:75;display:flex;flex-direction:column;background:var(--bg);color:var(--text)}
+.dx-tabs[hidden]{display:none}
+.dx-tabs-h{display:flex;align-items:center;gap:12px;padding:14px 16px 10px}
+.dx-tabs-h strong{flex:1;font-family:var(--font-head);font-size:18px}
+.dx-tabs-r{display:flex;align-items:center;gap:6px}
+.dx-new,.dx-x{width:44px;height:44px;border:0;border-radius:14px;display:grid;place-items:center;font-size:22px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dx-new{background:rgba(33,150,243,.22);color:var(--brand)}
+.dx-x{background:var(--surface);color:var(--text)}
+.dx-txt{border:0;background:none;color:var(--brand);font:600 14px var(--font-body);padding:10px 8px;cursor:pointer}
+.dx-tabs-s{display:flex;align-items:center;gap:10px;margin:0 16px 12px;padding:0 16px;height:46px;border-radius:999px;background:var(--surface)}
+.dx-tabs-s i{color:var(--muted);font-size:18px}
+.dx-tabs-s input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;color:var(--text);font:500 15px var(--font-body)}
+.dx-tabs-g{flex:1;overflow:auto;padding:4px 16px 100px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-content:start;-webkit-overflow-scrolling:touch}
+@media(min-width:700px){.dx-tabs-g{grid-template-columns:repeat(4,1fr)}}
+.dx-tc{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:20px;background:var(--surface);overflow:hidden;min-width:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dx-tc-h{display:flex;align-items:center;gap:8px;padding:12px 8px 8px 12px}
+.dx-tc-h .fv{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);overflow:hidden;font:800 11px var(--font-head);color:var(--brand)}
+.dx-tc-h .fv img{width:100%;height:100%;object-fit:cover}
+.dx-tc-h span.ti{flex:1;min-width:0;font:600 14px var(--font-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dx-tc-h button{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:none;color:var(--muted);font-size:17px;display:grid;place-items:center;cursor:pointer}
+.dx-tc-b{margin:0 10px 10px;border-radius:12px;background:var(--bg);padding:12px;min-height:150px;display:flex;flex-direction:column;gap:8px}
+.dx-tc-b .k{font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.dx-tc-b .q{font:700 15px/1.3 var(--font-head);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word}
+.dx-tc-b .bar{height:10px;border-radius:5px;background:var(--surface-2)}
+.dx-tc-b .bar.s{width:60%}
+.dx-tc-b .t{margin-top:auto;font-size:12px;color:var(--muted)}
+.dx-tabs-e{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;font-size:14.5px;line-height:1.5}
+.dx-tabs-e i{display:block;font-size:44px;margin-bottom:10px;opacity:.6}
 .dx-res{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column}
 .dx-res[hidden]{display:none}
 .dx-res-h{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);color:var(--text);border-bottom:1px solid var(--line)}
@@ -921,7 +951,7 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
 
 <section class="discover" id="discoverView" hidden aria-label="Discover">
   <div class="wrap dx-wrap">
-    <div class="dx-top"><button type="button" class="dx-gift" id="dxGift" aria-label="Rewards"><i class="ph ph-gift" aria-hidden="true"></i></button></div>
+    <div class="dx-top"><button type="button" class="dx-tabbtn" id="dxTabBtn" aria-label="Open tabs"><b id="dxTabN">0</b></button></div>
     <form class="dx-search" id="dxSearch" role="search" autocomplete="off">
       <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
       <input type="text" id="dxQ" inputmode="url" enterkeyhint="go" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Search or enter a link" aria-label="Search or enter a link">
@@ -937,6 +967,15 @@ nav.main .nv-social a{display:grid;place-items:center;width:42px;height:42px;pad
       <div class="dx-icons named" id="dxFeat"></div>
     </section>
     <div class="dx-ad" id="dxAd"></div>
+  </div>
+  <div class="dx-tabs" id="dxTabs" hidden role="dialog" aria-label="Tabs">
+    <div class="dx-tabs-h">
+      <button type="button" class="dx-new" id="dxTabNew" aria-label="New search"><i class="ph ph-plus" aria-hidden="true"></i></button>
+      <strong id="dxTabsT">Tabs</strong>
+      <span class="dx-tabs-r"><button type="button" id="dxTabsClear" class="dx-txt">Clear all</button><button type="button" id="dxTabsClose" class="dx-x" aria-label="Close tabs"><i class="ph ph-x" aria-hidden="true"></i></button></span>
+    </div>
+    <div class="dx-tabs-s"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input type="text" id="dxTabsQ" placeholder="Search your tabs" aria-label="Search your tabs" autocomplete="off" autocapitalize="none" spellcheck="false"></div>
+    <div class="dx-tabs-g" id="dxTabsG"></div>
   </div>
   <div class="dx-res" id="dxResults" hidden role="dialog" aria-label="Search results">
     <div class="dx-res-h"><button type="button" id="dxResBack" aria-label="Back"><i class="ph ph-arrow-left" aria-hidden="true"></i></button><strong id="dxResQ"></strong></div>
@@ -2927,6 +2966,42 @@ function dxAuto(){
     box.scrollTo({ left: i * (box.clientWidth + 12), behavior: "smooth" });
   }, 5000);
 }
+/* ---- Discover "tabs": everything searched or opened stays here as a tab until it is closed or cleared ---- */
+var dxT = { list: null };
+function dxTLoad(){
+  if (dxT.list) return dxT.list;
+  try { var r = JSON.parse(localStorage.getItem("ys_dx_tabs") || "[]"); dxT.list = Array.isArray(r) ? r : []; } catch (e) { dxT.list = []; }
+  return dxT.list;
+}
+function dxTSave(){ try { localStorage.setItem("ys_dx_tabs", JSON.stringify(dxT.list)); } catch (e) {} dxTCount(); }
+function dxTCount(){ var n = dxTLoad().length; var el = document.getElementById("dxTabN"); if (el) el.textContent = n > 99 ? "99+" : n; }
+function dxTAdd(type, q, url){
+  var l = dxTLoad().filter(function(t){ return !(t.type === type && t.q === q); });
+  l.unshift({ id: "t" + Date.now() + Math.floor(Math.random() * 1000), type: type, q: q, url: url, at: Date.now() });
+  dxT.list = l.slice(0, 40); dxTSave();
+}
+function dxHost(u){ try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } }
+function dxAgo(ts){
+  var m = Math.max(0, Math.floor((Date.now() - ts) / 60000));
+  if (m < 1) return "Just now"; if (m < 60) return m + " min ago";
+  var h = Math.floor(m / 60); if (h < 24) return h + " h ago";
+  return Math.floor(h / 24) + " d ago";
+}
+function dxTRender(){
+  var q = (dvEl("dxTabsQ").value || "").trim().toLowerCase(), all = dxTLoad();
+  var list = q ? all.filter(function(t){ return (t.q + " " + (t.url || "")).toLowerCase().indexOf(q) > -1; }) : all;
+  dvEl("dxTabsT").textContent = all.length + (all.length === 1 ? " tab" : " tabs");
+  dvEl("dxTabsClear").hidden = !all.length;
+  dvEl("dxTabsG").innerHTML = list.length ? list.map(function(t){
+    var link = t.type === "link", title = link ? dxHost(t.url) : t.q;
+    var fv = link ? '<img alt="" src="https://www.google.com/s2/favicons?domain=' + encodeURIComponent(dxHost(t.url)) + '&sz=64" onerror="this.replaceWith(document.createTextNode(\'' + esc(title.charAt(0).toUpperCase()) + '\'))">' : "G";
+    return '<article class="dx-tc" data-dxtab="' + t.id + '"><div class="dx-tc-h"><span class="fv">' + fv + '</span><span class="ti">' + esc(title) + '</span>'
+      + '<button type="button" data-dxtabx="' + t.id + '" aria-label="Close tab"><i class="ph ph-x" aria-hidden="true"></i></button></div>'
+      + '<div class="dx-tc-b"><span class="k">' + (link ? "Website" : "Google search") + '</span><span class="q">' + esc(link ? t.url : t.q) + '</span><span class="bar"></span><span class="bar s"></span><span class="t">' + dxAgo(t.at) + '</span></div></article>';
+  }).join("") : '<div class="dx-tabs-e"><i class="ph ph-browsers" aria-hidden="true"></i>' + (q ? "No tabs match your search." : "No tabs yet.<br>What you search for will show up here.") + '</div>';
+}
+function dxTOpen(){ dvEl("dxTabs").hidden = false; document.body.style.overflow = "hidden"; dvEl("dxTabsQ").value = ""; dxTRender(); }
+function dxTClose(){ dvEl("dxTabs").hidden = true; document.body.style.overflow = dvEl("dxResults").hidden ? "" : "hidden"; }
 /* search box: a link opens as typed; anything else is a Google search.
    With CONFIG.googleCx set, results show inside the app; otherwise Google opens in a new tab. */
 var dxCse = { loaded: false, ready: false, pending: "" };
@@ -2954,12 +3029,15 @@ function dxCloseResults(){ dvEl("dxResults").hidden = true; document.body.style.
 function dxSearchGo(q){
   q = String(q || "").trim(); if (!q) return;
   var isLink = /^https?:\/\//i.test(q) || (!/\s/.test(q) && /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?([\/?#].*)?$/i.test(q));
-  if (isLink){ window.open(/^https?:\/\//i.test(q) ? q : "https://" + q, "_blank", "noopener,noreferrer"); return; }
+  if (isLink){ var u = /^https?:\/\//i.test(q) ? q : "https://" + q; dxTAdd("link", u, u); window.open(u, "_blank", "noopener,noreferrer"); return; }
+  dxTAdd("search", q, "");
   if (CONFIG.googleCx) dxShowResults(q);
   else window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank", "noopener,noreferrer");
 }
+discoverView.addEventListener("input", function(e){ if (e.target.id === "dxTabsQ") dxTRender(); });
 function discoverEnter(){
   dxBuild();
+  dxTCount();
   dxAuto();
   if (!document.getElementById("dxAd").firstChild) promoMount("dxAd");
 }
@@ -2969,7 +3047,18 @@ discoverView.addEventListener("submit", function(e){
 });
 discoverView.addEventListener("click", function(e){
   if (e.target.closest("#dxResBack")){ dxCloseResults(); return; }
-  if (e.target.closest("#dxGift")){ window.open("https://offers.yongsocial.com", "_blank", "noopener,noreferrer"); return; }
+  if (e.target.closest("#dxTabBtn")){ dxTOpen(); return; }
+  if (e.target.closest("#dxTabsClose")){ dxTClose(); return; }
+  if (e.target.closest("#dxTabNew")){ dxTClose(); var qi = dvEl("dxQ"); qi.value = ""; qi.focus(); return; }
+  if (e.target.closest("#dxTabsClear")){ dxT.list = []; dxTSave(); dxTRender(); return; }
+  var tx = e.target.closest("[data-dxtabx]");
+  if (tx){ var id = tx.getAttribute("data-dxtabx"); dxT.list = dxTLoad().filter(function(t){ return t.id !== id; }); dxTSave(); dxTRender(); return; }
+  var tc = e.target.closest("[data-dxtab]");
+  if (tc){
+    var tb = dxTLoad().filter(function(t){ return t.id === tc.getAttribute("data-dxtab"); })[0];
+    if (tb){ dxTClose(); if (tb.type === "link"){ dxTAdd("link", tb.q, tb.url); window.open(tb.url, "_blank", "noopener,noreferrer"); } else dxSearchGo(tb.q); }
+    return;
+  }
   var b = e.target.closest("[data-dxb]");
   if (b){ dxGo(DX_BANNERS[+b.getAttribute("data-dxb")].go); return; }
   var o = e.target.closest("[data-dxopen]");
