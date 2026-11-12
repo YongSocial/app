@@ -110,6 +110,9 @@ nav.main a,.navbtn{font-size:14px;font-weight:500;color:var(--muted);padding:8px
 .share-btn{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
 .g-search{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;padding:0;font:800 14px var(--font-head);color:#4285f4;-webkit-tap-highlight-color:transparent}
 .g-search img{display:block}
+.ml{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.ml .g-search{width:30px;height:30px}
+.ml .g-search img{width:18px;height:18px}
 .share-btn:hover{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.18)}
 .feature .share-btn{margin-left:auto}
 .share-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:100;display:none;place-items:center;padding:20px}
@@ -1541,10 +1544,12 @@ function gBtn(p){
 document.addEventListener("click", function(e){
   var b = e.target.closest ? e.target.closest(".g-search") : null;
   if (!b) return;
-  e.preventDefault();
+  e.preventDefault(); e.stopPropagation();
   var host = "yongsocial.com"; try { host = new URL(CONFIG.blogUrl).hostname.replace(/^www\./, ""); } catch (err) {}
   window.open("https://www.google.com/search?q=" + encodeURIComponent("site:" + host + " " + (b.getAttribute("data-q") || "")), "_blank", "noopener,noreferrer");
-});
+}, true);
+/* same button for use inside a story link (a span, because a button can't sit inside a link) */
+function gMini(p){ return gBtn(p).replace("<button", '<span role="button" tabindex="0"').replace("</button>", "</span>").replace('type="button" ', ""); }
 function cardHtml(p){
   return '<article class="card"><a class="thumb" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="' + esc(p.title) + '" onerror="this.src=\'' + ph(p.title) + '\'"></a>'
     + '<div class="body">' + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
@@ -3996,7 +4001,7 @@ function hmImg(p){ return '<img loading="lazy" src="' + esc(p.thumb || ph(p.titl
 function hmLead(p){
   return '<a class="hm-lead" ' + attrs(p) + '>' + hmImg(p) + '<span class="tx">'
     + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
-    + '<h3>' + esc(p.title) + '</h3><small>' + esc(p.author) + ' \u00b7 ' + hmAgo(p.date) + '</small></span></a>';
+    + '<h3>' + esc(p.title) + '</h3><span class="ml"><small>' + esc(p.author) + ' \u00b7 ' + hmAgo(p.date) + '</small>' + gMini(p) + '</span></span></a>';
 }
 function hmRow(p){
   return '<a class="hm-row" ' + attrs(p) + '>' + hmImg(p) + '<span class="tx">'
@@ -4004,8 +4009,8 @@ function hmRow(p){
     + '<strong>' + esc(p.title) + '</strong><small>' + hmAgo(p.date) + '</small></span></a>';
 }
 function hmStoryRow(p){
-  return '<a class="hm-srow" ' + attrs(p) + '><span class="tx"><strong>' + esc(p.title) + '</strong><small>'
-    + (p.labels[0] ? esc(p.labels[0]) + ' \u00b7 ' : '') + hmAgo(p.date) + '</small></span>' + hmImg(p) + '</a>';
+  return '<a class="hm-srow" ' + attrs(p) + '><span class="tx"><strong>' + esc(p.title) + '</strong><span class="ml"><small>'
+    + (p.labels[0] ? esc(p.labels[0]) + ' \u00b7 ' : '') + hmAgo(p.date) + '</small>' + gMini(p) + '</span></span>' + hmImg(p) + '</a>';
 }
 function hmNotice(msg, attr){
   return '<div class="notice">' + msg + (attr ? '<br><button class="dv-btn" type="button" ' + attr + ' style="margin-top:10px">Try again</button>' : '') + '</div>';
