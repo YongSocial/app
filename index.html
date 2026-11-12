@@ -108,6 +108,8 @@ nav.main a,.navbtn{font-size:14px;font-weight:500;color:var(--muted);padding:8px
 
 /* Share */
 .share-btn{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+.g-search{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;padding:0;font:800 14px var(--font-head);color:#4285f4;-webkit-tap-highlight-color:transparent}
+.g-search img{display:block}
 .share-btn:hover{color:#fff;border-color:var(--brand);background:rgba(33,150,243,.18)}
 .feature .share-btn{margin-left:auto}
 .share-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:100;display:none;place-items:center;padding:20px}
@@ -1531,13 +1533,25 @@ var SOCIAL_ICONS = {
 
 function shareBtn(p){ return '<button class="share-btn" data-share-url="' + esc(p.url) + '" data-share-title="' + esc(p.title) + '" type="button" aria-label="Share this article">&#10148; Share</button>'; }
 
+/* Google button: searches Google for site:yongsocial.com <the post's first label> (or its title when it has no label) */
+function gBtn(p){
+  var q = p.labels && p.labels[0] ? p.labels[0] : p.title;
+  return '<button class="g-search" type="button" data-q="' + esc(q) + '" aria-label="Search Google for more on ' + esc(q) + '"><img alt="" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" width="20" height="20" onerror="this.replaceWith(document.createTextNode(\'G\'))"></button>';
+}
+document.addEventListener("click", function(e){
+  var b = e.target.closest ? e.target.closest(".g-search") : null;
+  if (!b) return;
+  e.preventDefault();
+  var host = "yongsocial.com"; try { host = new URL(CONFIG.blogUrl).hostname.replace(/^www\./, ""); } catch (err) {}
+  window.open("https://www.google.com/search?q=" + encodeURIComponent("site:" + host + " " + (b.getAttribute("data-q") || "")), "_blank", "noopener,noreferrer");
+});
 function cardHtml(p){
   return '<article class="card"><a class="thumb" ' + attrs(p) + '><img loading="lazy" src="' + esc(p.thumb || ph(p.title)) + '" alt="' + esc(p.title) + '" onerror="this.src=\'' + ph(p.title) + '\'"></a>'
     + '<div class="body">' + (p.labels[0] ? '<span class="tag">' + esc(p.labels[0]) + '</span>' : '')
     + '<h3><a ' + attrs(p) + '>' + esc(p.title) + '</a></h3>'
     + '<p>' + esc(p.snippet) + '</p>'
     + '<div class="meta"><span>' + esc(p.author) + '</span><span>&bull;</span><span>' + fmt(p.date) + '</span></div>'
-    + '<div class="card-actions"><a class="readmore" ' + attrs(p) + '>Read article</a>' + shareBtn(p) + bookmarkBtn(p) + '</div></div></article>';
+    + '<div class="card-actions"><a class="readmore" ' + attrs(p) + '>Read article</a>' + gBtn(p) + shareBtn(p) + bookmarkBtn(p) + '</div></div></article>';
 }
 
 function featureHtml(p){
@@ -2976,7 +2990,7 @@ function dxTRender(){
   dvEl("dxTabsClear").hidden = !all.length;
   dvEl("dxTabsG").innerHTML = list.length ? list.map(function(t){
     var link = t.type === "link", title = link ? dxHost(t.url) : t.q;
-    var fv = link ? '<img alt="" src="https://www.google.com/s2/favicons?domain=' + encodeURIComponent(dxHost(t.url)) + '&sz=64" onerror="this.replaceWith(document.createTextNode(\'' + esc(title.charAt(0).toUpperCase()) + '\'))">' : "G";
+    var fv = link ? '<img alt="" src="https://www.google.com/s2/favicons?domain=' + encodeURIComponent(dxHost(t.url)) + '&sz=64" onerror="this.replaceWith(document.createTextNode(\'' + esc(title.charAt(0).toUpperCase()) + '\'))">' : '<img alt="" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" onerror="this.replaceWith(document.createTextNode(\'G\'))">';
     return '<article class="dx-tc" data-dxtab="' + t.id + '"><div class="dx-tc-h"><span class="fv">' + fv + '</span><span class="ti">' + esc(title) + '</span>'
       + '<button type="button" data-dxtabx="' + t.id + '" aria-label="Close tab"><i class="ph ph-x" aria-hidden="true"></i></button></div>'
       + '<div class="dx-tc-b"><span class="k">' + (link ? "Website" : "Google search") + '</span><span class="q">' + esc(link ? t.url : t.q) + '</span><span class="bar"></span><span class="bar s"></span><span class="t">' + dxAgo(t.at) + '</span></div></article>';
