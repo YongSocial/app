@@ -1540,7 +1540,7 @@ function shareBtn(p){ return '<button class="share-btn" data-share-url="' + esc(
 /* Google button: searches Google for site:yongsocial.com <the post's first label> (or its title when it has no label) */
 function gBtn(p){
   var q = p.labels && p.labels[0] ? p.labels[0] : p.title;
-  return '<button class="g-search" type="button" data-q="' + esc(q) + '" aria-label="Search Google for more on ' + esc(q) + '"><img alt="" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" width="20" height="20" onerror="this.replaceWith(document.createTextNode(\'G\'))"></button>';
+  return '<button class="g-search" type="button" data-q="' + esc(q) + '" aria-label="Search Google for more on ' + esc(q) + '"><img alt="" src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" width="20" height="20" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'https://www.google.com/s2/favicons?domain=google.com&sz=64\'}else{this.replaceWith(document.createTextNode(\'G\'))}"></button>';
 }
 document.addEventListener("click", function(e){
   var b = e.target.closest ? e.target.closest(".g-search") : null;
@@ -2996,7 +2996,7 @@ function dxTRender(){
   dvEl("dxTabsClear").hidden = !all.length;
   dvEl("dxTabsG").innerHTML = list.length ? list.map(function(t){
     var link = t.type === "link", title = link ? dxHost(t.url) : t.q;
-    var fv = link ? '<img alt="" src="https://www.google.com/s2/favicons?domain=' + encodeURIComponent(dxHost(t.url)) + '&sz=64" onerror="this.replaceWith(document.createTextNode(\'' + esc(title.charAt(0).toUpperCase()) + '\'))">' : '<img alt="" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" onerror="this.replaceWith(document.createTextNode(\'G\'))">';
+    var fv = link ? '<img alt="" src="https://www.google.com/s2/favicons?domain=' + encodeURIComponent(dxHost(t.url)) + '&sz=64" onerror="this.replaceWith(document.createTextNode(\'' + esc(title.charAt(0).toUpperCase()) + '\'))">' : '<img alt="" src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'https://www.google.com/s2/favicons?domain=google.com&sz=64\'}else{this.replaceWith(document.createTextNode(\'G\'))}">';
     return '<article class="dx-tc" data-dxtab="' + t.id + '"><div class="dx-tc-h"><span class="fv">' + fv + '</span><span class="ti">' + esc(title) + '</span>'
       + '<button type="button" data-dxtabx="' + t.id + '" aria-label="Close tab"><i class="ph ph-x" aria-hidden="true"></i></button></div>'
       + '<div class="dx-tc-b"><span class="k">' + (link ? "Website" : "Google search") + '</span><span class="q">' + esc(link ? t.url : t.q) + '</span><span class="bar"></span><span class="bar s"></span><span class="t">' + dxAgo(t.at) + '</span></div></article>';
